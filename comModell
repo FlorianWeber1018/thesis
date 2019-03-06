@@ -1,0 +1,18 @@
+#interfaces
+backend_dynamicContent	<->	webApp		-->	websockets eventuell mit vuex gekoppelt?
+backend_staticContent	<->	webApp		-->	HTTPS REST (zB crown Server)
+backend_staticContent	<->	SQL-Server	-->	c++ sql wrapperlib aus heatcore
+backend_dynamicContent	<->	OPCUA		-->	OpenOPCUA
+
+
+ausnamslos alles muss eventbasiert kommunizieren. um die reaktivität zu überwachen müssen keepAliveRequests oder Ähnliches genutzt werden!
+
+->keepAliveRequest auf als event auf das geantwortet wird -> watchdog starten, request absetzten
+->jede schnittstelle muss diese Anfrage unterstützen (bei sql muss man sich was überlegen(eventuell die zeit abfragen oder ähnliches))
+->events werden bei rest sowie websockets mittels json ausgetauscht
+	erster ansatz:
+		uint_16t type:0
+		Payload:{} 
+		timestamp: <-- evt überflüssig --> optional (evt nicht in websockets, rest da es dort wahrscheinlich schon vorhanden ist)
+damit braucht jeder "user" eine funktion um events zu definieren und abzusetzen sowie einen eigenen EventDispatcher --> c++
+
