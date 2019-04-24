@@ -16,9 +16,7 @@ struct SqlCredentials{
     std::string database;
 };
 
-struct Databinding{
-    uint64_t blaaa;
-};
+
 class SqlClient
 {
 public:
@@ -28,21 +26,18 @@ public:
     void connect() noexcept;
     void disconnect() noexcept;
     bool connected();
-
-    //bool insertDatabinding()
-    /*
-    To implement!!!
-
-
-    */
-    //to Test
     bool initDB();
-protected:
 
-    MYSQL_RES* sendCommand(std::string sendstring);
+    //to Test
+    bool insertDatabinding(uint64_t srcID, uint64_t destID, const DataBindingsType& databindingType);
+    bool deleteDatabinding(uint64_t ID);
+    bool deleteDatabinding(uint64_t destID, const DataBindingsType& databindingType);
+    bool getAllRowsOfTable(const std::string& tableName, rj::Document& dom_o);
+protected:
+    MYSQL_RES* sendCommand(std::string& sendstring);
     bool sendCUD(const std::string& sendstring);
     bool executeScript(const std::string& scriptName);
-    static pt::ptree MYSQL_RES_to_ptree(MYSQL_RES* resultset, unsigned int keyColNumber);
+    bool mysqlResToDom(MYSQL_RES* resultset, unsigned int keyColNumber, rj::Document& dom_o);
 private:
     MYSQL* mysqlhandle_m;
     SqlCredentials credentials_m;

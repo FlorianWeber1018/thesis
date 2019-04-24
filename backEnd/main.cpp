@@ -10,10 +10,11 @@ int main()
         std::cout << "This is the Backend-Deamon-Process, "
                      "to kill the Process type \"0\" and press Enter" << std::endl;
 
-        std::cin >> userInput;
+        //std::cin >> userInput;
         if(userInput == 0){
-            return 0;
+            run = 0;
         }
+        run = 0;
     }
     return 0;
 }

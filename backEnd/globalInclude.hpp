@@ -7,10 +7,10 @@
 #include <string>
 #include <list>
 #include <mutex>
-#include <boost/property_tree/ptree_fwd.hpp>
 #include <iostream>
-#include "util.hpp"
 #include <cstdint>
-namespace pt = boost::property_tree;
-
+#include "rapidjson/fwd.h"
+enum DataBindingsType{ guiToOpcua, opcuaToGui, guiToGui };
+namespace rj = rapidjson;
+#include "util.hpp"
 #endif

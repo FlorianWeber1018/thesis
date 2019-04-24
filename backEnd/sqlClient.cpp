@@ -1,6 +1,6 @@
 #include "globalInclude.hpp"
 #include "sqlClient.hpp"
-#include <boost/property_tree/ptree.hpp>
+#include "rapidjson/document.h"
 SqlCredentials::SqlCredentials(
         std::string userName = "WebVisuSU",
         std::string password = "637013",
@@ -29,7 +29,7 @@ SqlClient::SqlClient()
 {
     mysqlhandle_m = mysql_init(nullptr);
     if(mysqlhandle_m == nullptr){
-        throw 100;
+        throw "100";
     }
     connect();
 }
@@ -73,7 +73,7 @@ bool SqlClient::connected()
 {
     return connected_m;
 }
-MYSQL_RES* SqlClient::sendCommand(std::string sendstring)
+MYSQL_RES* SqlClient::sendCommand(std::string& sendstring)
 {
     mutex_m.lock();
     std::lock_guard<std::mutex> lg(mutex_m, std::adopt_lock);
@@ -82,9 +82,9 @@ MYSQL_RES* SqlClient::sendCommand(std::string sendstring)
         {
             return mysql_store_result(mysqlhandle_m);
         }
-        return NULL;
+        return nullptr;
     }
-
+    return nullptr;
 }
 bool SqlClient::sendCUD(const std::string& sendstring)
 {
@@ -106,6 +106,8 @@ bool SqlClient::sendCUD(const std::string& sendstring)
         }else{
             return true;
         }
+    }else{
+        return false;
     }
 }
 bool SqlClient::executeScript(const std::string& scriptName)
@@ -128,19 +130,42 @@ bool SqlClient::executeScript(const std::string& scriptName)
 
     return true;
 }
-pt::ptree SqlClient::MYSQL_RES_to_ptree(MYSQL_RES* resultset, unsigned int keyColNumber)
+bool SqlClient::mysqlResToDom(MYSQL_RES* resultset, unsigned int keyColNumber, rj::Document& dom_o)
 {
-    pt::ptree resTree;
+    dom_o.SetObject();
+
     if(resultset != nullptr){
-        while (MYSQL_ROW row = mysql_fetch_row(resultset)) {
-            pt::ptree rowTree;
-            for(uint i = 0; i < resultset->field_count; i++){
-                rowTree.put(resultset->fields[i].name, row[i]);
-            }
-            resTree.put_child(row[keyColNumber], rowTree);
+        unsigned int fieldCount = mysql_num_fields(resultset);
+        std::vector<MYSQL_FIELD*> fields;
+        MYSQL_FIELD* field;
+
+        while((field = mysql_fetch_field(resultset)) != nullptr){
+            fields.push_back(field);
         }
+        while (MYSQL_ROW row = mysql_fetch_row(resultset)) {
+            rj::Value jsonRow(rj::kObjectType);
+            rj::Value rowKey;
+            rowKey.SetString(row[keyColNumber], dom_o.GetAllocator());
+            for(uint i=0; i<fieldCount; i++){
+                rj::Value val;
+                rj::Value colKey;
+                colKey.SetString(fields[i]->name, dom_o.GetAllocator());
+                if(row[i]!=nullptr){
+                    if(fields[i]->type == MYSQL_TYPE_LONGLONG){
+                        val.SetUint64(std::stoull(row[i]));
+                    }else{
+                        val.SetString(row[i], dom_o.GetAllocator());
+                    }
+                }
+                jsonRow.AddMember(colKey, val, dom_o.GetAllocator());
+            }
+            dom_o.AddMember(rowKey, jsonRow, dom_o.GetAllocator());
+        }
+        return true;
+    }else{
+        return false;
     }
-    return resTree;
+
 }
 void SqlClient::prepareScript(const std::list<std::string>& src, std::list<std::string>& dest)
 {
@@ -190,4 +215,86 @@ bool SqlClient::initDB()
     rtn &= executeScript("createDatabase.sql");
     rtn &= executeScript("createTables.sql");
     return rtn;
+}
+bool SqlClient::insertDatabinding(uint64_t srcID, uint64_t destID, const DataBindingsType& databindingType)
+{
+    std::string query = "Insert into DataBindings ( destGuiElementDataNodeID, srcGuiElementDataNodeID, destOPCUANodeID, srcOPCUANodeID ) VALUES ( ";
+    switch(databindingType){
+        case DataBindingsType::guiToOpcua:{
+            query.append("NULL");
+            query.append(" , ");
+            query.append(std::to_string(destID));
+            query.append(" , ");
+            query.append(std::to_string(srcID));
+            query.append(" , ");
+            query.append("NULL");
+        }break;
+        case DataBindingsType::opcuaToGui:{
+            query.append(std::to_string(destID));
+            query.append(" , ");
+            query.append("NULL");
+            query.append(" , ");
+            query.append("NULL");
+            query.append(" , ");
+            query.append(std::to_string(srcID));
+        }break;
+        case DataBindingsType::guiToGui:{
+            query.append(std::to_string(destID));
+            query.append(" , ");
+            query.append(std::to_string(srcID));
+            query.append(" , ");
+            query.append("NULL");
+            query.append(" , ");
+            query.append("NULL");
+        }break;
+        default:{
+            return false;
+        }
+    }
+    query.append(");");
+    return sendCUD(query);
+}
+bool SqlClient::deleteDatabinding(uint64_t ID)
+{
+    std::string query = "Delete From DataBindings where ID = ";
+    query.append(std::to_string(ID));
+    query.append(";");
+    return sendCUD(query);
+}
+bool SqlClient::deleteDatabinding(uint64_t destID, const DataBindingsType& databindingType)
+{
+     std::string query = "Delete From DataBindings where ";
+     switch(databindingType){
+         case DataBindingsType::guiToOpcua:{
+             query.append("destOPCUANodeID = ");
+             query.append(std::to_string(destID));
+         }break;
+         case DataBindingsType::opcuaToGui:{
+            query.append("destGuiElementDataNodeID = ");
+            query.append(std::to_string(destID));
+         }break;
+         case DataBindingsType::guiToGui:{
+            query.append("destGuiElementDataNodeID = ");
+            query.append(std::to_string(destID));
+         }break;
+         default:{
+             return false;
+         }
+     }
+     query.append(";");
+     return sendCUD(query);
+}
+bool SqlClient::getAllRowsOfTable(const std::string& tableName, rj::Document& dom_o)
+{
+    std::string query = "Select * from ";
+    query.append(tableName);
+    MYSQL_RES* result = sendCommand(query);
+    if(result != nullptr){
+        bool res = mysqlResToDom(result, 0, dom_o);
+        mysql_free_result(result);
+        return res;
+    }else{
+        return false;
+    }
+
 }

@@ -9,7 +9,7 @@ class RwFile
 public:
     static bool readFile(
             const std::string& fileName,
-            std::function<bool(const std::string& line ) noexcept> lineHandler);
+            std::function<bool(const std::string& line )> lineHandler);
     static bool readFile(const std::string& fileName, std::list<std::string>& linesOut);
 };
 
@@ -36,6 +36,10 @@ private:
     static std::mutex mutex_s;
 
 };
-
+class Json{
+public:
+    static bool toDom(const std::string& jsonString, rj::Document& dom_o);
+    static std::string toJson(const rj::Document& dom_o);
+};
 }
 #endif

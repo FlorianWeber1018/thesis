@@ -1,10 +1,14 @@
 #include "globalInclude.hpp"
 #include "util.hpp"
 #include <fstream>
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
+
 namespace util{
 std::mutex ConsoleOut::mutex_s;
 
-bool RwFile::readFile(const std::string& fileName, std::function<bool(const std::string& line ) noexcept> lineHandler)
+bool RwFile::readFile(const std::string& fileName, std::function<bool(const std::string& line )> lineHandler)
 {
     std::string line;
     std::ifstream file (fileName);
@@ -34,5 +38,18 @@ bool RwFile::readFile(const std::string& fileName, std::list<std::string>& lines
 {
     auto lambda = [&linesOut](const std::string& line) noexcept -> bool {linesOut.push_back(line);return true;};
     return readFile(fileName, lambda);
+}
+bool Json::toDom(const std::string& jsonString, rj::Document& dom_o)
+{
+    dom_o.Parse(jsonString.c_str());
+    return !dom_o.HasParseError();
+}
+
+std::string Json::toJson(const rj::Document& dom_o)
+{
+    rj::StringBuffer buffer;
+    rj::Writer<rj::StringBuffer> writer(buffer);
+    dom_o.Accept(writer);
+    return buffer.GetString();
 }
 }

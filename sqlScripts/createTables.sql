@@ -90,3 +90,5 @@ DELETE FROM GuiElementsTypes WHERE ID= 1 or ID = 2;
 INSERT INTO GuiElementsTypes (ID, `type`) VALUES 
 	(1, 'button'),
 	(2, 'p');
+Insert INTO Pages (title) values
+	('sampleTitle'),('anotherSampleTitle');
