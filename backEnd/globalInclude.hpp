@@ -9,6 +9,9 @@
 #include <mutex>
 #include <iostream>
 #include <cstdint>
+#include <thread>
+#include <chrono>
+#include <functional>
 #include "rapidjson/fwd.h"
 enum DataBindingsType{ guiToOpcua, opcuaToGui, guiToGui };
 namespace rj = rapidjson;

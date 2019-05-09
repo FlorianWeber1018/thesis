@@ -1,5 +1,4 @@
 #include "globalInclude.hpp"
-#include "functional"
 #include "mariadb/mysql.h"
 #ifndef rwfile__hpp
 #define rwfile__hpp
@@ -54,6 +53,33 @@ private:
     std::vector<enum_field_types> fieldTypes_m;
     std::vector<std::string> headers_m;
     std::vector<std::vector<std::string>> records_m;
+};
+
+
+enum ClockTrigger{noTrigger, A_trigger, B_trigger};
+
+class Clock
+{
+public:
+    Clock(std::chrono::milliseconds _T, std::function<void(void)> callback);
+    void start();
+    void stop();
+protected:
+    void threadloopA();
+    void threadloopB();
+
+    std::chrono::milliseconds T;
+
+    std::mutex m_triggerMutex;
+    volatile ClockTrigger m_trigger = noTrigger;
+    ClockTrigger getTrigger();
+    void setTrigger(const ClockTrigger& newTrigger);
+    void setTriggerConditionary(const ClockTrigger& newTrigger, const ClockTrigger& waitTrigger);
+
+    std::mutex m_CallbackMutex;
+    std::function<void(void)> m_callback;
+private:
+
 };
 }
 #endif
