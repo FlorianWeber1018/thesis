@@ -24,11 +24,8 @@ void OpcuaServer::flushChangeRequest(const ChangeRequest& changeRequest)
                               "colsult to increase Constant changeRequestsMaxCnt, "
                               "or use a more performant backend Server."
                               "The Change Request with the Node ID: "
-                                /*<< changeRequest.nodeID.identifier.byteString. << "OR"
-                                << changeRequest.nodeID.identifier.guid << "OR"
-                                << changeRequest.nodeID.identifier.numeric << "OR"
-                                << changeRequest.nodeID.identifier.string */
-                            "to a new Value was not performed";
+                                << changeRequest.nodeID.identifier.string.data
+                           << "to a new Value was not performed";
         return;
     }else{
         changeRequests_m.push_back(changeRequest);
@@ -95,5 +92,5 @@ void OpcuaServer::ChangeRequestWorker()
 }
 void OpcuaServer::performChangeRequest(const ChangeRequest& changeRequest)
 {
-
+//TO Implement
 }

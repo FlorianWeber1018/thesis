@@ -14,6 +14,7 @@
 #include <functional>
 #include "rapidjson/fwd.h"
 enum DataBindingsType{ guiToOpcua, opcuaToGui, guiToGui };
+enum GuiElementType{ button, label, numeric, textInput, selector};//only examples there have to by an custom variable for every type
 namespace rj = rapidjson;
 #include "util.hpp"
 #endif

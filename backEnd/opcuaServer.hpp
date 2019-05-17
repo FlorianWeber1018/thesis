@@ -15,7 +15,9 @@ public:
 
     OpcuaServer();
     ~OpcuaServer();
-    void flushChangeRequest(const ChangeRequest& changeRequest);
+    void flushChangeRequest(const ChangeRequest& changeRequest); //not blocking
+    void createVariable(/*???*/);
+
     bool start();
     bool stop();
     bool getState();
@@ -28,10 +30,10 @@ protected:
     volatile bool running_m = false;
     UA_StatusCode ServerFkt();
     void ChangeRequestWorker();
-    void performChangeRequest(const ChangeRequest& changeRequest);
+    void performChangeRequest(const ChangeRequest& changeRequest);      //TO IMPLEMENT
 private:
     const size_t changeRequestsMaxCnt = 100;        // if this Count is reached, the coresponding flush funktion
-                                                    // will not add new change Requests and will not block
+                                                    // will not add new change Requests and will not block (maby this isnt a good idea because the coresponding changerequest is lost if this occurs)
     const int64_t changeRequestWorkerTimebase = 20; // Time in  Milliseconds only used in Constructor
 };
 #endif
