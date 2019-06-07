@@ -45,20 +45,58 @@ CREATE TABLE IF NOT EXISTS `GuiElements` (
   CONSTRAINT `GuiElements_GuiElementsTypes_FK` FOREIGN KEY (`TypeID`) REFERENCES `GuiElementsTypes` (`ID`),
   CONSTRAINT `GuiElements_Pages_FK` FOREIGN KEY (`PageID`) REFERENCES `Pages` (`ID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- GuiElementsDataNodesTemplate
+CREATE TABLE `GuiElementsDataNodesTemplate` (
+  `ID` int(10) unsigned NOT NULL,
+  `type` varchar(100) NOT NULL,
+  `defaultValue` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- GuiElementTypesDataNodesRel
+CREATE TABLE `GuiElementTypesDataNodesRel` (
+  `GuiElementTypeID` int(10) unsigned NOT NULL,
+  `DataNodeTemplateID` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`GuiElementTypeID`,`DataNodeTemplateID`),
+  KEY `GuiElementTypesDataNodesRel_FK_1` (`DataNodeTemplateID`),
+  CONSTRAINT `GuiElementTypesDataNodesRel_FK` FOREIGN KEY (`GuiElementTypeID`) REFERENCES `GuiElementsTypes` (`ID`) ON DELETE CASCADE,
+  CONSTRAINT `GuiElementTypesDataNodesRel_FK_1` FOREIGN KEY (`DataNodeTemplateID`) REFERENCES `GuiElementsDataNodesTemplate` (`ID`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 -- GuiElementsDataNodes
-CREATE TABLE IF NOT EXISTS `GuiElementsDataNodes` (
+CREATE TABLE `GuiElementsDataNodes` (
   `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `GuiElementID` bigint(20) unsigned NOT NULL,
+  `typeID` int(10) unsigned NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `GuiElementsDataNodes_GuiElements_FK` (`GuiElementID`),
+  KEY `GuiElementsDataNodes_FK` (`typeID`),
+  CONSTRAINT `GuiElementsDataNodes_FK` FOREIGN KEY (`typeID`) REFERENCES `GuiElementsDataNodesTemplate` (`ID`) ON DELETE CASCADE,
   CONSTRAINT `GuiElementsDataNodes_GuiElements_FK` FOREIGN KEY (`GuiElementID`) REFERENCES `GuiElements` (`ID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- GuiElementsParamsTemplate
+CREATE TABLE `GuiElementsParamsTemplate` (
+  `ID` int(10) unsigned NOT NULL,
+  `type` varchar(100) NOT NULL,
+  `defaultValue` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- GuiElementTypesParamRel
+CREATE TABLE `GuiElementTypesParamRel` (
+  `GuiElementTypeID` int(10) unsigned NOT NULL,
+  `ParamTemplateID` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`GuiElementTypeID`,`ParamTemplateID`),
+  KEY `GuiElementTypesParamRel_FK` (`ParamTemplateID`),
+  CONSTRAINT `GuiElementTypesParamRel_FK` FOREIGN KEY (`ParamTemplateID`) REFERENCES `GuiElementsParamsTemplate` (`ID`) ON DELETE CASCADE,
+  CONSTRAINT `GuiElementTypesParamRel_FK_1` FOREIGN KEY (`GuiElementTypeID`) REFERENCES `GuiElementsTypes` (`ID`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 -- GuiElementsParams
-CREATE TABLE IF NOT EXISTS `GuiElementsParams` (
+CREATE TABLE `GuiElementsParams` (
   `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `GuiElementID` bigint(20) unsigned NOT NULL,
+  `typeID` int(10) unsigned NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `GuiElementsParams_GuiElements_FK` (`GuiElementID`),
+  KEY `GuiElementsParams_FK` (`typeID`),
+  CONSTRAINT `GuiElementsParams_FK` FOREIGN KEY (`typeID`) REFERENCES `GuiElementsParamsTemplate` (`ID`) ON DELETE CASCADE,
   CONSTRAINT `GuiElementsParams_GuiElements_FK` FOREIGN KEY (`GuiElementID`) REFERENCES `GuiElements` (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 -- Databindings
@@ -87,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `GuiElementsParams` (
 -- 	('i', 'NUMERIC (UInteger)', NULL),
 -- 	('s', 'STRING (String)', NULL);
 DELETE FROM GuiElementsTypes WHERE ID= 1 or ID = 2;
-INSERT INTO GuiElementsTypes (ID, `type`) VALUES 
+INSERT INTO GuiElementsTypes (ID, `type`) VALUES
 	(1, 'button'),
 	(2, 'p');
 Insert INTO Pages (title) values
