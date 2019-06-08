@@ -16,4 +16,12 @@ Backend::Backend(){
         }
         util::ConsoleOut() << teststring;
     }
+    UA_VariableAttributes attr = UA_VariableAttributes_default;
+    UA_Int32 myInt = 42;
+    UA_Variant_setScalar(&attr.value, &myInt, &UA_TYPES[UA_TYPES_INT32]);
+    attr.description = UA_LOCALIZEDTEXT("en-US", "the super funky description");
+    attr.displayName = UA_LOCALIZEDTEXT("en-US", "the super funky displayName");
+    attr.dataType = UA_TYPES[UA_TYPES_INT32].typeId;
+    attr.accessLevel = UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE;
+    createVariable(attr, "pages.1.4.56.dummeNode");
 }

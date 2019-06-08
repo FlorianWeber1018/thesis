@@ -16,7 +16,7 @@ public:
     OpcuaServer();
     ~OpcuaServer();
     void flushChangeRequest(const ChangeRequest& changeRequest); //not blocking
-    void createVariable(/*???*/);
+    void createVariable(const UA_VariableAttributes& attributes, const std::string &path);
 
     bool start();
     bool stop();
