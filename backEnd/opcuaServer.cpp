@@ -95,11 +95,39 @@ void OpcuaServer::performChangeRequest(const ChangeRequest& changeRequest)
 //TO Implement
 }
 void OpcuaServer::createVariable(const UA_VariableAttributes& attributes,
-                                 const std::string& path)
+                                 const string& newNodeID,
+                                 const string& parentNodeID)
 {
-    UA_NodeId nodeId = UA_NODEID_STRING_ALLOC(1, path.c_str());
+    UA_NodeId nodeId = UA_NODEID_STRING_ALLOC(1, newNodeID);
     UA_QualifiedName qualifiedName = UA_QUALIFIEDNAME(1, (char*)attributes.displayName.text.data);
     UA_NodeId parentNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER);
     UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
     UA_Server_addVariableNode(server_m, nodeId, parentNodeId, parentReferenceNodeId, qualifiedName, UA_NODEID_NUMERIC(0,UA_NS0ID_BASEDATAVARIABLETYPE), attributes, nullptr, nullptr);
+}
+void generateNodeID(std::string& prefix, uint64_t sqlID)
+{
+    prefix.append(std::to_string(sqlID));
+}
+UA_NodeId generateNodeID(IdType type, uint64_t sqlID)
+{
+    std::string prefix;
+    switch(type){
+        case IdType_DataNode:{
+            prefix = "DN_";
+        }break;
+        case IdType_GuiElement:{
+            prefix = "GE_";
+        }break;
+        case IdType_GuiELementTypedef:{
+            prefix = "GEType_";
+        }break;
+        case IdType_Page:{
+            prefix = "P_";
+        }break;
+        default:{
+            prefix = "";
+        }
+    }
+    generateNodeID(prefix, sqlID);
+    return UA_NODEID_STRING(1, prefix);
 }
