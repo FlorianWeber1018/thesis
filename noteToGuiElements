@@ -1,0 +1,6 @@
+Button:
+	-ein Butto hat als Datanode ein Uint32.
+	  ein drücken eines Buttons erhöht die Datanode des Buttons um eins
+	  ein loslassen des buttons erniedrigt die Datennode um eins
+		--> es wird damit eine veroderung aller Buttons in allen instanzen des WebUI erzeugt
+

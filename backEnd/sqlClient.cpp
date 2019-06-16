@@ -214,6 +214,7 @@ bool SqlClient::initDB()
     rtn &= executeScript("dropDatabase.sql");
     rtn &= executeScript("createDatabase.sql");
     rtn &= executeScript("createTables.sql");
+    rtn &= executeScript("createSampleData.sql");
     return rtn;
 }
 bool SqlClient::insertDatabinding(uint64_t srcID, uint64_t destID, const DataBindingsType& databindingType)
@@ -296,5 +297,4 @@ bool SqlClient::getAllRowsOfTable(const std::string& tableName, rj::Document& do
     }else{
         return false;
     }
-
 }

@@ -94,21 +94,22 @@ void OpcuaServer::performChangeRequest(const ChangeRequest& changeRequest)
 {
 //TO Implement
 }
+
+
+
 void OpcuaServer::createVariable(const UA_VariableAttributes& attributes,
-                                 const string& newNodeID,
-                                 const string& parentNodeID)
+                                 const UA_NodeId& newNodeID,
+                                 const UA_NodeId& parentNodeID)
 {
-    UA_NodeId nodeId = UA_NODEID_STRING_ALLOC(1, newNodeID);
     UA_QualifiedName qualifiedName = UA_QUALIFIEDNAME(1, (char*)attributes.displayName.text.data);
-    UA_NodeId parentNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER);
     UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
-    UA_Server_addVariableNode(server_m, nodeId, parentNodeId, parentReferenceNodeId, qualifiedName, UA_NODEID_NUMERIC(0,UA_NS0ID_BASEDATAVARIABLETYPE), attributes, nullptr, nullptr);
+    UA_Server_addVariableNode(server_m, newNodeID, parentNodeID, parentReferenceNodeId, qualifiedName, UA_NODEID_NUMERIC(0,UA_NS0ID_BASEDATAVARIABLETYPE), attributes, nullptr, nullptr);
 }
-void generateNodeID(std::string& prefix, uint64_t sqlID)
+void OpcuaServer::generateNodeID(std::string& prefix, uint64_t sqlID)
 {
     prefix.append(std::to_string(sqlID));
 }
-UA_NodeId generateNodeID(IdType type, uint64_t sqlID)
+UA_NodeId OpcuaServer::generateNodeID(const IdType& type, uint64_t sqlID)
 {
     std::string prefix;
     switch(type){
@@ -129,5 +130,5 @@ UA_NodeId generateNodeID(IdType type, uint64_t sqlID)
         }
     }
     generateNodeID(prefix, sqlID);
-    return UA_NODEID_STRING(1, prefix);
+    return UA_NODEID_STRING_ALLOC(1, prefix.c_str());
 }
