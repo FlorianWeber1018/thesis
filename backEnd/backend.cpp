@@ -9,7 +9,7 @@ Backend::Backend(){
         return;
     }
     rj::Document myDom;
-    if(getAllRowsOfTable("Pages",myDom)){
+    if(getAllRowsOfTable("GuiElementsDataNodesTemplate",myDom)){
         std::string teststring = util::Json().toJson(myDom);
         rj::Document newDom;
         if(util::Json::toDom(teststring, newDom)){

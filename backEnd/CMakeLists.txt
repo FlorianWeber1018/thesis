@@ -11,5 +11,5 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} "boost_system" "pthread" "mariadbclient" "open62541")
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O3 -Wall ")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall ")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")

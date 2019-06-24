@@ -7,13 +7,11 @@ struct SqlCredentials{
                   std::string userName,
                   std::string password,
                   std::string host,
-                  unsigned int port,
-                  std::string database);
+                  unsigned int port);
     std::string userName;
     std::string password;
     std::string host;
     unsigned int port;
-    std::string database;
 };
 
 

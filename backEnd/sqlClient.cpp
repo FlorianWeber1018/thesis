@@ -1,19 +1,15 @@
 #include "globalInclude.hpp"
 #include "sqlClient.hpp"
 #include "rapidjson/document.h"
-SqlCredentials::SqlCredentials(
-        std::string userName = "WebVisuSU",
+SqlCredentials::SqlCredentials(std::string userName = "WebVisuSU",
         std::string password = "637013",
         std::string host = "localhost",
-        unsigned int port = 3306,
-        std::string database = "WebVisu")
+        unsigned int port = 3306)
 {
     this->userName = userName;
     this->password = password;
     this->host = host;
     this->port = port;
-    this->database = database;
-
 }
 SqlClient::SqlClient(const SqlCredentials& credentials)
 {
@@ -52,7 +48,7 @@ void SqlClient::connect() noexcept
                            credentials_m.host.c_str(),
                            credentials_m.userName.c_str(),
                            credentials_m.password.c_str(),
-                           credentials_m.database.c_str(),
+                           nullptr,
                            credentials_m.port, nullptr, 0)
         == nullptr)
     {
@@ -170,6 +166,7 @@ bool SqlClient::mysqlResToDom(MYSQL_RES* resultset, unsigned int keyColNumber, r
 void SqlClient::prepareScript(const std::list<std::string>& src, std::list<std::string>& dest)
 {
     std::string tempQuery = "";
+    std::string delimiter = ";";
     for(auto&& srcLine : src){
         std::string tempSrcLine = srcLine.substr(0, srcLine.find("-- ", 0));//create substring without comments
         tempSrcLine = tempSrcLine.substr(0, tempSrcLine.find("\r",0)); //remove \r and everything after(normaly there isnt anything after \r)
@@ -177,8 +174,18 @@ void SqlClient::prepareScript(const std::list<std::string>& src, std::list<std::
                     tempSrcLine.find_first_not_of(" ") > tempSrcLine.length() ?
                         tempSrcLine.length() : tempSrcLine.find_first_not_of(" "),
                     tempSrcLine.length()); //remove " " in front of the line
+        tempSrcLine = tempSrcLine.substr(0, tempSrcLine.find_last_not_of(" ")+1); //remove " " in the end of the line
+        if(tempSrcLine != "" && tempQuery != ""){
+            tempQuery.append(" ");
+        }
         tempQuery.append(tempSrcLine);
-        if(tempQuery.back() == ';'){
+        if(tempQuery.find("DELIMITER") != std::string::npos){
+            delimiter = tempQuery.substr(tempQuery.find("DELIMITER") + std::string("DELIMITER").length(), tempQuery.find_last_not_of(' '));
+            delimiter = delimiter.substr(delimiter.find_first_not_of(' '));
+            tempQuery = "";
+        }
+        if(tempQuery.rfind(delimiter) != std::string::npos && !(tempQuery.empty())){
+            tempQuery = tempQuery.substr(0, tempQuery.rfind(delimiter));
             dest.push_back(tempQuery);
             tempQuery = "";
         }
@@ -214,77 +221,11 @@ bool SqlClient::initDB()
     rtn &= executeScript("dropDatabase.sql");
     rtn &= executeScript("createDatabase.sql");
     rtn &= executeScript("createTables.sql");
+    rtn &= executeScript("createProcedures.sql");
     rtn &= executeScript("createSampleData.sql");
     return rtn;
 }
-bool SqlClient::insertDatabinding(uint64_t srcID, uint64_t destID, const DataBindingsType& databindingType)
-{
-    std::string query = "Insert into DataBindings ( destGuiElementDataNodeID, srcGuiElementDataNodeID, destOPCUANodeID, srcOPCUANodeID ) VALUES ( ";
-    switch(databindingType){
-        case DataBindingsType::guiToOpcua:{
-            query.append("NULL");
-            query.append(" , ");
-            query.append(std::to_string(destID));
-            query.append(" , ");
-            query.append(std::to_string(srcID));
-            query.append(" , ");
-            query.append("NULL");
-        }break;
-        case DataBindingsType::opcuaToGui:{
-            query.append(std::to_string(destID));
-            query.append(" , ");
-            query.append("NULL");
-            query.append(" , ");
-            query.append("NULL");
-            query.append(" , ");
-            query.append(std::to_string(srcID));
-        }break;
-        case DataBindingsType::guiToGui:{
-            query.append(std::to_string(destID));
-            query.append(" , ");
-            query.append(std::to_string(srcID));
-            query.append(" , ");
-            query.append("NULL");
-            query.append(" , ");
-            query.append("NULL");
-        }break;
-        default:{
-            return false;
-        }
-    }
-    query.append(");");
-    return sendCUD(query);
-}
-bool SqlClient::deleteDatabinding(uint64_t ID)
-{
-    std::string query = "Delete From DataBindings where ID = ";
-    query.append(std::to_string(ID));
-    query.append(";");
-    return sendCUD(query);
-}
-bool SqlClient::deleteDatabinding(uint64_t destID, const DataBindingsType& databindingType)
-{
-     std::string query = "Delete From DataBindings where ";
-     switch(databindingType){
-         case DataBindingsType::guiToOpcua:{
-             query.append("destOPCUANodeID = ");
-             query.append(std::to_string(destID));
-         }break;
-         case DataBindingsType::opcuaToGui:{
-            query.append("destGuiElementDataNodeID = ");
-            query.append(std::to_string(destID));
-         }break;
-         case DataBindingsType::guiToGui:{
-            query.append("destGuiElementDataNodeID = ");
-            query.append(std::to_string(destID));
-         }break;
-         default:{
-             return false;
-         }
-     }
-     query.append(";");
-     return sendCUD(query);
-}
+
 bool SqlClient::getAllRowsOfTable(const std::string& tableName, rj::Document& dom_o)
 {
     std::string query = "Select * from ";
