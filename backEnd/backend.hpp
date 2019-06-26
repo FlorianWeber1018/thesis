@@ -7,7 +7,8 @@ class Backend : protected OpcuaServer, protected WebsocketServer, protected SqlC
 public:
     Backend();
 protected:
-
+    void createOpcuaGuiElementsFromSql(int64_t guiElementID);
+    void traverseOpcuaPagesFromSql(int64_t startPageID = 0);
 private:
 
 };

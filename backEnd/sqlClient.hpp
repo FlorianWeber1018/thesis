@@ -27,9 +27,6 @@ public:
     bool initDB();
 
     //to Test
-    bool insertDatabinding(uint64_t srcID, uint64_t destID, const DataBindingsType& databindingType);
-    bool deleteDatabinding(uint64_t ID);
-    bool deleteDatabinding(uint64_t destID, const DataBindingsType& databindingType);
     bool getAllRowsOfTable(const std::string& tableName, rj::Document& dom_o);
 protected:
     MYSQL_RES* sendCommand(std::string& sendstring);

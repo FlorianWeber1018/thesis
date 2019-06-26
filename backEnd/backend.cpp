@@ -8,6 +8,7 @@ Backend::Backend(){
     }else{
         return;
     }
+
     rj::Document myDom;
     if(getAllRowsOfTable("GuiElementsDataNodesTemplate",myDom)){
         std::string teststring = util::Json().toJson(myDom);
@@ -18,21 +19,20 @@ Backend::Backend(){
         }
         util::ConsoleOut() << teststring;
     }
-    UA_VariableAttributes attr = UA_VariableAttributes_default;
-    UA_Int32 myInt = 42;
-    UA_Variant_setScalar(&attr.value, &myInt, &UA_TYPES[UA_TYPES_INT32]);
-    attr.description = UA_LOCALIZEDTEXT("en-US", "the super funky description");
-    attr.displayName = UA_LOCALIZEDTEXT("en-US", "the super funky displayName");
-    attr.dataType = UA_TYPES[UA_TYPES_INT32].typeId;
-    attr.accessLevel = UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE;
+    createPageNode("landingPage","root page where the user is landing",0,1);
+    createPageNode("Page1","page1 description",1,2);
+    createPageNode("Page2","page2 description",1,3);
 
-    UA_VariableAttributes attr2 = UA_VariableAttributes_default;
-    UA_Int32 myInt2 = 42;
-    UA_Variant_setScalar(&attr2.value, &myInt2, &UA_TYPES[UA_TYPES_INT32]);
-    attr2.description = UA_LOCALIZEDTEXT("en-US", "the super funky description42");
-    attr2.displayName = UA_LOCALIZEDTEXT("en-US", "the super funky displayName2");
-    attr2.dataType = UA_TYPES[UA_TYPES_INT32].typeId;
-    attr2.accessLevel = UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE;
-    createVariable(attr, generateNodeID(IdType_DataNode, 42));
-    createVariable(attr2, generateNodeID(IdType_DataNode, 50));
+    createGuiElementNode("enable", "button", "a simple button that can be pressed", 3, 1);
+    createDataNode("Int32","42","funky description","buttonState",1,1,0);
+    createDataNode("Int32","42","funky description","buttonState2",1,2,0);
+
+}
+void Backend::createOpcuaGuiElementsFromSql(int64_t guiElementID)
+{
+
+}
+void Backend::traverseOpcuaPagesFromSql(int64_t startPageID)
+{
+    std::string query = "select PageID, ParentID from";
 }

@@ -1,11 +1,11 @@
 USE WebVisu;
 
-INSERT INTO GuiElementTypes (`type`) VALUES
-	('button');
+INSERT INTO GuiElementTypes (`type`, description) VALUES
+	('button','just a stupid Button');
 
-Insert INTO Pages (ParentID, title) values
-	(NULL,'ROOT_PAGE'),
-	(1,'SUB_PAGE');
+Insert INTO Pages (ParentID, title, description) values
+	(NULL,'ROOT_PAGE', 'the landing Page of the Visu'),
+	(1,'SUB_PAGE', 'first sub page');
 
 INSERT INTO DataTypes (type) values
 	('Bool'),
@@ -40,7 +40,6 @@ INSERT INTO GuiElementTypesParamsRel (GuiElementTypeID, ParamTemplateID) values
 	(1, 4),
 	(1, 5);
 -- CREATE SAMPLEDATA
-INSERT INTO GuiElements (PageID, TypeID) VALUES
-	(1, 1),
-	(2, 1);
-CALL CreateInstanceOfGuiElement('button', 1);
+
+CALL CreateInstanceOfGuiElement('button', 1, 'der erste Button');
+CALL CreateInstanceOfGuiElement('button', 2, 'der zweite Button');

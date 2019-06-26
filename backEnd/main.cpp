@@ -1,7 +1,7 @@
 #include "globalInclude.hpp"
 #include "backend.hpp"
 #include <iostream>
-#define serverRun 0
+#define serverRun 1
 Backend backend;
 int main()
 {
@@ -11,7 +11,7 @@ int main()
         std::cout << "This is the Backend-Deamon-Process, "
                      "to kill the Process type \"0\" and press Enter" << std::endl;
         if(serverRun){
-            std::cin >> userInput;
+            std::this_thread::sleep_for(std::chrono::seconds(240));
         }else{
             run = false;
         }
@@ -21,3 +21,4 @@ int main()
     }
     return 0;
 }
+//
