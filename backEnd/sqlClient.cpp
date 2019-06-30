@@ -74,10 +74,16 @@ MYSQL_RES* SqlClient::sendCommand(std::string& sendstring)
     mutex_m.lock();
     std::lock_guard<std::mutex> lg(mutex_m, std::adopt_lock);
     if(connected_m){
-        if (!mysql_query(mysqlhandle_m, sendstring.c_str()))
+        while(mysql_next_result(mysqlhandle_m) == 0){
+
+        }
+        int ErrCode = mysql_query(mysqlhandle_m, sendstring.c_str());
+        if (ErrCode == 0)
         {
             return mysql_store_result(mysqlhandle_m);
         }
+        printSqlError(ErrCode,sendstring);
+        std::cout << mysql_error(this->mysqlhandle_m);
         return nullptr;
     }
     return nullptr;
@@ -235,6 +241,52 @@ bool SqlClient::getAllRowsOfTable(const std::string& tableName, rj::Document& do
         bool res = mysqlResToDom(result, 0, dom_o);
         mysql_free_result(result);
         return res;
+    }else{
+        return false;
+    }
+}
+bool SqlClient::createInstanceOfGuiElement(const std::string& type, uint64_t pageSqlID, const std::string& name)
+{
+    std::string query = "CALL CreateInstanceOfGuiElement('";
+    query.append(type);
+    query.append("', ");
+    query.append(std::to_string(pageSqlID));
+    query.append(", '");
+    query.append(name);
+    query.append("')");
+    return sendCUD(query);
+}
+MYSQL_RES* SqlClient::getDataNodes(uint64_t guiElementID)
+{
+    std::string query = "CALL getDataNodesByGuiElementID(";
+    query.append(std::to_string(guiElementID));
+    query.append(")");
+    return sendCommand(query);
+}
+MYSQL_RES* SqlClient::getGuiElements(uint64_t pageID)
+{
+    std::string query = "CALL getGuiElementsByPageID(";
+    query.append(std::to_string(pageID));
+    query.append(")");
+    return sendCommand(query);
+}
+MYSQL_RES* SqlClient::getPages(uint64_t pageID)
+{
+    std::string query = "CALL getPagesByParentPageID(";
+    query.append(pageID == 0 ? "NULL" : std::to_string(pageID));
+    query.append(")");
+    return sendCommand(query);
+}
+bool SqlClient::itterateThroughMYSQL_RES(MYSQL_RES* resultSet, std::function<void(const MYSQL_ROW&)> callback, bool freeResultSetAfter)
+{
+    if(resultSet != nullptr){
+        while (MYSQL_ROW row = mysql_fetch_row(resultSet)) {
+            callback(row);
+        }
+        if(freeResultSetAfter){
+            mysql_free_result(resultSet);
+        }
+        return true;
     }else{
         return false;
     }

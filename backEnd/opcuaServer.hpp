@@ -31,6 +31,10 @@ protected:
     void createDataNode(const std::string& type, const std::string& initValue, const std::string& description, const std::string& name, uint64_t parentguiElementSqlID, uint64_t newDataNodeSqlID, bool writePermission);
     void createGuiElementNode(const std::string& name, const std::string &type, const std::string& description, uint64_t parentPageSqlID, uint64_t newGuiELementSqlID);
     void createPageNode(const std::string& title, const std::string& description, uint64_t parentPageSqlID, uint64_t newPageSqlID);
+//TO IMPLEMENT
+    void createDataNode(const MYSQL_ROW& dataNodeRow);
+    void createGuiElementNode(const MYSQL_ROW& guiElementNodeRow);
+    void createPageNode(const MYSQL_ROW& pageNodeRow);
 
     bool start();
     bool stop();

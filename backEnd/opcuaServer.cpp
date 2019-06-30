@@ -279,3 +279,32 @@ void OpcuaServer::createPageNode(const std::string& title,
         createObject(attr, generateNodeID(IdType_Page, newPageSqlID));
     }
 }
+void OpcuaServer::createDataNode(const MYSQL_ROW& dataNodeRow)
+{
+    std::string type = dataNodeRow[0];
+    std::string initValue = dataNodeRow[1];
+    std::string description = dataNodeRow[2];
+    std::string name = dataNodeRow[3];
+    uint64_t parentguiElementSqlID = std::stoull(dataNodeRow[4]);
+    uint64_t newDataNodeSqlID = std::stoull(dataNodeRow[5]);
+    std::string writePermissionString = dataNodeRow[6];
+    bool writePermission = writePermissionString == "1" ? true : false;
+    createDataNode(type,initValue,description, name, parentguiElementSqlID, newDataNodeSqlID, writePermission);
+}
+void OpcuaServer::createGuiElementNode(const MYSQL_ROW& guiElementNodeRow)
+{
+    std::string name = guiElementNodeRow[0];
+    std::string type = guiElementNodeRow[1];
+    std::string description = guiElementNodeRow[2];
+    uint64_t parentPageSqlID = std::stoull(guiElementNodeRow[3]);
+    uint64_t newGuiELementSqlID = std::stoull(guiElementNodeRow[4]);
+    createGuiElementNode(name, type, description, parentPageSqlID, newGuiELementSqlID);
+}
+void OpcuaServer::createPageNode(const MYSQL_ROW& pageNodeRow)
+{
+    std::string title = pageNodeRow[0];
+    std::string description = pageNodeRow[1];
+    uint64_t parentPageSqlID = pageNodeRow[2] == nullptr ? 0 : std::stoull(pageNodeRow[2]);
+    uint64_t newPageSqlID = std::stoull(pageNodeRow[3]);
+    createPageNode(title, description, parentPageSqlID, newPageSqlID);
+}
