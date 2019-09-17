@@ -5,7 +5,7 @@ backend_staticContent	<->	SQL-Server	-->	c++ sql wrapperlib aus heatcore
 backend_dynamicContent	<->	OPCUA		-->	OpenOPCUA
 
 
-ausnamslos alles muss eventbasiert kommunizieren. um die reaktivität zu überwachen müssen keepAliveRequests oder Ähnliches genutzt werden!
+ausnamslos alles muss eventbasiert kommunizieren. um die reaktivität zu überwachen müssen keepAliveRequests oder Ähnliches genutzt werden! (bereits in websockets implementiert, passendes interface muss gefunden/geschrieben werden)
 
 ->keepAliveRequest auf als event auf das geantwortet wird -> watchdog starten, request absetzten
 ->jede schnittstelle muss diese Anfrage unterstützen (bei sql muss man sich was überlegen(eventuell die zeit abfragen oder ähnliches))

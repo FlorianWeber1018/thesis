@@ -1,1 +1,0 @@
-DROP TABLE IF EXISTS DataBindings, OPCUAMirrorNodes, OPCUAMirrorNodesIdentifierTypes, GuiElementsDataNodes, GuiElementsParams, GuiElements, GuiElementsTypes, Pages;

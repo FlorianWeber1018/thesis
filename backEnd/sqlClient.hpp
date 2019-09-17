@@ -7,13 +7,11 @@ struct SqlCredentials{
                   std::string userName,
                   std::string password,
                   std::string host,
-                  unsigned int port,
-                  std::string database);
+                  unsigned int port);
     std::string userName;
     std::string password;
     std::string host;
     unsigned int port;
-    std::string database;
 };
 
 
@@ -23,17 +21,24 @@ public:
     SqlClient(const SqlCredentials& credentials);
     SqlClient();
     ~SqlClient();
+
+protected:
     void connect() noexcept;
     void disconnect() noexcept;
     bool connected();
     bool initDB();
 
+
     //to Test
-    bool insertDatabinding(uint64_t srcID, uint64_t destID, const DataBindingsType& databindingType);
-    bool deleteDatabinding(uint64_t ID);
-    bool deleteDatabinding(uint64_t destID, const DataBindingsType& databindingType);
     bool getAllRowsOfTable(const std::string& tableName, rj::Document& dom_o);
-protected:
+    bool createInstanceOfGuiElement(const std::string& type, uint64_t pageSqlID, const std::string& name);
+
+    MYSQL_RES* getDataNodes(uint64_t guiElementID);
+    MYSQL_RES* getGuiElements(uint64_t pageID);
+    MYSQL_RES* getPages(uint64_t pageID);
+
+    bool itterateThroughMYSQL_RES(MYSQL_RES* resultSet, std::function<void(const MYSQL_ROW&)> callback, bool freeResultSetAfter = true);
+
     MYSQL_RES* sendCommand(std::string& sendstring);
     bool sendCUD(const std::string& sendstring);
     bool executeScript(const std::string& scriptName);

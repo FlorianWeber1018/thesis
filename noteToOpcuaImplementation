@@ -1,0 +1,10 @@
+- Jedes gui element bekommt ein eigenen Datentyp der aus der m:n Zuordnung von GuiElementTypes und GuiElementDataNodesTemplate initial beim start vom Backend zusammengebaut wird. 
+	Ein nachträgliches erstellen benutzerdefinierter GuiElements zur Laufzeit wird so explizit abgelehnt.
+- Eine page ist ein element, das immer aus einem array von anderen Pages besteht sowie einem array aus Gui Elementen 
+	(BaseDataType aller DataNodesTemplates -> vererbung) die Dimensionen dieser zweier arrays können auch 0 sein //ist ein dynamisches arr überhaut in den typedefs möglich???
+- Die IDs der instanzierten Elemente sind immer StringIDs die sich aus dem Präfix des Typs (DN_ für DataNode, GE_ für GuiElement und P_ für Page) sowie der ID der jeweiligen InstanzTabelle zusammensetzt.
+	Dies bringt den Vorteil mit sich das diese IDs fix sind, vom SqlServer generiert werden (Stichwort Autoincrement) und damit auch nicht verändert werden, 
+	wenn man die GuiElemente (und damit die DataNodes) von einer Page zur Nächsten verschiebt. Daraus resultiert auch, dass diese IDs geeignete Schlüssel werden um von der 
+	OPCUA-Client Seite die Daten zu Lesen oder zu verändern (Interface für CPUs)
+- Die IDs der Typen werden Analog zu denen der instanzierten Elemente zusammengesetzt. Diese erhalten den Präfix GEType_ gefolgt von der ID von der Tabelle GuiElementTypes.
+

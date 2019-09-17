@@ -1,94 +1,101 @@
--- ALTER TABLE WebVisu.DataBindings ADD CONSTRAINT `DataBindings_OPCUAMirrorNodes_FK_1` FOREIGN KEY (`srcOPCUANodeID`) REFERENCES `OPCUAMirrorNodes` (`ID`) ON DELETE CASCADE;
--- SHOW CREATE TABLE DataBindings;
--- OPCUAMirrorNodesIdentifierTypes
 USE WebVisu;
--- CREATE TABLE IF NOT EXISTS `OPCUAMirrorNodesIdentifierTypes` (
---   `ID` char(1) NOT NULL,
---   `IdentifierType` varchar(100) DEFAULT NULL,
---   `description` varchar(100) DEFAULT NULL,
---   PRIMARY KEY (`ID`)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- OPCUAMirrorNodes
--- CREATE TABLE IF NOT EXISTS `OPCUAMirrorNodes` (
---   `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
---   `namespaceIndex` int(10) unsigned NOT NULL,
---   `IdentifierTypeID` char(1) NOT NULL,
---   `identifier` varchar(100) NOT NULL,
---   `dataType` varchar(100) NOT NULL,
---   PRIMARY KEY (`ID`),
---   KEY `OPCUAMirrorNodes_OPCUAMirrorNodesIdentifierTypes_FK` (`IdentifierTypeID`),
---   CONSTRAINT `OPCUAMirrorNodes_OPCUAMirrorNodesIdentifierTypes_FK` FOREIGN KEY (`IdentifierTypeID`) REFERENCES `OPCUAMirrorNodesIdentifierTypes` (`ID`)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 -- Pages
 CREATE TABLE IF NOT EXISTS `Pages` (
   `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `ParentID` bigint(20) unsigned DEFAULT NULL,
+  `parentID` bigint(20) unsigned DEFAULT NULL,
   `title` varchar(30) NOT NULL,
+  `description` varchar(250) NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `Pages_Pages_FK` (`ParentID`),
-  CONSTRAINT `Pages_Pages_FK` FOREIGN KEY (`ParentID`) REFERENCES `Pages` (`ID`) ON DELETE CASCADE
+  CONSTRAINT `Pages_Pages_FK` FOREIGN KEY (`parentID`) REFERENCES `Pages` (`ID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- GuiElementsTypes
-CREATE TABLE IF NOT EXISTS `GuiElementsTypes` (
-  `ID` int(10) unsigned NOT NULL,
+-- GuiElementTypes
+CREATE TABLE `GuiElementTypes` (
+  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `type` varchar(32) NOT NULL,
-  PRIMARY KEY (`ID`)
+  `description` varchar(250) NOT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `GuiElementTypes_UN` (`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- GuiElements
+-- GuiElement
 CREATE TABLE IF NOT EXISTS `GuiElements` (
   `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `PageID` bigint(20) unsigned DEFAULT NULL,
-  `TypeID` int(10) unsigned NOT NULL,
+  `pageID` bigint(20) unsigned DEFAULT NULL,
+  `typeID` int(10) unsigned NOT NULL,
+  `name` varchar(30) NOT NULL,
   PRIMARY KEY (`ID`),
-  KEY `GuiElements_Pages_FK` (`PageID`),
-  KEY `GuiElements_GuiElementsTypes_FK` (`TypeID`),
-  CONSTRAINT `GuiElements_GuiElementsTypes_FK` FOREIGN KEY (`TypeID`) REFERENCES `GuiElementsTypes` (`ID`),
-  CONSTRAINT `GuiElements_Pages_FK` FOREIGN KEY (`PageID`) REFERENCES `Pages` (`ID`) ON DELETE CASCADE
+  KEY `GuiElement_Pages_FK` (`pageID`),
+  KEY `GuiElement_GuiElementTypes_FK` (`typeID`),
+  CONSTRAINT `GuiElement_GuiElementTypes_FK` FOREIGN KEY (`typeID`) REFERENCES `GuiElementTypes` (`ID`),
+  CONSTRAINT `GuiElement_Pages_FK` FOREIGN KEY (`pageID`) REFERENCES `Pages` (`ID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- GuiElementsDataNodes
-CREATE TABLE IF NOT EXISTS `GuiElementsDataNodes` (
+-- DataTypes
+CREATE TABLE `DataTypes` (
+  `type` varchar(100) NOT NULL,
+  PRIMARY KEY (`type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- GuiElementDataNodeTemplates
+CREATE TABLE `GuiElementDataNodeTemplates` (
+  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `writePermission` tinyint(1) DEFAULT false,
+  `type` varchar(100) NOT NULL,
+  `qualifiedName` varchar(100) DEFAULT 'unnamed',
+  `defaultValue` varchar(100) DEFAULT NULL,
+  `description` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `GuiElementDataNodeTemplates_FK` (`type`),
+  CONSTRAINT `GuiElementDataNodeTemplates_FK` FOREIGN KEY (`type`) REFERENCES `DataTypes` (`type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- GuiElementTypesDataNodesRel
+CREATE TABLE `GuiElementTypesDataNodesRel` (
+  `guiElementTypeID` int(10) unsigned NOT NULL,
+  `dataNodeTemplateID` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`guiElementTypeID`,`dataNodeTemplateID`),
+  KEY `GuiElementTypesDataNodesRel_FK_1` (`dataNodeTemplateID`),
+  CONSTRAINT `GuiElementTypesDataNodesRel_FK` FOREIGN KEY (`guiElementTypeID`) REFERENCES `GuiElementTypes` (`ID`) ON DELETE CASCADE,
+  CONSTRAINT `GuiElementTypesDataNodesRel_FK_1` FOREIGN KEY (`dataNodeTemplateID`) REFERENCES `GuiElementDataNodeTemplates` (`ID`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- GuiElementDataNodes
+CREATE TABLE `GuiElementDataNodes` (
   `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `GuiElementID` bigint(20) unsigned NOT NULL,
+  `guiElementID` bigint(20) unsigned NOT NULL,
+  `typeID` int(10) unsigned NOT NULL,
+  `initValue` varchar(100) NOT NULL,
   PRIMARY KEY (`ID`),
-  KEY `GuiElementsDataNodes_GuiElements_FK` (`GuiElementID`),
-  CONSTRAINT `GuiElementsDataNodes_GuiElements_FK` FOREIGN KEY (`GuiElementID`) REFERENCES `GuiElements` (`ID`) ON DELETE CASCADE
+  KEY `GuiElementDataNodes_GuiElement_FK` (`guiElementID`),
+  KEY `GuiElementDataNodes_FK` (`typeID`),
+  CONSTRAINT `GuiElementDataNodes_FK` FOREIGN KEY (`typeID`) REFERENCES `GuiElementDataNodeTemplates` (`ID`) ON DELETE CASCADE,
+  CONSTRAINT `GuiElementDataNodes_GuiElement_FK` FOREIGN KEY (`guiElementID`) REFERENCES `GuiElements` (`ID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- GuiElementsParams
-CREATE TABLE IF NOT EXISTS `GuiElementsParams` (
+-- GuiElementParamTemplates
+CREATE TABLE `GuiElementParamTemplates` (
+  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `type` varchar(100) NOT NULL,
+  `qualifiedName` varchar(100) DEFAULT 'unnamed',
+  `defaultValue` varchar(100) DEFAULT NULL,
+  `description` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `GuiElementParamTemplates_FK` (`type`),
+  CONSTRAINT `GuiElementParamTemplates_FK` FOREIGN KEY (`type`) REFERENCES `DataTypes` (`type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- GuiElementTypesParamsRel
+CREATE TABLE `GuiElementTypesParamsRel` (
+  `guiElementTypeID` int(10) unsigned NOT NULL,
+  `paramTemplateID` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`GuiElementTypeID`,`ParamTemplateID`),
+  KEY `GuiElementTypesParamsRel_FK` (`paramTemplateID`),
+  CONSTRAINT `GuiElementTypesParamsRel_FK` FOREIGN KEY (`paramTemplateID`) REFERENCES `GuiElementParamTemplates` (`ID`) ON DELETE CASCADE,
+  CONSTRAINT `GuiElementTypesParamsRel_FK_1` FOREIGN KEY (`guiElementTypeID`) REFERENCES `GuiElementTypes` (`ID`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- GuiElementParams
+CREATE TABLE `GuiElementParams` (
   `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `GuiElementID` bigint(20) unsigned NOT NULL,
+  `guiElementID` bigint(20) unsigned NOT NULL,
+  `typeID` int(10) unsigned NOT NULL,
+  `value` varchar(100) NOT NULL,
   PRIMARY KEY (`ID`),
-  KEY `GuiElementsParams_GuiElements_FK` (`GuiElementID`),
-  CONSTRAINT `GuiElementsParams_GuiElements_FK` FOREIGN KEY (`GuiElementID`) REFERENCES `GuiElements` (`ID`)
+  KEY `GuiElementParams_GuiElement_FK` (`guiElementID`),
+  KEY `GuiElementParams_FK` (`typeID`),
+  CONSTRAINT `GuiElementParams_FK` FOREIGN KEY (`typeID`) REFERENCES `GuiElementParamTemplates` (`ID`) ON DELETE CASCADE,
+  CONSTRAINT `GuiElementParams_GuiElement_FK` FOREIGN KEY (`guiElementID`) REFERENCES `GuiElements` (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- Databindings
--- CREATE TABLE IF NOT EXISTS `DataBindings` (
---   `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
---   `destGuiElementDataNodeID` bigint(20) unsigned DEFAULT NULL,
---   `srcGuiElementDataNodeID` bigint(20) unsigned DEFAULT NULL,
---   `destOPCUANodeID` bigint(20) unsigned DEFAULT NULL,
---   `srcOPCUANodeID` bigint(20) unsigned DEFAULT NULL,
---   PRIMARY KEY (`ID`),
---   KEY `DataBindings_OPCUAMirrorNodes_FK` (`destOPCUANodeID`),
---   KEY `DataBindings_OPCUAMirrorNodes_FK_1` (`srcOPCUANodeID`),
---   KEY `DataBindings_GuiELementsDataNodes_FK` (`destGuiElementDataNodeID`),
---   KEY `DataBindings_GuiELementsDataNodes_FK_1` (`srcGuiElementDataNodeID`),
---   CONSTRAINT `DataBindings_OPCUAMirrorNodes_FK` FOREIGN KEY (`destOPCUANodeID`) REFERENCES `OPCUAMirrorNodes` (`ID`) ON DELETE CASCADE,
---   CONSTRAINT `DataBindings_OPCUAMirrorNodes_FK_1` FOREIGN KEY (`srcOPCUANodeID`) REFERENCES `OPCUAMirrorNodes` (`ID`) ON DELETE CASCADE,
---   CONSTRAINT `DataBindings_GuiELementsDataNodes_FK` FOREIGN KEY (`destGuiElementDataNodeID`) REFERENCES `GuiElementsDataNodes` (`ID`) ON DELETE CASCADE,
---   CONSTRAINT `DataBindings_GuiELementsDataNodes_FK_1` FOREIGN KEY (`srcGuiElementDataNodeID`) REFERENCES `GuiElementsDataNodes` (`ID`) ON DELETE CASCADE,
---   CONSTRAINT `justOneBindingPerDatarecord` CHECK (`destGuiElementDataNodeID` is not null and `srcGuiElementDataNodeID` is null and `destOPCUANodeID` is null and `srcOPCUANodeID` is not null or `destGuiElementDataNodeID` is null and `srcGuiElementDataNodeID` is not null and `destOPCUANodeID` is not null and `srcOPCUANodeID` is null or `destGuiElementDataNodeID` is not null and `srcGuiElementDataNodeID` is not null and `destOPCUANodeID` is null and `srcOPCUANodeID` is null)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- INSERT ENUMERATION VALUES
--- DELETE FROM OPCUAMirrorNodesIdentifierTypes WHERE ID='b' or ID='g' or ID='i' or ID = 's';
--- INSERT INTO OPCUAMirrorNodesIdentifierTypes (ID, IdentifierType, description) Values
--- 	('b', 'OPAQUE (ByteString)', NULL),
--- 	('g', 'GUID (Guid)', 'global unique...'),
--- 	('i', 'NUMERIC (UInteger)', NULL),
--- 	('s', 'STRING (String)', NULL);
-DELETE FROM GuiElementsTypes WHERE ID= 1 or ID = 2;
-INSERT INTO GuiElementsTypes (ID, `type`) VALUES 
-	(1, 'button'),
-	(2, 'p');
-Insert INTO Pages (title) values
-	('sampleTitle'),('anotherSampleTitle');

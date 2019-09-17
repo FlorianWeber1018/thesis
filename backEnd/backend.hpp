@@ -7,7 +7,7 @@ class Backend : protected OpcuaServer, protected WebsocketServer, protected SqlC
 public:
     Backend();
 protected:
-
+    void traverseOpcuaPagesFromSql(uint64_t startPageID = 0);
 private:
 
 };

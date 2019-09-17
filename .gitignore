@@ -2,6 +2,9 @@
 # Created by https://www.gitignore.io/api/qt,vue,c++,qtcreator
 # Edit at https://www.gitignore.io/?templates=qt,vue,c++,qtcreator
 
+*.swp
+
+
 ### C++ ###
 # Prerequisites
 *.d
