@@ -6,7 +6,6 @@
 
 struct ChangeRequest{
     UA_Variant newValue;
-    bool silent = false;
     UA_NodeId nodeID;
 };
 enum IdType
@@ -26,12 +25,16 @@ public:
 
 
 protected:
-    void flushChangeRequest(const ChangeRequest& changeRequest); //not blocking
 
-    void createDataNode(const std::string& type, const std::string& initValue, const std::string& description, const std::string& name, uint64_t parentguiElementSqlID, uint64_t newDataNodeSqlID, bool writePermission);
+    virtual void dataChangeDispatcher(const ChangeRequest& changeRequest); //dispatcher to be overloaded in Backend to transmit events to the websocket class
+
+    void flushChangeRequest(const std::string& newValue, const std::string& type, uint64_t dataNodeSqlID);//not blocking      //interface for websocket
+    void flushChangeRequest(const std::string& newValue, uint64_t dataNodeSqlID);
+
+    void createDataNode(const std::string& typeStr, const std::string& initValue, const std::string& description, const std::string& name, uint64_t parentguiElementSqlID, uint64_t newDataNodeSqlID, bool writePermission);
     void createGuiElementNode(const std::string& name, const std::string &type, const std::string& description, uint64_t parentPageSqlID, uint64_t newGuiELementSqlID);
     void createPageNode(const std::string& title, const std::string& description, uint64_t parentPageSqlID, uint64_t newPageSqlID);
-//TO IMPLEMENT
+
     void createDataNode(const MYSQL_ROW& dataNodeRow);
     void createGuiElementNode(const MYSQL_ROW& guiElementNodeRow);
     void createPageNode(const MYSQL_ROW& pageNodeRow);
@@ -39,6 +42,7 @@ protected:
     bool start();
     bool stop();
     bool getState();
+
 
 
 
@@ -51,19 +55,32 @@ private:
     volatile bool running_m = false;
     UA_StatusCode ServerFkt();
     void ChangeRequestWorker();
-    void performChangeRequest(const ChangeRequest& changeRequest);      //TO IMPLEMENT
+    void performChangeRequest(const ChangeRequest& changeRequest);
+    bool parseValue(UA_Variant& outVariant, const std::string& valueString, int8_t type);
+    bool parseValue(UA_Variant& outVariant, const std::string& valueString, const std::string& typeString);
+    std::string plotValue(const UA_Variant& variant, int8_t type);
+    bool parseType(int8_t& outType, const std::string& typeString);
+    std::string plotType (int8_t type);
+    std::string to_string(const UA_String& uaString);
 
     void generateNodeID(std::string& prefix, uint64_t sqlID);
     UA_NodeId generateNodeID(const IdType& type, uint64_t sqlID);
-
+    void generateNodeID(UA_NodeId& outNodeID, const IdType& type, uint64_t sqlID);
     void createVariable(const UA_VariableAttributes& attributes, const UA_NodeId& newNodeID, const UA_NodeId &parentNodeID = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER));
     void createObject(const UA_ObjectAttributes& attributes, const UA_NodeId& newNodeID, const UA_NodeId &parentNodeID = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER));
+    void flushChangeRequest(const ChangeRequest& changeRequest);
+    void flushChangeRequest(const std::string& newValue, int8_t type, uint64_t dataNodeSqlID);
 
+    void dataChangeDispatcher(const UA_NodeId *nodeId, const UA_DataValue *data); //generic dispatcher for dataChange
+    static void staticDataChangeDispatcher(UA_Server *server,
+                           const UA_NodeId *sessionId, void *sessionContext,
+                           const UA_NodeId *nodeId, void *nodeContext,
+                           const UA_NumericRange *range, const UA_DataValue *data);
     const size_t changeRequestsMaxCnt = 100;        // if this Count is reached, the coresponding flush funktion
                                                     // will not add new change Requests and will not block (maby this isnt a good idea because the coresponding changerequest is lost if this occurs)
     const int64_t changeRequestWorkerTimebase = 20; // Time in  Milliseconds only used in Constructor
 
-    std::map<std::string,uint8_t> basicTypeMapping
+    std::map<std::string,int8_t> basicTypeMapping
     {
         {"Bool" , UA_TYPES_BOOLEAN},
         {"Int8" , UA_TYPES_SBYTE},
@@ -78,7 +95,7 @@ private:
         {"Double" , UA_TYPES_DOUBLE},
         {"String" , UA_TYPES_STRING}
     };
-
+    std::map<int8_t,std::string> basicTypeMappingReverse; // will be set in runtime by the constructor
 };
 
 #endif

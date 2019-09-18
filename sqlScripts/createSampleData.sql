@@ -23,7 +23,8 @@ INSERT INTO DataTypes (type) values
 	('DateTime');
 INSERT INTO GuiElementDataNodeTemplates (writePermission, type, qualifiedName, defaultValue, description) values
 	(false, 'Bool','buttonState','0','DataNode which holds the value of the Button a Button cick event inc this value and a Button left event dec this value (state > 0 to evaluate the ORed state of all instances of the WebInterface)'),
-	(true, 'UInt8', 'colorSelector','0','DataNode to mux different colors to display a state');
+	(true, 'UInt8', 'colorSelector','0','DataNode to mux different colors to display a state'),
+	(true, 'String', 'text', 'ButtonText', 'text which is be displayed on the Button');
 INSERT INTO GuiElementParamTemplates (type, qualifiedName, defaultValue, description) values
 	('String', 'colorEnum', '{"red","green","blue","#FF00FF"}','JSON Array with the coloars that are selectable with the "colorSelector DataNode"'),
 	('UInt16', 'maxSizeX', '65535', 'value for the maximum Size of the GuiElement in X'),
@@ -32,7 +33,8 @@ INSERT INTO GuiElementParamTemplates (type, qualifiedName, defaultValue, descrip
 	('UInt16', 'posY', '0', 'value for the maximum Size of the GuiElement in Y');
 INSERT INTO GuiElementTypesDataNodesRel (GuiElementTypeID, DataNodeTemplateID) values
 	(1, 1),
-	(1, 2);
+	(1, 2),
+	(1, 3);
 INSERT INTO GuiElementTypesParamsRel (GuiElementTypeID, ParamTemplateID) values
 	(1, 1),
 	(1, 2),

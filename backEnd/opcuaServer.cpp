@@ -2,6 +2,10 @@
 #include "opcuaServer.hpp"
 OpcuaServer::OpcuaServer()
 {
+    for(auto&& element : basicTypeMapping){
+        basicTypeMappingReverse[element.second] = element.first;
+    }
+
     start();
     changeRequestWorkerClock_m = new util::Clock(std::chrono::milliseconds(changeRequestWorkerTimebase),
                                                std::bind(&OpcuaServer::ChangeRequestWorker, this));
@@ -29,6 +33,35 @@ void OpcuaServer::flushChangeRequest(const ChangeRequest& changeRequest)
         return;
     }else{
         changeRequests_m.push_back(changeRequest);
+    }
+}
+void OpcuaServer::flushChangeRequest(const std::string& newValue, const std::string& type, uint64_t dataNodeSqlID)
+{
+    int8_t parsedType = -1;
+    if(parseType(parsedType,type)){
+        flushChangeRequest(newValue, parsedType, dataNodeSqlID);
+    }
+}
+void OpcuaServer::flushChangeRequest(const std::string& newValue, uint64_t dataNodeSqlID)
+{
+    int8_t type = -1;
+    //determine Type
+    UA_NodeId nodeID;
+    UA_Variant oldValue;
+    generateNodeID(nodeID, IdType_DataNode, dataNodeSqlID);
+    UA_Server_readValue(server_m, nodeID, &oldValue);
+    if(oldValue.type != nullptr && oldValue.type->typeIndex <= std::numeric_limits<int8_t>::max()){
+        type = static_cast<int8_t>(oldValue.type->typeIndex);
+        flushChangeRequest(newValue, type, dataNodeSqlID);
+    }
+
+}
+void OpcuaServer::flushChangeRequest(const std::string& newValue, int8_t type, uint64_t dataNodeSqlID)
+{
+    ChangeRequest newChangeRequest;
+    if(parseValue(newChangeRequest.newValue, newValue, type)){
+        generateNodeID(newChangeRequest.nodeID, IdType_DataNode, dataNodeSqlID);
+        flushChangeRequest(newChangeRequest);
     }
 }
 bool OpcuaServer::start()
@@ -92,11 +125,175 @@ void OpcuaServer::ChangeRequestWorker()
 }
 void OpcuaServer::performChangeRequest(const ChangeRequest& changeRequest)
 {
-//TO Implement
+    UA_Server_writeValue(server_m, changeRequest.nodeID, changeRequest.newValue);
 }
+bool OpcuaServer::parseValue(UA_Variant& outVariant, const std::string& valueString, int8_t type)
+{
+    switch(type){
+        case UA_TYPES_BOOLEAN:{
+            UA_Boolean convertedInitValue = (valueString == "1") ? true : false;
+            UA_Variant_setScalarCopy(&outVariant, &convertedInitValue, &UA_TYPES[type]);
+        }break;
+        case UA_TYPES_SBYTE:{
+            int64_t intVal =  std::stoi(valueString);
+            util::moveToBorders(intVal, static_cast<int64_t>(UA_SBYTE_MIN), static_cast<int64_t>(UA_SBYTE_MAX));
+            UA_SByte convertedInitValue = static_cast<UA_SByte>(intVal);
+            UA_Variant_setScalarCopy(&outVariant, &convertedInitValue, &UA_TYPES[type]);
+        }break;
+        case UA_TYPES_BYTE:{
+            int64_t intVal =  std::stoi(valueString);
+            util::moveToBorders(intVal, static_cast<int64_t>(UA_BYTE_MIN), static_cast<int64_t>(UA_BYTE_MAX));
+            UA_Byte convertedInitValue = static_cast<UA_Byte>(intVal);
+            UA_Variant_setScalarCopy(&outVariant, &convertedInitValue, &UA_TYPES[type]);
+        }break;
+        case UA_TYPES_INT16:{
+            int64_t intVal =  std::stoll(valueString);
+            util::moveToBorders(intVal, static_cast<int64_t>(UA_INT16_MIN), static_cast<int64_t>(UA_INT16_MAX));
+            UA_Int16 convertedInitValue = static_cast<UA_Int16>(intVal);
+            UA_Variant_setScalarCopy(&outVariant, &convertedInitValue, &UA_TYPES[type]);
+        }break;
+        case UA_TYPES_UINT16:{
+            int64_t intVal =  std::stoll(valueString);
+            util::moveToBorders(intVal, static_cast<int64_t>(UA_UINT16_MIN), static_cast<int64_t>(UA_UINT16_MAX));
+            UA_UInt16 convertedInitValue = static_cast<UA_UInt16>(intVal);
+            UA_Variant_setScalarCopy(&outVariant, &convertedInitValue, &UA_TYPES[type]);
+        }break;
+        case UA_TYPES_INT32:{
+            int64_t intVal =  std::stoll(valueString);
+            util::moveToBorders(intVal, static_cast<int64_t>(UA_INT32_MIN), static_cast<int64_t>(UA_INT32_MAX));
+            UA_Int32 convertedInitValue = static_cast<UA_Int32>(intVal);
+            UA_Variant_setScalarCopy(&outVariant, &convertedInitValue, &UA_TYPES[type]);
+        }break;
+        case UA_TYPES_UINT32:{
+            int64_t intVal =  std::stoll(valueString);
+            util::moveToBorders(intVal, static_cast<int64_t>(UA_UINT32_MIN), static_cast<int64_t>(UA_UINT32_MAX));
+            UA_UInt32 convertedInitValue = static_cast<UA_UInt32>(intVal);
+            UA_Variant_setScalarCopy(&outVariant, &convertedInitValue, &UA_TYPES[type]);
+        }break;
+        case UA_TYPES_INT64:{
+            int64_t intVal =  std::stoll(valueString);
+            util::moveToBorders(intVal, std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max());
+            UA_Int64 convertedInitValue = static_cast<UA_Int64>(intVal);
+            UA_Variant_setScalarCopy(&outVariant, &convertedInitValue, &UA_TYPES[type]);
+        }break;
+        case UA_TYPES_UINT64:{
+            uint64_t intVal =  std::stoull(valueString);
+            util::moveToBorders(intVal, std::numeric_limits<uint64_t>::min(), std::numeric_limits<uint64_t>::max());
+            UA_UInt64 convertedInitValue = static_cast<UA_UInt64>(intVal);
+            UA_Variant_setScalarCopy(&outVariant, &convertedInitValue, &UA_TYPES[type]);
+        }break;
+        case UA_TYPES_FLOAT:{
+            UA_Float convertedValue = std::stof(valueString);
+            UA_Variant_setScalarCopy(&outVariant, &convertedValue, &UA_TYPES[type]);
+        }break;
+        case UA_TYPES_DOUBLE:{
+            UA_Double convertedValue = std::stod(valueString);
+            UA_Variant_setScalarCopy(&outVariant, &convertedValue, &UA_TYPES[type]);
+        }break;
+        case UA_TYPES_STRING:{
+            UA_String convertedValue = UA_STRING_ALLOC(valueString.c_str());
+            UA_Variant_setScalarCopy(&outVariant, &convertedValue, &UA_TYPES[type]);
+        }break;
+        default:{
+            util::ConsoleOut() << "Exception by parsing a Value with the UA_Type: " << type << " ValueString was:" << valueString;
+            return false;
+        }
+    }
+    return true;
+}
+bool OpcuaServer::parseValue(UA_Variant& outVariant, const std::string& valueString, const std::string& typeString)
+{
+    int8_t type;
+    return parseType(type, typeString) == true ? parseValue(outVariant, valueString, type) : false;
+}
+std::string OpcuaServer::plotValue(const UA_Variant& variant, int8_t type){
+    switch(type){
+        case UA_TYPES_BOOLEAN:{
+            UA_Boolean* castedValue = static_cast<UA_Boolean*>(variant.data);
+            if(castedValue != nullptr){
+                return *castedValue ? "true" : "false";
+            }else{
+                return "";
+            }
+        }break;
 
+        case UA_TYPES_SBYTE:{
+            UA_SByte* castedValue = static_cast<UA_SByte*>(variant.data);
 
+            return castedValue != nullptr ? std::to_string(*castedValue) : "";
+        }break;
+        case UA_TYPES_BYTE:{
+            UA_Byte* castedValue = static_cast<UA_Byte*>(variant.data);
+            return castedValue != nullptr ? std::to_string(*castedValue) : "";
+        }break;
+        case UA_TYPES_INT16:{
+            UA_Int16* castedValue = static_cast<UA_Int16*>(variant.data);
+            return castedValue != nullptr ? std::to_string(*castedValue) : "";
+        }break;
+        case UA_TYPES_UINT16:{
+            UA_UInt16* castedValue = static_cast<UA_UInt16*>(variant.data);
+            return castedValue != nullptr ? std::to_string(*castedValue) : "";
+        }break;
+        case UA_TYPES_INT32:{
+            UA_Int32* castedValue = static_cast<UA_Int32*>(variant.data);
+            return castedValue != nullptr ? std::to_string(*castedValue) : "";
+        }break;
+        case UA_TYPES_UINT32:{
+            UA_UInt32* castedValue = static_cast<UA_UInt32*>(variant.data);
+            return castedValue != nullptr ? std::to_string(*castedValue) : "";
+        }break;
+        case UA_TYPES_INT64:{
+            UA_Int64* castedValue = static_cast<UA_Int64*>(variant.data);
+            return castedValue != nullptr ? std::to_string(*castedValue) : "";
+        }break;
+        case UA_TYPES_UINT64:{
+            UA_UInt64* castedValue = static_cast<UA_UInt64*>(variant.data);
+            return castedValue != nullptr ? std::to_string(*castedValue) : "";
+        }break;
+        case UA_TYPES_FLOAT:{
+            UA_Float* castedValue = static_cast<UA_Float*>(variant.data);
+            return castedValue != nullptr ? std::to_string(*castedValue) : "";
+        }break;
+        case UA_TYPES_DOUBLE:{
+            UA_Double* castedValue = static_cast<UA_Double*>(variant.data);
+            return castedValue != nullptr ? std::to_string(*castedValue) : "";
+        }break;
+        case UA_TYPES_STRING:{
+            UA_String* castedValue = static_cast<UA_String*>(variant.data);
+            return castedValue != nullptr ? to_string(*castedValue) : "";
+        }break;
+        default:{
+            util::ConsoleOut() << "Exception by ploting a Value of a Variant with the UA_TypeID: " << type << "the type ID cant be resolved";
+            return "";
+        }
+    }
+    return "";
+}
+bool OpcuaServer::parseType(int8_t& outType, const std::string& typeString)
+{
+    try{
+        outType = this->basicTypeMapping.at(typeString);
+    }catch(std::out_of_range e){
+        outType = -1;
+        return false;
+    }
+    return true;
+}
+std::string OpcuaServer::plotType (int8_t type)
+{
+    std::string rtn;
+    try{
+        rtn = this->basicTypeMappingReverse.at(type);
+    }catch(std::out_of_range e){
+        rtn = "";
+    }
+    return rtn;
+}
+std::string OpcuaServer::to_string(const UA_String& uaString)
+{
 
+    return std::string(reinterpret_cast<const char*>(uaString.data), uaString.length);
+}
 void OpcuaServer::createVariable(const UA_VariableAttributes& attributes,
                                  const UA_NodeId& newNodeID,
                                  const UA_NodeId& parentNodeID)
@@ -105,7 +302,11 @@ void OpcuaServer::createVariable(const UA_VariableAttributes& attributes,
     qualifiedName.namespaceIndex = 1;
     qualifiedName.name = attributes.displayName.text;
     UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
-    UA_Server_addVariableNode(server_m, newNodeID, parentNodeID, parentReferenceNodeId, qualifiedName, UA_NODEID_NUMERIC(0,UA_NS0ID_BASEDATAVARIABLETYPE), attributes, nullptr, nullptr);
+    UA_Server_addVariableNode(server_m, newNodeID, parentNodeID, parentReferenceNodeId, qualifiedName, UA_NODEID_NUMERIC(0,UA_NS0ID_BASEDATAVARIABLETYPE), attributes, this, nullptr);
+    UA_ValueCallback callback;
+    callback.onRead = nullptr;
+    callback.onWrite = OpcuaServer::staticDataChangeDispatcher;
+    UA_Server_setVariableNode_valueCallback(server_m, newNodeID, callback);
 }
 void OpcuaServer::createObject(const UA_ObjectAttributes& attributes,
                   const UA_NodeId& newNodeID,
@@ -123,6 +324,11 @@ void OpcuaServer::generateNodeID(std::string& prefix, uint64_t sqlID)
 }
 UA_NodeId OpcuaServer::generateNodeID(const IdType& type, uint64_t sqlID)
 {
+    UA_NodeId newNodeID;
+    generateNodeID(newNodeID, type, sqlID);
+    return newNodeID;
+}
+void OpcuaServer::generateNodeID(UA_NodeId& outNodeID, const IdType& type, uint64_t sqlID){
     std::string prefix;
     switch(type){
         case IdType_DataNode:{
@@ -142,9 +348,9 @@ UA_NodeId OpcuaServer::generateNodeID(const IdType& type, uint64_t sqlID)
         }
     }
     generateNodeID(prefix, sqlID);
-    return UA_NODEID_STRING_ALLOC(1, prefix.c_str());
+    outNodeID = UA_NODEID_STRING_ALLOC(1, prefix.c_str());
 }
-void OpcuaServer::createDataNode(const std::string& type,
+void OpcuaServer::createDataNode(const std::string& typeStr,
                                  const std::string& initValue,
                                  const std::string& description,
                                  const std::string& name,
@@ -153,94 +359,20 @@ void OpcuaServer::createDataNode(const std::string& type,
                                  bool writePermission)
 {
     UA_VariableAttributes attr = UA_VariableAttributes_default;
-    uint8_t typeFromMapping;
-    try{
-        typeFromMapping = this->basicTypeMapping.at(type);
-    }catch(std::out_of_range e){
-        typeFromMapping = -1;
-    }
-    switch(typeFromMapping){
-        case UA_TYPES_BOOLEAN:{
-            UA_Boolean convertedInitValue = (initValue == "1") ? true : false;
-            UA_Variant_setScalarCopy(&attr.value, &convertedInitValue, &UA_TYPES[typeFromMapping]);
-        }break;
-        case UA_TYPES_SBYTE:{
-            int64_t intVal =  std::stoi(initValue);
-            util::moveToBorders(intVal, static_cast<int64_t>(UA_SBYTE_MIN), static_cast<int64_t>(UA_SBYTE_MAX));
-            UA_SByte convertedInitValue = static_cast<UA_SByte>(intVal);
-            UA_Variant_setScalarCopy(&attr.value, &convertedInitValue, &UA_TYPES[typeFromMapping]);
-        }break;
-        case UA_TYPES_BYTE:{
-            int64_t intVal =  std::stoi(initValue);
-            util::moveToBorders(intVal, static_cast<int64_t>(UA_BYTE_MIN), static_cast<int64_t>(UA_BYTE_MAX));
-            UA_Byte convertedInitValue = static_cast<UA_Byte>(intVal);
-            UA_Variant_setScalarCopy(&attr.value, &convertedInitValue, &UA_TYPES[typeFromMapping]);
-        }break;
-        case UA_TYPES_INT16:{
-            int64_t intVal =  std::stoll(initValue);
-            util::moveToBorders(intVal, static_cast<int64_t>(UA_INT16_MIN), static_cast<int64_t>(UA_INT16_MAX));
-            UA_Int16 convertedInitValue = static_cast<UA_Int16>(intVal);
-            UA_Variant_setScalarCopy(&attr.value, &convertedInitValue, &UA_TYPES[typeFromMapping]);
-        }break;
-        case UA_TYPES_UINT16:{
-            int64_t intVal =  std::stoll(initValue);
-            util::moveToBorders(intVal, static_cast<int64_t>(UA_UINT16_MIN), static_cast<int64_t>(UA_UINT16_MAX));
-            UA_UInt16 convertedInitValue = static_cast<UA_UInt16>(intVal);
-            UA_Variant_setScalarCopy(&attr.value, &convertedInitValue, &UA_TYPES[typeFromMapping]);
-        }break;
-        case UA_TYPES_INT32:{
-            int64_t intVal =  std::stoll(initValue);
-            util::moveToBorders(intVal, static_cast<int64_t>(UA_INT32_MIN), static_cast<int64_t>(UA_INT32_MAX));
-            UA_Int32 convertedInitValue = static_cast<UA_Int32>(intVal);
-            UA_Variant_setScalarCopy(&attr.value, &convertedInitValue, &UA_TYPES[typeFromMapping]);
-        }break;
-        case UA_TYPES_UINT32:{
-            int64_t intVal =  std::stoll(initValue);
-            util::moveToBorders(intVal, static_cast<int64_t>(UA_UINT32_MIN), static_cast<int64_t>(UA_UINT32_MAX));
-            UA_UInt32 convertedInitValue = static_cast<UA_UInt32>(intVal);
-            UA_Variant_setScalarCopy(&attr.value, &convertedInitValue, &UA_TYPES[typeFromMapping]);
-        }break;
-        case UA_TYPES_INT64:{
-            int64_t intVal =  std::stoll(initValue);
-            util::moveToBorders(intVal, std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max());
-            UA_Int64 convertedInitValue = static_cast<UA_Int64>(intVal);
-            UA_Variant_setScalarCopy(&attr.value, &convertedInitValue, &UA_TYPES[typeFromMapping]);
-        }break;
-        case UA_TYPES_UINT64:{
-            uint64_t intVal =  std::stoull(initValue);
-            util::moveToBorders(intVal, std::numeric_limits<uint64_t>::min(), std::numeric_limits<uint64_t>::max());
-            UA_UInt64 convertedInitValue = static_cast<UA_UInt64>(intVal);
-            UA_Variant_setScalarCopy(&attr.value, &convertedInitValue, &UA_TYPES[typeFromMapping]);
-        }break;
-        case UA_TYPES_FLOAT:{
-            UA_Float convertedValue = std::stof(initValue);
-            UA_Variant_setScalarCopy(&attr.value, &convertedValue, &UA_TYPES[typeFromMapping]);
-        }break;
-        case UA_TYPES_DOUBLE:{
-            UA_Double convertedValue = std::stod(initValue);
-            UA_Variant_setScalarCopy(&attr.value, &convertedValue, &UA_TYPES[typeFromMapping]);
-        }break;
-        case UA_TYPES_STRING:{
-            UA_String convertedValue = UA_STRING_ALLOC(initValue.c_str());
-            UA_Variant_setScalarCopy(&attr.value, &convertedValue, &UA_TYPES[typeFromMapping]);
-        }break;
-        default:{
-            util::ConsoleOut() << "Exception by creating the Datanode with the ID: " << newDataNodeSqlID << "GuiElementID was: " << parentguiElementSqlID << "and type was: " << type << "This type cant be resolved of the internal Type Mapping.";
-            return;
+    int8_t type;
+    if(parseType(type, typeStr) && parseValue(attr.value, initValue, type)){
+        attr.dataType = UA_TYPES[type].typeId;
+        attr.description = UA_LOCALIZEDTEXT_ALLOC("en-US", description.c_str());
+        attr.displayName = UA_LOCALIZEDTEXT_ALLOC("en-US", name.c_str());
+        attr.accessLevel = UA_ACCESSLEVELMASK_READ;
+        if(writePermission){
+            attr.accessLevel |= UA_ACCESSLEVELMASK_WRITE;
         }
-    }
-
-    attr.dataType = UA_TYPES[typeFromMapping].typeId;
-    attr.description = UA_LOCALIZEDTEXT_ALLOC("en-US", description.c_str());
-    attr.displayName = UA_LOCALIZEDTEXT_ALLOC("en-US", name.c_str());
-    attr.accessLevel = UA_ACCESSLEVELMASK_READ;
-    if(writePermission){
-        attr.accessLevel |= UA_ACCESSLEVELMASK_WRITE;
-    }
-    if(parentguiElementSqlID != 0){
-        createVariable(attr, generateNodeID(IdType_DataNode, newDataNodeSqlID), generateNodeID(IdType_GuiElement, parentguiElementSqlID));
-    }else{
-        createVariable(attr, generateNodeID(IdType_DataNode, newDataNodeSqlID));
+        if(parentguiElementSqlID != 0){
+            createVariable(attr, generateNodeID(IdType_DataNode, newDataNodeSqlID), generateNodeID(IdType_GuiElement, parentguiElementSqlID));
+        }else{
+            createVariable(attr, generateNodeID(IdType_DataNode, newDataNodeSqlID));
+        }
     }
 }
 void OpcuaServer::createGuiElementNode(const std::string& name,
@@ -307,4 +439,28 @@ void OpcuaServer::createPageNode(const MYSQL_ROW& pageNodeRow)
     uint64_t parentPageSqlID = pageNodeRow[2] == nullptr ? 0 : std::stoull(pageNodeRow[2]);
     uint64_t newPageSqlID = std::stoull(pageNodeRow[3]);
     createPageNode(title, description, parentPageSqlID, newPageSqlID);
+}
+void OpcuaServer::dataChangeDispatcher(const ChangeRequest& changeRequest)
+{
+    util::ConsoleOut() << "______________________________________________________________________________"
+                       << "this is the virtual OpcuaServer::dataChangeDispatcher which is the Interface for the Backend class and should be reimplemented by the Backend Class to dispatch the datachange events on the OPCUA Server and transmit them to the Websocket Server."
+                       << "ID Of DataNode with changed Data:" << changeRequest.nodeID.identifier.string.data << "type is: " << this->plotType(changeRequest.newValue.type->typeIndex) << "new Value is: " << plotValue(changeRequest.newValue, changeRequest.newValue.type->typeIndex)
+                       << "______________________________________________________________________________";
+}
+void OpcuaServer::staticDataChangeDispatcher(UA_Server *server,
+                       const UA_NodeId *sessionId, void *sessionContext,
+                       const UA_NodeId *nodeId, void *nodeContext,
+                       const UA_NumericRange *range, const UA_DataValue *data)
+{
+    if(data != nullptr && data->hasValue && data->status == UA_STATUSCODE_GOOD && nodeId != nullptr && nodeContext != nullptr){
+        OpcuaServer* thisPointer = static_cast<OpcuaServer*>(nodeContext);
+        ChangeRequest newChangeRequest;
+        UA_Variant_copy(&data->value, &newChangeRequest.newValue);
+        UA_NodeId_copy(nodeId, &newChangeRequest.nodeID);
+        thisPointer->dataChangeDispatcher(newChangeRequest);//eventuell anderen disptcher der nur nodeID new value und type bekommtalternativ direkt die websocket msg.(schlanker man spart sich die speicheralocation... )
+        UA_NodeId_deleteMembers(&newChangeRequest.nodeID);
+        UA_Variant_deleteMembers(&newChangeRequest.newValue);
+    }else{
+        util::ConsoleOut() << "native OpcuaServer::staticDataChangeDispatcher(UA_Server *, const UA_NodeId*, ...) failed";
+    }
 }

@@ -7,8 +7,19 @@ Backend::Backend(){
     if(initDB()){
         util::ConsoleOut() << "jo Datenbank wurde initialisiert" ;
     }else{
+        util::ConsoleOut() << "da lief wohl was schief beim datenbank initialisieren" ;
         return;
     }
+
+
+
+    traverseOpcuaPagesFromSql(0);
+
+    //teststuff
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    flushChangeRequest("1", 1);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    flushChangeRequest("42", 2);
 
     rj::Document myDom;
     if(getAllRowsOfTable("GuiElementDataNodeTemplates",myDom)){
@@ -20,8 +31,6 @@ Backend::Backend(){
         }
         util::ConsoleOut() << teststring;
     }
-
-    traverseOpcuaPagesFromSql(0);
 }
 void Backend::traverseOpcuaPagesFromSql(uint64_t startPageID)
 {
