@@ -8,7 +8,7 @@ add_executable(${PROJECT_NAME}
     "sqlClient.cpp"
     "util.cpp")
 
-target_link_libraries(${PROJECT_NAME} "boost_system" "pthread" "mariadbclient" "open62541")
+target_link_libraries(${PROJECT_NAME} "boost_system" "pthread" "mariadbclient"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               "open62541")
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall ")
