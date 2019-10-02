@@ -2,6 +2,7 @@
 #include "backend.hpp"
 #include "util.hpp"
 #include "rapidjson/document.h"
+#include "httpServer.hpp"
 #include <functional>
 Backend::Backend(){
     if(initDB()){

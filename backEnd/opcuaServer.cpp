@@ -457,7 +457,7 @@ void OpcuaServer::staticDataChangeDispatcher(UA_Server *server,
         ChangeRequest newChangeRequest;
         UA_Variant_copy(&data->value, &newChangeRequest.newValue);
         UA_NodeId_copy(nodeId, &newChangeRequest.nodeID);
-        thisPointer->dataChangeDispatcher(newChangeRequest);//eventuell anderen disptcher der nur nodeID new value und type bekommtalternativ direkt die websocket msg.(schlanker man spart sich die speicheralocation... )
+        thisPointer->dataChangeDispatcher(newChangeRequest);//eventuell anderen dispatcher der nur nodeID new value und type bekommt alternativ direkt die websocket msg.(schlanker man spart sich die speicheralocation... )
         UA_NodeId_deleteMembers(&newChangeRequest.nodeID);
         UA_Variant_deleteMembers(&newChangeRequest.newValue);
     }else{
