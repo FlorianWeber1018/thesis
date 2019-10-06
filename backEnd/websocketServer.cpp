@@ -1,5 +1,5 @@
-#include "globalInclude.hpp"
 #include "websocketServer.hpp"
+#include "globalInclude.hpp"
 #include "certificates/server_certificate.hpp"
 #include <boost/beast/core.hpp>
 #include <boost/beast/ssl.hpp>
@@ -21,8 +21,8 @@ void fail(beast::error_code ec, char const* what){
     std::cerr << what << ": " << ec.message() << "\n";
 }
 
-session::session(tcp::socket&& socket, ssl::context& ctx) : ws_(std::move(socket), ctx){
-
+session::session(tcp::socket&& socket, ssl::context& ctx/*, WebsocketServer* websocketServer*/) : ws_(std::move(socket), ctx){
+    //this->websocketServer_m = websocketServer;
 }
 
 void session::run(){
@@ -100,8 +100,10 @@ void session::on_write( beast::error_code ec, std::size_t bytes_transferred){
 
 //------------------------------------------------------------------------------
 
-listener::listener( net::io_context& ioc, ssl::context& ctx, tcp::endpoint endpoint) : ioc_(ioc), ctx_(ctx), acceptor_(net::make_strand(ioc)){
+listener::listener( net::io_context& ioc, ssl::context& ctx, tcp::endpoint endpoint, WebsocketServer* websocketServer) : ioc_(ioc), ctx_(ctx), acceptor_(net::make_strand(ioc)){
     beast::error_code ec;
+
+    this->websocketServer_m = websocketServer;
 
     // Open the acceptor
     acceptor_.open(endpoint.protocol(), ec);
@@ -167,7 +169,8 @@ WebsocketServer::WebsocketServer(){
     load_server_certificate(ctx);
 
     // Create and launch a listening port
-    std::make_shared<listener>(ioc, ctx, tcp::endpoint{address, port})->run();
+    listener_m = std::make_shared<listener>(ioc, ctx, tcp::endpoint{address, port}, this);
+    listener_m->run();
 
     // Run the I/O service on the requested number of threads
 
