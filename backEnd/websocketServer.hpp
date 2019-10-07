@@ -16,76 +16,107 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <queue>
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
 namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
 namespace net = boost::asio;            // from <boost/asio.hpp>
 namespace ssl = boost::asio::ssl;       // from <boost/asio/ssl.hpp>
 using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
+
 enum websocketEvent{DataChangeRequest = 0 };
+struct message{
+    message(const message& msg);
+    websocketEvent evt = DataChangeRequest;
+    std::string adress = "";
+    std::string payload = "";
+    void to_Str(std::string& out);
+};
 class WebsocketServer; // FWD Declaration
-    void fail(beast::error_code ec, char const* what);
 
-    class session : public std::enable_shared_from_this<session>
-    {
-        websocket::stream<beast::ssl_stream<beast::tcp_stream>> ws_;
-        beast::flat_buffer buffer_;
+void fail(beast::error_code ec, char const* what);
 
-    public:
-        // Take ownership of the socket
-        session(tcp::socket&& socket, ssl::context& ctx/*, WebsocketServer* websocketServer*/);
+class session : public std::enable_shared_from_this<session>
+{
+    websocket::stream<beast::ssl_stream<beast::tcp_stream>> ws_;
+    beast::flat_buffer buffer_in;
+    beast::flat_buffer buffer_out;
 
-        // Start the asynchronous operation
-        void run();
-        void on_handshake(beast::error_code ec);
-        void on_accept(beast::error_code ec);
-        void do_read();// Read a message into our buffer
-        void on_read(beast::error_code ec, std::size_t bytes_transferred);
-        void on_write(beast::error_code ec, std::size_t bytes_transferred);
-    private:
-        WebsocketServer* websocketServer_m = nullptr; //Pointer to underlieing WebsocketServer Object
-    };
-    // Accepts incoming connections and launches the sessions
-    class listener : public std::enable_shared_from_this<listener>
-    {
-        net::io_context& ioc_;
-        ssl::context& ctx_;
-        tcp::acceptor acceptor_;
+    const size_t outQueueMaxSize = 500;
+public:
+    // Take ownership of the socket
+    session(tcp::socket&& socket, ssl::context& ctx, WebsocketServer* websocketServer);
+    ~session();
+    // Start the asynchronous operation
+    void run();
+    void on_handshake(beast::error_code ec);
+    void on_accept(beast::error_code ec);
+    //void do_read();// Read a message into our buffer
+    void after_read(beast::error_code ec, std::size_t bytes_transferred);
+    void on_write(beast::error_code ec, std::size_t bytes_transferred);
 
-    public:
-        listener(net::io_context& ioc, ssl::context& ctx, tcp::endpoint endpoint, WebsocketServer* websocketServer);
 
-        void run(); // Start accepting incoming connections
+    void addToQueue(const message& msg);//interface for flushing messages, only blocks if outQueue.size() has reached outQueueMaxSize
+private:
+    void asyncReading();
+    void asyncWritingFromQueue();
 
-    private:
-        WebsocketServer* websocketServer_m = nullptr; //Pointer to underlieing Websocket Server Object
-        void do_accept();
-        void on_accept(beast::error_code ec, tcp::socket socket);
-    };
+    void publish(const message& msg);
+    std::mutex outQueueMutex;
+    std::queue<message> outQueue;
+    std::set<uint8_t> subscriptions;
+    std::mutex mutex_m;
+    WebsocketServer* websocketServer_m = nullptr; //Pointer to underlieing WebsocketServer Object
+};
 
-    class WebsocketServer
-    {
-    public:
-        WebsocketServer();
-        ~WebsocketServer();
-    protected:
-        //virtual void dispatcher(); //dispatcher to be overloaded in Backend to transmit events to the OPCUAServer and SQLClient class
-    private:
-        net::ip::address const address = net::ip::make_address("0.0.0.0");
-        unsigned short const port = static_cast<unsigned short>(18080);
-        int const threads = 1;
+// Accepts incoming connections and launches the sessions
+class listener : public std::enable_shared_from_this<listener>
+{
+    net::io_context& ioc_;
+    ssl::context& ctx_;
+    tcp::acceptor acceptor_;
 
-        std::shared_ptr<listener> listener_m;
+public:
+    listener(net::io_context& ioc, ssl::context& ctx, tcp::endpoint endpoint, WebsocketServer* websocketServer);
 
-        // The io_context is required for all I/O
-        net::io_context ioc{threads};
+    void run(); // Start accepting incoming connections
 
-        // The SSL context is required, and holds certificates
-        ssl::context ctx{ssl::context::tlsv12};
+private:
+    WebsocketServer* websocketServer_m = nullptr; //Pointer to underlieing Websocket Server Object
+    void do_accept();
+    void on_accept(beast::error_code ec, tcp::socket socket);
+};
 
-        // The Threads where running the io Service
-        std::vector<std::thread> ioThreads;
-    };
+class WebsocketServer
+{
+    friend class listener;
+    friend class session;
+public:
+    WebsocketServer();
+    ~WebsocketServer();
+protected:
+    void addSession(std::shared_ptr<session> session_p);
+    void removeDeletedSessions();
+    void publishtoAllSessions(std::string msg);
+    //virtual void dispatcher(); //dispatcher to be overloaded in Backend to transmit events to the OPCUAServer and SQLClient class
+private:
+    std::list<std::weak_ptr<session>> sessions_m;
+    std::mutex sessionsMutex_m;
+    net::ip::address const address = net::ip::make_address("0.0.0.0");
+    unsigned short const port = static_cast<unsigned short>(18080);
+    int const threadCnt = 1;
+
+    std::shared_ptr<listener> listener_m;
+
+    // The io_context is required for all I/O
+    net::io_context ioc{threadCnt};
+
+    // The SSL context is required, and holds certificates
+    ssl::context ctx{ssl::context::tlsv12};
+
+    // The Threads where running the io Service
+    std::vector<std::thread> ioThreads;
+};
 
 
 

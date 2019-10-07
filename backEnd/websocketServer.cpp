@@ -16,15 +16,34 @@
 #include <vector>
 
 
+void message::to_Str(std::string& out)
+{
+    out.append(std::to_string(evt));
+    out.append(";");
+    out.append(adress);
+    out.append(";");
+    out.append(payload);
+}
+message::message(const message& msg)
+{
+    this->evt = msg.evt;
+    this->adress = msg.adress;
+    this->payload = msg.payload;
+}
 // Report a failure
 void fail(beast::error_code ec, char const* what){
     std::cerr << what << ": " << ec.message() << "\n";
 }
 
-session::session(tcp::socket&& socket, ssl::context& ctx/*, WebsocketServer* websocketServer*/) : ws_(std::move(socket), ctx){
-    //this->websocketServer_m = websocketServer;
+session::session(tcp::socket&& socket, ssl::context& ctx, WebsocketServer* websocketServer) : ws_(std::move(socket), ctx){
+    this->websocketServer_m = websocketServer;
 }
-
+session::~session()
+{
+    mutex_m.lock();
+    std::lock_guard<std::mutex> lg(mutex_m, std::adopt_lock);
+    websocketServer_m->removeDeletedSessions();
+}
 void session::run(){
     // Set the timeout.
     beast::get_lowest_layer(ws_).expires_after(std::chrono::seconds(30));
@@ -62,15 +81,27 @@ void session::on_accept(beast::error_code ec){
         return fail(ec, "accept");
 
     // Read a message
-    do_read();
+    asyncReading();
+    // writes initial message
+    asyncWritingFromQueue();
 }
 
-void session::do_read(){
+void session::asyncReading(){
     // Read a message into our buffer
-    ws_.async_read( buffer_, beast::bind_front_handler( &session::on_read, shared_from_this() ) );
+    ws_.async_read( buffer_in, beast::bind_front_handler( &session::after_read, shared_from_this() ) );
 }
+void session::asyncWritingFromQueue(){
+    outQueueMutex.lock();
+    std::lock_guard<std::mutex> lg(outQueueMutex, std::adopt_lock);
+    if(outQueue.size() > 0){
+        std::string sendString;
+        outQueue.front().to_Str(sendString);
+        outQueue.pop();
 
-void session::on_read( beast::error_code ec, std::size_t bytes_transferred){
+        //ws_.async_write
+    }
+}
+void session::after_read( beast::error_code ec, std::size_t bytes_transferred){
     boost::ignore_unused(bytes_transferred);
 
     // This indicates that the session was closed
@@ -79,9 +110,12 @@ void session::on_read( beast::error_code ec, std::size_t bytes_transferred){
     if(ec)
         fail(ec, "read");
 
+///HIER WAS MACHEN UM
     // Echo the message
-    ws_.text(ws_.got_text());
-    ws_.async_write( buffer_.data(), beast::bind_front_handler( &session::on_write, shared_from_this() ) );
+    //ws_.text(ws_.got_text());
+    //ws_.async_write( buffer_.data(), beast::bind_front_handler( &session::on_write, shared_from_this() ) );
+
+    asyncReading(); //loop
 }
 
 void session::on_write( beast::error_code ec, std::size_t bytes_transferred){
@@ -91,13 +125,22 @@ void session::on_write( beast::error_code ec, std::size_t bytes_transferred){
         return fail(ec, "write");
 
     // Clear the buffer
-    buffer_.consume(buffer_.size());
+    buffer_out.consume(buffer_out.size());
 
     // Do another read
-    do_read();
+    //do_read();
 }
 
-
+void session::addToQueue(const message& msg){
+    //filter here
+    outQueueMutex.lock();
+    std::lock_guard<std::mutex> lg(outQueueMutex, std::adopt_lock);
+    if(outQueue.size() < outQueueMaxSize){
+        outQueue.push(msg);
+    }else{
+        util::ConsoleOut() << "A session reached outQueueMaxSize --> message got lost";
+    }
+}
 //------------------------------------------------------------------------------
 
 listener::listener( net::io_context& ioc, ssl::context& ctx, tcp::endpoint endpoint, WebsocketServer* websocketServer) : ioc_(ioc), ctx_(ctx), acceptor_(net::make_strand(ioc)){
@@ -150,7 +193,9 @@ void listener::on_accept(beast::error_code ec, tcp::socket socket){
         fail(ec, "accept");
     } else {
         // Create the session and run it
-        std::make_shared<session>(std::move(socket), ctx_)->run();
+        std::shared_ptr<session> session_ = std::make_shared<session>(std::move(socket), ctx_, this->websocketServer_m);
+        session_->run();
+        websocketServer_m->addSession(session_);
     }
 
     // Accept another connection
@@ -174,12 +219,16 @@ WebsocketServer::WebsocketServer(){
 
     // Run the I/O service on the requested number of threads
 
-    ioThreads.reserve(threads);
-    ioThreads.emplace_back(
-    [this]
+    ioThreads.reserve(threadCnt);
+    for(int i= 0; i< threadCnt; i++)
     {
-        this->ioc.run();
-    });
+        ioThreads.emplace_back(
+        [this]
+        {
+            this->ioc.run();
+        });
+
+    }
 
 
 }
@@ -197,7 +246,38 @@ WebsocketServer::~WebsocketServer(){
     }
 
 }
+void WebsocketServer::addSession(std::shared_ptr<session> session_p)
+{
+    sessionsMutex_m.lock();
+    std::lock_guard<std::mutex> lg(sessionsMutex_m, std::adopt_lock);
+    std::weak_ptr<session> wp = session_p;
+    sessions_m.push_back(wp);
+}
+void WebsocketServer::removeDeletedSessions() // evt unnötig (wenn geprüft wird ob der pointer noch gültig ist kann die session auch hier gelöscht werden (über itterator (is ja gelockt)))
+{
+    sessionsMutex_m.lock();
+    std::lock_guard<std::mutex> lg(sessionsMutex_m, std::adopt_lock);
+    sessions_m.remove_if(
+                [](auto const& a){
+                    std::shared_ptr<session> b = a.lock();
+                        if(b){
+                            return false;
+                        }else{
+                            return true;
+                        }
+                         });
+}
+void WebsocketServer::publishtoAllSessions(std::string msg)
+{
+    sessionsMutex_m.lock();
+    std::lock_guard<std::mutex> lg(sessionsMutex_m, std::adopt_lock);
+    for(auto&& session_wp : sessions_m){
+        if(std::shared_ptr<session> session_sp = session_wp.lock()){
+            //session_sp.
+            //do something with the session
+        }else{
+            //session is gone :(
+        }
 
-
-
-
+    }
+}
