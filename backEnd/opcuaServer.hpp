@@ -3,6 +3,14 @@
 #define UA_NO_AMALGAMATION
 #include "open62541.h"
 #include "globalInclude.hpp"
+class OpcuaServer; //fwd declaration
+class NodeContext : public std::enable_shared_from_this<NodeContext>
+{
+public:
+    NodeContext(const std::string& initOldValue, OpcuaServer* opcuaServer);
+    std::string oldValue;
+    OpcuaServer* opcuaServer_m;
+};
 
 struct ChangeRequest{
     UA_Variant newValue;
@@ -30,7 +38,7 @@ protected:
 
     void flushChangeRequest(const std::string& newValue, const std::string& type, uint64_t dataNodeSqlID);//not blocking      //interface for websocket
     void flushChangeRequest(const std::string& newValue, uint64_t dataNodeSqlID);
-
+    void flushChangeRequest(const std::string& newValue, const std::string& dataNodeSqlID);
     void createDataNode(const std::string& typeStr, const std::string& initValue, const std::string& description, const std::string& name, uint64_t parentguiElementSqlID, uint64_t newDataNodeSqlID, bool writePermission);
     void createGuiElementNode(const std::string& name, const std::string &type, const std::string& description, uint64_t parentPageSqlID, uint64_t newGuiELementSqlID);
     void createPageNode(const std::string& title, const std::string& description, uint64_t parentPageSqlID, uint64_t newPageSqlID);
@@ -39,11 +47,12 @@ protected:
     void createGuiElementNode(const MYSQL_ROW& guiElementNodeRow);
     void createPageNode(const MYSQL_ROW& pageNodeRow);
 
+    void removeNode(const IdType& type, uint64_t sqlID);
     bool start();
     bool stop();
     bool getState();
-
-
+    std::string plotValue(const UA_Variant& variant, int8_t type);
+    void NodeIdToSqlId(std::string& str);
 
 
 private:
@@ -58,7 +67,7 @@ private:
     void performChangeRequest(const ChangeRequest& changeRequest);
     bool parseValue(UA_Variant& outVariant, const std::string& valueString, int8_t type);
     bool parseValue(UA_Variant& outVariant, const std::string& valueString, const std::string& typeString);
-    std::string plotValue(const UA_Variant& variant, int8_t type);
+
     bool parseType(int8_t& outType, const std::string& typeString);
     std::string plotType (int8_t type);
     std::string to_string(const UA_String& uaString);
@@ -96,6 +105,9 @@ private:
         {"String" , UA_TYPES_STRING}
     };
     std::map<int8_t,std::string> basicTypeMappingReverse; // will be set in runtime by the constructor
+    static void customNodeDestructor(UA_Server *server,
+                                   const UA_NodeId *sessionId, void *sessionContext,
+                                   const UA_NodeId *nodeId, void *nodeContext);
 };
 
 #endif

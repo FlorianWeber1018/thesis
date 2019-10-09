@@ -45,3 +45,5 @@ INSERT INTO GuiElementTypesParamsRel (GuiElementTypeID, ParamTemplateID) values
 
 CALL CreateInstanceOfGuiElement('button', 1, 'der erste Button');
 CALL CreateInstanceOfGuiElement('button', 2, 'der zweite Button');
+insert into Credentials (userName, pwHash) VALUES ('user', MD5('testPW'));
+insert into Credentials (userName, pwHash) VALUES ('WebVisuSU', MD5('637013'));

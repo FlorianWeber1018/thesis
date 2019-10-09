@@ -132,6 +132,34 @@ bool SqlClient::executeScript(const std::string& scriptName)
 
     return true;
 }
+bool SqlClient::validateCredentials(std::string userName, std::string pw)
+{
+    escapeString(userName);
+    escapeString(pw);
+
+    std::string query = "Select count(*) from Credentials where userName = '";
+    query.append( userName);
+    query.append("' and pwHash = MD5('");
+    query.append(pw);
+    query.append("')");
+
+    MYSQL_RES* result = sendCommand(query);
+    if(result != nullptr){
+        bool res = false;
+        if(MYSQL_ROW row = mysql_fetch_row(result)){
+            if(row[0]!=nullptr){
+                std::string resultStr(row[0]);
+                if(resultStr == "1"){
+                    res = true;
+                }
+            }
+        }
+        mysql_free_result(result);
+        return res;
+    }else{
+        return false;
+    }
+}
 bool SqlClient::mysqlResToDom(MYSQL_RES* resultset, unsigned int keyColNumber, rj::Document& dom_o)
 {
     dom_o.SetObject();
@@ -290,4 +318,15 @@ bool SqlClient::itterateThroughMYSQL_RES(MYSQL_RES* resultSet, std::function<voi
     }else{
         return false;
     }
+}
+void SqlClient::escapeString( std::string& str )
+{
+    char result[100];
+    {
+        mutex_m.lock();
+        std::lock_guard<std::mutex> lg(mutex_m, std::adopt_lock);
+        mysql_real_escape_string(mysqlhandle_m, result, str.c_str(), str.size());
+    }
+    str.clear();
+    str.append(result);
 }

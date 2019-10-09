@@ -24,52 +24,66 @@ namespace net = boost::asio;            // from <boost/asio.hpp>
 namespace ssl = boost::asio::ssl;       // from <boost/asio/ssl.hpp>
 using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
-enum websocketEvent{DataChangeRequest = 0 };
-struct message{
-    message(const message& msg);
-    websocketEvent evt = DataChangeRequest;
-    std::string adress = "";
-    std::string payload = "";
+enum wsEvent{
+    wsEvent_invalid = 0,
+    wsEvent_dataNodeChange = 1,
+    wsEvent_paramNodeChange = 2,
+    wsEvent_pageChange = 3,
+    wsEvent_structure = 4,
+    wsEvent_authentification = 5};
+struct ws_message{
+    ws_message(const ws_message& msg);
+    ws_message(const std::string& str);
+    ws_message();
+    wsEvent event = wsEvent_invalid;
+    std::vector<std::string> payload;
     void to_Str(std::string& out);
+    std::string to_Str();
 };
 class WebsocketServer; // FWD Declaration
 
 void fail(beast::error_code ec, char const* what);
 
-class session : public std::enable_shared_from_this<session>
+class ws_session : public std::enable_shared_from_this<ws_session>
 {
     websocket::stream<beast::ssl_stream<beast::tcp_stream>> ws_;
     beast::flat_buffer buffer_in;
-    beast::flat_buffer buffer_out;
+
 
     const size_t outQueueMaxSize = 500;
 public:
     // Take ownership of the socket
-    session(tcp::socket&& socket, ssl::context& ctx, WebsocketServer* websocketServer);
-    ~session();
+    ws_session(tcp::socket&& socket, ssl::context& ctx, WebsocketServer* websocketServer);
+    ~ws_session();
     // Start the asynchronous operation
     void run();
     void on_handshake(beast::error_code ec);
     void on_accept(beast::error_code ec);
-    //void do_read();// Read a message into our buffer
+    //void do_read();// Read a ws_message into our buffer
     void after_read(beast::error_code ec, std::size_t bytes_transferred);
     void on_write(beast::error_code ec, std::size_t bytes_transferred);
 
-
-    void addToQueue(const message& msg);//interface for flushing messages, only blocks if outQueue.size() has reached outQueueMaxSize
+    void on_send(std::shared_ptr<ws_message> msg, bool filterEn);
+    void send(std::shared_ptr<ws_message>& msg);//interface for flushing ws_messages
+    void sendFiltered(std::shared_ptr<ws_message>& msg);//interface for flushing ws_messages
+    bool checkDataNodeSubscription(const std::string& sqlId);
+    bool checkParamNodeSubscription(const std::string& sqlId);
+    void setAuthenticated();
 private:
     void asyncReading();
-    void asyncWritingFromQueue();
 
-    void publish(const message& msg);
-    std::mutex outQueueMutex;
-    std::queue<message> outQueue;
-    std::set<uint8_t> subscriptions;
+    void dispatch(const ws_message& msg, std::shared_ptr<ws_session> ws_session_);
+
+
+    bool authenticated_m = false;
+    std::queue<std::shared_ptr<ws_message> > outQueue;
+    std::set<std::string> dnSubscriptions;
+    std::set<std::string> paramSubscriptions;
     std::mutex mutex_m;
     WebsocketServer* websocketServer_m = nullptr; //Pointer to underlieing WebsocketServer Object
 };
 
-// Accepts incoming connections and launches the sessions
+// Accepts incoming connections and launches the ws_sessions
 class listener : public std::enable_shared_from_this<listener>
 {
     net::io_context& ioc_;
@@ -90,18 +104,18 @@ private:
 class WebsocketServer
 {
     friend class listener;
-    friend class session;
+    friend class ws_session;
 public:
     WebsocketServer();
     ~WebsocketServer();
 protected:
-    void addSession(std::shared_ptr<session> session_p);
+    void addSession(std::shared_ptr<ws_session> ws_session_p);
     void removeDeletedSessions();
-    void publishtoAllSessions(std::string msg);
-    //virtual void dispatcher(); //dispatcher to be overloaded in Backend to transmit events to the OPCUAServer and SQLClient class
+    void publishtoAllSessions(const ws_message &msg);
+    virtual void ws_dispatch(const ws_message& msg, std::shared_ptr<ws_session> ws_session_) = 0;
 private:
-    std::list<std::weak_ptr<session>> sessions_m;
-    std::mutex sessionsMutex_m;
+    std::list<std::weak_ptr<ws_session>> ws_sessions_m;
+    std::mutex ws_sessionsMutex_m;
     net::ip::address const address = net::ip::make_address("0.0.0.0");
     unsigned short const port = static_cast<unsigned short>(18080);
     int const threadCnt = 1;
@@ -116,6 +130,10 @@ private:
 
     // The Threads where running the io Service
     std::vector<std::thread> ioThreads;
+
+
+
+
 };
 
 

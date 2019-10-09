@@ -8,7 +8,9 @@ class Backend : protected OpcuaServer, protected WebsocketServer, protected SqlC
 public:
     Backend();
 protected:
+    virtual void dataChangeDispatcher(const ChangeRequest& changeRequest) override;
     void traverseOpcuaPagesFromSql(uint64_t startPageID = 0);
+    virtual void ws_dispatch(const ws_message& msg, std::shared_ptr<ws_session> ws_session_) override;
 private:
 
 };

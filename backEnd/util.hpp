@@ -4,6 +4,22 @@
 #define rwfile__hpp
 namespace util{
 
+template <typename Container, typename Key>
+bool includes(Container container, Key key)
+{
+    return container.count(key) > 0 ? true : false;
+}
+
+template <class Container>
+void split(const std::string& str, Container& cont, char delim = ';')
+{
+    std::stringstream ss(str);
+    std::string token;
+    while (std::getline(ss, token, delim)) {
+        cont.push_back(token);
+    }
+}
+
 class RwFile
 {
 public:

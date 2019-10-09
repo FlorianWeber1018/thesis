@@ -13,15 +13,17 @@ Backend::Backend(){
     }
 
 
-
     traverseOpcuaPagesFromSql(0);
 
     //teststuff
+
     std::this_thread::sleep_for(std::chrono::seconds(3));
     flushChangeRequest("1", 1);
     std::this_thread::sleep_for(std::chrono::seconds(1));
     flushChangeRequest("42", 2);
+    removeNode(IdType_DataNode, 4);
 
+/*
     rj::Document myDom;
     if(getAllRowsOfTable("GuiElementDataNodeTemplates",myDom)){
         std::string teststring = util::Json().toJson(myDom);
@@ -31,7 +33,7 @@ Backend::Backend(){
             util::ConsoleOut() << teststring2;
         }
         util::ConsoleOut() << teststring;
-    }
+    }*/
 }
 void Backend::traverseOpcuaPagesFromSql(uint64_t startPageID)
 {
@@ -60,3 +62,49 @@ void Backend::traverseOpcuaPagesFromSql(uint64_t startPageID)
     }
 
 }
+void Backend::dataChangeDispatcher(const ChangeRequest& changeRequest)
+{
+    ws_message msg;
+    msg.event = wsEvent_dataNodeChange;
+    msg.payload.push_back(std::string(reinterpret_cast<const char*>(changeRequest.nodeID.identifier.string.data)));
+    NodeIdToSqlId(msg.payload.front());
+    msg.payload.push_back(plotValue(changeRequest.newValue, changeRequest.newValue.type->typeIndex));
+    publishtoAllSessions(msg);
+}
+void Backend::ws_dispatch(const ws_message& msg, std::shared_ptr<ws_session> ws_session_)
+{
+    switch(msg.event){
+    case wsEvent_dataNodeChange:{
+        if(msg.payload.size() == 2){
+            flushChangeRequest(msg.payload[1], msg.payload[0]);
+        }
+    }break;
+    case wsEvent_paramNodeChange:{
+        if(msg.payload.size() == 2){
+            //
+        }
+        util::ConsoleOut() << "wsEvent_paramNodeChange";
+    }break;
+    case wsEvent_pageChange:{
+        util::ConsoleOut() << "wsEvent_pageChange";
+    }break;
+    case wsEvent_authentification:{
+        if(msg.payload.size() == 2){
+            if(validateCredentials(msg.payload[0], msg.payload[1])){
+                ws_session_->setAuthenticated();
+                std::shared_ptr<ws_message> answer = std::make_shared<ws_message>();
+                answer->event=wsEvent_authentification;
+                ws_session_->send(answer);
+            }
+        }
+        util::ConsoleOut() << "wsEvent_authentification";
+    }break;
+    case wsEvent_structure:{
+        util::ConsoleOut() << "wsEvent_structure";
+    }break;
+    default:{
+        return;
+    }
+    }
+}
+

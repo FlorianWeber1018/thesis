@@ -1,5 +1,11 @@
 #include "globalInclude.hpp"
 #include "opcuaServer.hpp"
+
+NodeContext::NodeContext(const std::string& initOldValue, OpcuaServer* opcuaServer) : oldValue (initOldValue)
+{
+    opcuaServer_m = opcuaServer;
+}
+
 OpcuaServer::OpcuaServer()
 {
     for(auto&& element : basicTypeMapping){
@@ -56,6 +62,10 @@ void OpcuaServer::flushChangeRequest(const std::string& newValue, uint64_t dataN
     }
 
 }
+void OpcuaServer::flushChangeRequest(const std::string& newValue, const std::string& dataNodeSqlID)
+{
+    flushChangeRequest(newValue, std::stoull(dataNodeSqlID));
+}
 void OpcuaServer::flushChangeRequest(const std::string& newValue, int8_t type, uint64_t dataNodeSqlID)
 {
     ChangeRequest newChangeRequest;
@@ -98,6 +108,7 @@ UA_StatusCode OpcuaServer::ServerFkt()
         std::lock_guard<std::mutex> lg(serverFktMutex_m, std::adopt_lock);
 
         UA_ServerConfig* config = UA_ServerConfig_new_default();
+        config->nodeLifecycle.destructor = OpcuaServer::customNodeDestructor;
         server_m = UA_Server_new(config);
         UA_StatusCode retVal = UA_Server_run(server_m, &running_m);
 
@@ -126,6 +137,14 @@ void OpcuaServer::ChangeRequestWorker()
 void OpcuaServer::performChangeRequest(const ChangeRequest& changeRequest)
 {
     UA_Server_writeValue(server_m, changeRequest.nodeID, changeRequest.newValue);
+}
+void OpcuaServer::NodeIdToSqlId(std::string& str)
+{
+    size_t pos = str.find_last_of("_") + 1;
+    if( !(pos > str.npos) ){
+       str = str.substr(str.find_last_of("_")+1);
+    }
+
 }
 bool OpcuaServer::parseValue(UA_Variant& outVariant, const std::string& valueString, int8_t type)
 {
@@ -298,11 +317,12 @@ void OpcuaServer::createVariable(const UA_VariableAttributes& attributes,
                                  const UA_NodeId& newNodeID,
                                  const UA_NodeId& parentNodeID)
 {
+    NodeContext* nodeContext = new NodeContext(plotValue( attributes.value, attributes.value.type->typeIndex), this);
     UA_QualifiedName qualifiedName;
     qualifiedName.namespaceIndex = 1;
     qualifiedName.name = attributes.displayName.text;
     UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
-    UA_Server_addVariableNode(server_m, newNodeID, parentNodeID, parentReferenceNodeId, qualifiedName, UA_NODEID_NUMERIC(0,UA_NS0ID_BASEDATAVARIABLETYPE), attributes, this, nullptr);
+    UA_Server_addVariableNode(server_m, newNodeID, parentNodeID, parentReferenceNodeId, qualifiedName, UA_NODEID_NUMERIC(0,UA_NS0ID_BASEDATAVARIABLETYPE), attributes, nodeContext , nullptr);
     UA_ValueCallback callback;
     callback.onRead = nullptr;
     callback.onWrite = OpcuaServer::staticDataChangeDispatcher;
@@ -440,6 +460,10 @@ void OpcuaServer::createPageNode(const MYSQL_ROW& pageNodeRow)
     uint64_t newPageSqlID = std::stoull(pageNodeRow[3]);
     createPageNode(title, description, parentPageSqlID, newPageSqlID);
 }
+void OpcuaServer::removeNode(const IdType& type, uint64_t sqlID)
+{
+    UA_Server_deleteNode(server_m, generateNodeID(type, sqlID), true);
+}
 void OpcuaServer::dataChangeDispatcher(const ChangeRequest& changeRequest)
 {
     util::ConsoleOut() << "______________________________________________________________________________"
@@ -453,14 +477,30 @@ void OpcuaServer::staticDataChangeDispatcher(UA_Server *server,
                        const UA_NumericRange *range, const UA_DataValue *data)
 {
     if(data != nullptr && data->hasValue && data->status == UA_STATUSCODE_GOOD && nodeId != nullptr && nodeContext != nullptr){
-        OpcuaServer* thisPointer = static_cast<OpcuaServer*>(nodeContext);
-        ChangeRequest newChangeRequest;
-        UA_Variant_copy(&data->value, &newChangeRequest.newValue);
-        UA_NodeId_copy(nodeId, &newChangeRequest.nodeID);
-        thisPointer->dataChangeDispatcher(newChangeRequest);//eventuell anderen dispatcher der nur nodeID new value und type bekommt alternativ direkt die websocket msg.(schlanker man spart sich die speicheralocation... )
-        UA_NodeId_deleteMembers(&newChangeRequest.nodeID);
-        UA_Variant_deleteMembers(&newChangeRequest.newValue);
-    }else{
-        util::ConsoleOut() << "native OpcuaServer::staticDataChangeDispatcher(UA_Server *, const UA_NodeId*, ...) failed";
+        NodeContext* nodeContext_ = static_cast<NodeContext*>(nodeContext);
+        if(nodeContext_->opcuaServer_m != nullptr){
+            std::string newValueStr(nodeContext_->opcuaServer_m->plotValue(data->value, data->value.type->typeIndex));
+            if(nodeContext_->oldValue != newValueStr){                      //just pass diffs not all writes!
+                nodeContext_->oldValue = newValueStr;
+                ChangeRequest newChangeRequest;
+                UA_Variant_copy(&data->value, &newChangeRequest.newValue);
+                UA_NodeId_copy(nodeId, &newChangeRequest.nodeID);
+                nodeContext_->opcuaServer_m->dataChangeDispatcher(newChangeRequest);
+                UA_NodeId_deleteMembers(&newChangeRequest.nodeID);
+                UA_Variant_deleteMembers(&newChangeRequest.newValue);
+            }
+
+            return;
+        }
+    }
+    util::ConsoleOut() << "native OpcuaServer::staticDataChangeDispatcher(UA_Server *, const UA_NodeId*, ...) failed";
+}
+void OpcuaServer::customNodeDestructor(UA_Server *server,
+                               const UA_NodeId *sessionId, void *sessionContext,
+                               const UA_NodeId *nodeId, void *nodeContext)
+{
+    if(nodeContext!=nullptr){
+        NodeContext* nodeContext_ = static_cast<NodeContext*>(nodeContext);
+        delete nodeContext_;
     }
 }

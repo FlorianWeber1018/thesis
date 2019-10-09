@@ -28,11 +28,12 @@ protected:
     bool connected();
     bool initDB();
 
+    void updateParamNode;
 
     //to Test
     bool getAllRowsOfTable(const std::string& tableName, rj::Document& dom_o);
     bool createInstanceOfGuiElement(const std::string& type, uint64_t pageSqlID, const std::string& name);
-
+    bool validateCredentials(std::string userName, std::string pw);
     MYSQL_RES* getDataNodes(uint64_t guiElementID);
     MYSQL_RES* getGuiElements(uint64_t pageID);
     MYSQL_RES* getPages(uint64_t pageID);
@@ -50,5 +51,6 @@ private:
     bool connected_m = false;
     void prepareScript(const std::list<std::string>& src, std::list<std::string>& dest);
     void printSqlError(int ErrCode, const std::string &query);
+    void escapeString( std::string& str );
 };
 #endif

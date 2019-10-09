@@ -99,3 +99,8 @@ CREATE TABLE `GuiElementParams` (
   CONSTRAINT `GuiElementParams_FK` FOREIGN KEY (`typeID`) REFERENCES `GuiElementParamTemplates` (`ID`) ON DELETE CASCADE,
   CONSTRAINT `GuiElementParams_GuiElement_FK` FOREIGN KEY (`guiElementID`) REFERENCES `GuiElements` (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE `Credentials` (
+  userName varchar(100) NOT NULL,
+  pwHash varchar(100) NOT NULL,
+  PRIMARY KEY (`userName`)
+)  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

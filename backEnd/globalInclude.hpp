@@ -1,6 +1,9 @@
 #ifndef globalInclude__hpp
 #define globalInclude__hpp
-
+#include <memory>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
 #include <map>
 #include <set>
 #include <vector>
