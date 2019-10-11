@@ -7,6 +7,15 @@
 
 namespace util{
 std::mutex ConsoleOut::mutex_s;
+bool isUnsignedLL(const std::string& str) noexcept
+{
+    try{
+        std::stoull(str);
+    }catch(...) {
+        return false;
+    }
+    return true;
+}
 
 bool RwFile::readFile(const std::string& fileName, std::function<bool(const std::string& line )> lineHandler)
 {

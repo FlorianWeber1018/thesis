@@ -4,6 +4,7 @@
 #define rwfile__hpp
 namespace util{
 
+bool isUnsignedLL(const std::string& str) noexcept;
 template <typename Container, typename Key>
 bool includes(Container container, Key key)
 {
@@ -35,6 +36,15 @@ public:
 
     template <typename T>
     ConsoleOut& operator << (const std::list<T>& dataList){
+        mutex_s.lock();
+        std::lock_guard<std::mutex> lg(mutex_s, std::adopt_lock);
+        for(auto&& element : dataList){
+            std::cout << element << std::endl;
+        }
+        return *this;
+    }
+    template <typename T>
+    ConsoleOut& operator << (const std::vector<T>& dataList){
         mutex_s.lock();
         std::lock_guard<std::mutex> lg(mutex_s, std::adopt_lock);
         for(auto&& element : dataList){

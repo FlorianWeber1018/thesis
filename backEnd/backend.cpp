@@ -15,15 +15,21 @@ Backend::Backend(){
 
     traverseOpcuaPagesFromSql(0);
 
+
+
     //teststuff
+    /*rj::Document myDom;
+    getStructureOfPage("1", myDom);
+    util::ConsoleOut() << util::Json().toJson(myDom);
 
     std::this_thread::sleep_for(std::chrono::seconds(3));
     flushChangeRequest("1", 1);
     std::this_thread::sleep_for(std::chrono::seconds(1));
     flushChangeRequest("42", 2);
-    removeNode(IdType_DataNode, 4);
+    //removeNode(IdType_DataNode, 4);
 
-/*
+
+
     rj::Document myDom;
     if(getAllRowsOfTable("GuiElementDataNodeTemplates",myDom)){
         std::string teststring = util::Json().toJson(myDom);
@@ -64,13 +70,13 @@ void Backend::traverseOpcuaPagesFromSql(uint64_t startPageID)
 }
 void Backend::dataChangeDispatcher(const ChangeRequest& changeRequest)
 {
-    ws_message msg;
-    msg.event = wsEvent_dataNodeChange;
+    ws_message msg(wsEvent_dataNodeChange);
     msg.payload.push_back(std::string(reinterpret_cast<const char*>(changeRequest.nodeID.identifier.string.data)));
-    NodeIdToSqlId(msg.payload.front());
+    NodeIdToSqlId(msg.payload.front());//in OPCUA server (das es DN_ ist ist hier redundante info)
     msg.payload.push_back(plotValue(changeRequest.newValue, changeRequest.newValue.type->typeIndex));
     publishtoAllSessions(msg);
 }
+//dispatcher to dispatch messages emitted by the websocketServer Class
 void Backend::ws_dispatch(const ws_message& msg, std::shared_ptr<ws_session> ws_session_)
 {
     switch(msg.event){
@@ -80,31 +86,63 @@ void Backend::ws_dispatch(const ws_message& msg, std::shared_ptr<ws_session> ws_
         }
     }break;
     case wsEvent_paramNodeChange:{
-        if(msg.payload.size() == 2){
-            //
+        if(msg.payload.size() == 2 && util::isUnsignedLL(msg.payload[0])){
+            updateParamNode(msg.payload[0], msg.payload[1]);
         }
-        util::ConsoleOut() << "wsEvent_paramNodeChange";
     }break;
     case wsEvent_pageChange:{
-        util::ConsoleOut() << "wsEvent_pageChange";
+        if(msg.payload.size() == 1 && util::isUnsignedLL(msg.payload[0]) && pageExists(msg.payload[0])){
+            ws_session_->setPage(msg.payload[0]);
+            std::shared_ptr<ws_message> answer = std::make_shared<ws_message>(msg);
+            ws_session_->send(answer);
+        }
     }break;
     case wsEvent_authentification:{
         if(msg.payload.size() == 2){
             if(validateCredentials(msg.payload[0], msg.payload[1])){
                 ws_session_->setAuthenticated();
-                std::shared_ptr<ws_message> answer = std::make_shared<ws_message>();
-                answer->event=wsEvent_authentification;
+                std::shared_ptr<ws_message> answer = std::make_shared<ws_message>(wsEvent_authentification);
                 ws_session_->send(answer);
             }
         }
-        util::ConsoleOut() << "wsEvent_authentification";
     }break;
     case wsEvent_structure:{
-        util::ConsoleOut() << "wsEvent_structure";
+        if(msg.payload.size() == 1 && util::isUnsignedLL(msg.payload[0])){
+            rj::Document structureDOM;
+            getStructureOfPage(msg.payload[0], structureDOM);
+            std::shared_ptr<ws_message> answer = std::make_shared<ws_message>(wsEvent_structure, util::Json().toJson(structureDOM));
+            ws_session_->send(answer);
+            //hier wird das bdo aufgebaut und als JSON zurückgeschickt (wenn page geändert wird)
+        }
     }break;
     default:{
         return;
     }
     }
 }
+//dispatcher to dispatch messages emitted by the SqlClient Class
+void Backend::sql_dispatch(const sql_message& msg)
+{
+    switch(msg.event_m){
+    case sqlEvent_pageChange:{
 
+    }break;
+    case sqlEvent_paramNodeChange:{
+        if(msg.payload_m.size() == 2){
+            publishtoAllSessions( ws_message (wsEvent_paramNodeChange, msg.payload_m) );
+        }
+    }break;
+    default:{
+        return;
+    }
+    }
+    util::ConsoleOut() << "dispatcher to dispatch messages emitted by the SqlClient Class received event: " << msg.event_m << "payload: " << msg.payload_m;
+}
+void Backend::dispatchGetDataNodeIDs(std::shared_ptr<std::set<std::string> >  outDnIds, std::string pageID)
+{
+    getDataNodeIDs(outDnIds, pageID);
+}
+void Backend::dispatchGetParamNodeIDs(std::shared_ptr<std::set<std::string> > outPnIds, std::string pageID)
+{
+    getParamNodeIDs(outPnIds, pageID);
+}

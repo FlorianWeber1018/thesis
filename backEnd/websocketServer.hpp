@@ -30,10 +30,15 @@ enum wsEvent{
     wsEvent_paramNodeChange = 2,
     wsEvent_pageChange = 3,
     wsEvent_structure = 4,
-    wsEvent_authentification = 5};
+    wsEvent_authentification = 5,
+    wsEvent_dsdfsdf};
 struct ws_message{
     ws_message(const ws_message& msg);
     ws_message(const std::string& str);
+    ws_message(const wsEvent& event_, const std::vector<std::string>& payload_);
+    ws_message(const wsEvent& event_);
+    ws_message(const wsEvent& event_, const std::string& singlePayload);
+    ws_message(const wsEvent& event_, const std::string& firstPayload, const std::string& secondPayload);
     ws_message();
     wsEvent event = wsEvent_invalid;
     std::vector<std::string> payload;
@@ -69,17 +74,20 @@ public:
     bool checkDataNodeSubscription(const std::string& sqlId);
     bool checkParamNodeSubscription(const std::string& sqlId);
     void setAuthenticated();
+    void setSubscriptions(std::shared_ptr<std::set<std::string>>dnSubscriptions_p, std::shared_ptr<std::set<std::string>>pnSubscriptions_p);
+    //void setSubscriptionsThreadSafe(std::shared_ptr<std::set<std::string>>dnSubscriptions_p, std::shared_ptr<std::set<std::string>>pnSubscriptions_p);
+    void setPage(const std::string& newPage);
 private:
     void asyncReading();
 
     void dispatch(const ws_message& msg, std::shared_ptr<ws_session> ws_session_);
 
+    uint64_t actualPage = 0;
 
     bool authenticated_m = false;
     std::queue<std::shared_ptr<ws_message> > outQueue;
     std::set<std::string> dnSubscriptions;
-    std::set<std::string> paramSubscriptions;
-    std::mutex mutex_m;
+    std::set<std::string> pnSubscriptions;
     WebsocketServer* websocketServer_m = nullptr; //Pointer to underlieing WebsocketServer Object
 };
 
@@ -113,6 +121,8 @@ protected:
     void removeDeletedSessions();
     void publishtoAllSessions(const ws_message &msg);
     virtual void ws_dispatch(const ws_message& msg, std::shared_ptr<ws_session> ws_session_) = 0;
+    virtual void dispatchGetDataNodeIDs(std::shared_ptr<std::set<std::string> >  outDnIds, std::string pageID) = 0;
+    virtual void dispatchGetParamNodeIDs(std::shared_ptr<std::set<std::string> > outPnIds, std::string pageID) = 0;
 private:
     std::list<std::weak_ptr<ws_session>> ws_sessions_m;
     std::mutex ws_sessionsMutex_m;

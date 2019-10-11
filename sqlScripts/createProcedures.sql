@@ -33,6 +33,20 @@ B.writePermission as writePermission
 LEFT JOIN GuiElementDataNodeTemplates AS B ON B.ID = A.typeID WHERE A.guiElementID = inGuiElementID;
 END; $$
 
+CREATE OR REPLACE PROCEDURE WebVisu.getParamsByGuiElementID(IN inGuiElementID BIGINT(20) UNSIGNED)
+BEGIN	
+	select 
+	A.ID,
+	B.qualifiedName as name,
+	B.`type`,
+	A.value,
+	B.description
+from WebVisu.GuiElementParams AS A
+	LEFT JOIN WebVisu.GuiElementParamTemplates AS B
+		ON B.ID = A.typeID
+WHERE guiElementID =  inGuiElementID; 	
+END; $$
+
 CREATE OR REPLACE PROCEDURE WebVisu.getGuiElementsByPageID(IN inPageID BIGINT(20) UNSIGNED)
 BEGIN
 SELECT
@@ -55,5 +69,34 @@ BEGIN
 	END IF;
 END; $$
 
+CREATE OR REPLACE PROCEDURE WebVisu.getDataNodesIDsByPageID(IN inPageID BIGINT(20) UNSIGNED)
+BEGIN
+	IF(inPageID IS NULL) THEN
+		SELECT B.ID as ID
+		FROM GuiElements A
+		LEFT JOIN GuiElementDataNodes AS B ON B.guiElementID = A.ID
+		where A.pageID IS NULL;
+	ELSE
+		SELECT B.ID as ID
+		FROM GuiElements A
+		LEFT JOIN GuiElementDataNodes AS B ON B.guiElementID = A.ID
+		where A.pageID = inPageID;
+	END IF;
+END; $$
+
+CREATE OR REPLACE PROCEDURE WebVisu.getParamsIDsByPageID(IN inPageID BIGINT(20) UNSIGNED)
+BEGIN
+	IF(inPageID IS NULL) THEN
+		SELECT B.ID as ID
+		FROM GuiElements A
+		LEFT JOIN GuiElementParams AS B ON B.guiElementID = A.ID
+		where A.pageID IS NULL;
+	ELSE
+		SELECT B.ID as ID
+		FROM GuiElements A
+		LEFT JOIN GuiElementParams AS B ON B.guiElementID = A.ID
+		where A.pageID = inPageID;
+	END IF;
+END; $$
 
 DELIMITER ;

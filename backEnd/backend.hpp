@@ -11,6 +11,10 @@ protected:
     virtual void dataChangeDispatcher(const ChangeRequest& changeRequest) override;
     void traverseOpcuaPagesFromSql(uint64_t startPageID = 0);
     virtual void ws_dispatch(const ws_message& msg, std::shared_ptr<ws_session> ws_session_) override;
+    virtual void sql_dispatch(const sql_message& msg) override;
+
+    virtual void dispatchGetDataNodeIDs(std::shared_ptr<std::set<std::string> >  outDnIds, std::string pageID) override;
+    virtual void dispatchGetParamNodeIDs(std::shared_ptr<std::set<std::string> > outPnIds, std::string pageID) override;
 private:
 
 };

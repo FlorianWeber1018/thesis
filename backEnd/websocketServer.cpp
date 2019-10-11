@@ -49,6 +49,25 @@ ws_message::ws_message(const std::string& str)
     }
 
 }
+ws_message::ws_message(const wsEvent& event_, const std::vector<std::string>& payload_) : payload(payload_)
+{
+    event=event_;
+}
+ws_message::ws_message(const wsEvent& event_)
+{
+    event=event_;
+}
+ws_message::ws_message(const wsEvent& event_, const std::string& singlePayload)
+{
+    event = event_;
+    payload.push_back(singlePayload);
+}
+ws_message::ws_message(const wsEvent& event_, const std::string& firstPayload, const std::string& secondPayload)
+{
+    event = event_;
+    payload.push_back(firstPayload);
+    payload.push_back(secondPayload);
+}
 ws_message::ws_message()
 {
 
@@ -60,7 +79,6 @@ void fail(beast::error_code ec, char const* what){
 
 ws_session::ws_session(tcp::socket&& socket, ssl::context& ctx, WebsocketServer* websocketServer) : ws_(std::move(socket), ctx){
     this->websocketServer_m = websocketServer;
-    dnSubscriptions.insert("6");
 }
 ws_session::~ws_session()
 {
@@ -118,8 +136,11 @@ void ws_session::after_read( beast::error_code ec, std::size_t bytes_transferred
     // This indicates that the ws_session was closed
     if(ec == websocket::error::closed)
         return;
-    if(ec)
+    if(ec){
         fail(ec, "read");
+        return;
+    }
+
     if(ws_.got_text()){
         ws_message msg(beast::buffers_to_string(buffer_in.cdata()));
         if(msg.event == wsEvent_authentification || authenticated_m){
@@ -189,11 +210,41 @@ bool ws_session::checkDataNodeSubscription(const std::string& sqlId)
 }
 bool ws_session::checkParamNodeSubscription(const std::string& sqlId)
 {
-    return util::includes(paramSubscriptions, sqlId);
+    return util::includes(pnSubscriptions, sqlId);
 }
 void ws_session::setAuthenticated()
 {
     authenticated_m = true;
+}
+void ws_session::setSubscriptions(std::shared_ptr<std::set<std::string>>dnSubscriptions_p, std::shared_ptr<std::set<std::string>>pnSubscriptions_p)
+{
+    dnSubscriptions.clear();
+    pnSubscriptions.clear();
+    dnSubscriptions = *dnSubscriptions_p;
+    pnSubscriptions = *pnSubscriptions_p;
+}/*
+void ws_session::setSubscriptionsThreadSafe(std::shared_ptr<std::set<std::string>>dnSubscriptions_p, std::shared_ptr<std::set<std::string>>pnSubscriptions_p)
+{
+    net::post(ws_.get_executor(), beast::bind_front_handler(&ws_session::setSubscriptions, shared_from_this(), dnSubscriptions_p, pnSubscriptions_p));
+}*/
+void ws_session::setPage(const std::string& newPage)
+{
+    uint64_t pageID = std::stoull(newPage);
+    //get all dn and pn of page
+    //subscribe
+
+    auto dnSubscriptions_p = std::make_shared<std::set<std::string>>();
+    auto pnSubscriptions_p = std::make_shared<std::set<std::string>>();
+    websocketServer_m->dispatchGetDataNodeIDs(dnSubscriptions_p, newPage);
+    websocketServer_m->dispatchGetParamNodeIDs(pnSubscriptions_p, newPage);
+
+    setSubscriptions(dnSubscriptions_p, pnSubscriptions_p);
+
+
+    actualPage = pageID;
+
+    ws_message structure(wsEvent_structure, newPage);
+    dispatch(structure, shared_from_this());//get the bdo
 }
 //------------------------------------------------------------------------------
 

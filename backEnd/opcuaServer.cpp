@@ -150,7 +150,7 @@ bool OpcuaServer::parseValue(UA_Variant& outVariant, const std::string& valueStr
 {
     switch(type){
         case UA_TYPES_BOOLEAN:{
-            UA_Boolean convertedInitValue = (valueString == "1") ? true : false;
+            UA_Boolean convertedInitValue = (valueString == "1" || valueString == "true") ? true : false;
             UA_Variant_setScalarCopy(&outVariant, &convertedInitValue, &UA_TYPES[type]);
         }break;
         case UA_TYPES_SBYTE:{
@@ -230,7 +230,7 @@ std::string OpcuaServer::plotValue(const UA_Variant& variant, int8_t type){
         case UA_TYPES_BOOLEAN:{
             UA_Boolean* castedValue = static_cast<UA_Boolean*>(variant.data);
             if(castedValue != nullptr){
-                return *castedValue ? "true" : "false";
+                return *castedValue ? "1" : "0";
             }else{
                 return "";
             }
