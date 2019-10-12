@@ -1,0 +1,31 @@
+\chapter{Einführung}
+\section{Motivation}
+\section{Zielsetzung}
+\section{Gliederung}
+
+
+In der heutigen Informatik wird immer mehr auf grafische Benutzeroberflächen gesetzt, welche als Webapplikation im Browser lauffähig sind.
+In der Industrie ist dies leider noch nicht der Fall und die Benutzeroberfläche wird statisch geschrieben und kompiliert, was einige Einschränkungen mit sich bringt:
+\begin{itemize}
+    \item Die Benutzeroberfläche ist statisch und lässt sich zur Laufzeit nur eingeschränkt an Daten anpassen. So kann man zum Beispiel ein interaktives Steuerelement zur Laufzeit nur sichtbar oder unsichtbar machen, eine dynamische Bindung an Daten ist nicht möglich.
+    \item Die Benutzeroberfläche ist Plattform gebunden. Wenn zum Beispiel in WinCC eine Oberfläche erstellt wird, braucht man zwingend eine WinCC Runtime welche ausschließlich in Windows lauffähig ist.
+\end{itemize}
+Um die genannten Probleme zu lösen wird eine neuartige Architektur entworfen um Prozessdaten im Browser in Echtzeit anzuzeigen und zu verändern.
+Die folgenden Anforderungen werden an die Architektur gestellt:
+\begin{itemize}
+    \item   Die Datenrate der Webapplikation bei vertretbarem Aufwand, soll so klein wie möglich sein.
+            Dies ermöglicht unteranderem die Nutzung des Systems im einem Umfeld mit geringer verfügbarer Bandbreite zur Steuerungsebene.
+    \item   Das Framework soll Steuerelemente die eine Eingabe durch den Nutzer zulassen, sowie Steuerelemente die eine Darstellung eines Prozesswerts ermöglichen.
+    \item   Die Webapplikation selbst soll so modular sein, dass man zur Laufzeit Steuerelemente hinzufügen und entfernen kann, ohne dass das System offline geht.
+    \item   Die Prozessdaten sollen nicht, wie aktuell bei vielen Webapplikationen üblich, durch Polling synchronisiert werden, sondern die Weboberfläche soll auf Datenänderungen des Prozesses in Echtzeit (bei statischem Routing im Netzwerk) reagieren. Dasselbe gilt für die andere Richtung.
+    \item   Die Architektur soll herstellerunabhängige Schnittstellen zur Integration in ein vorhandenes System bereitstellen.
+    \item   Die Weboberfläche soll eine feste Auflösung haben und muss nicht auf Änderungen des Viewports reagieren. Ausnahmen bilden hierbei Darstellungen die dies, durch ihre einfache Gestalt, erlauben wie zum Beispiel:
+            \begin{itemize}
+                \item Tabellen
+                \item Buttons
+                \item Labels
+                \item Einzelne Grafiken deren Position für die Darstellung nicht relevant ist
+            \end{itemize}
+\end{itemize}
+Der Beweis der Realisierbarkeit soll durch eine Beispielimplementierung erbracht werden.
+Dabei soll je ein Eingabeelement (z.B. Button), ein Ausgabeelement (z.B. Label), sowie ein Ein-/Ausgabe Element (zum Beispiel ein Textfeld) implementiert werden.

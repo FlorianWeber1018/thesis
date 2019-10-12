@@ -1,0 +1,48 @@
+\documentclass[paper=A4,12pt,twoside,bibliography=totoc,listof=totoc]{scrreprt}
+
+\input{packages}
+\input{settings}
+
+\bibliography{references}
+
+\titlehead{
+\center{\includegraphics[page=1,width=.6\textwidth]{content/Hska_logo}  }}
+\begin{titlepage}
+\title{\Huge Entwurf einer Architektur und eines Proof of Concept für ein
+echtzeitfähiges SCADA System mit Webfrontend}
+
+\date{\normalfont 12.11.2019}
+\author{Florian Weber (44907)}
+\subtitle  {\LARGE\vspace{1cm}Bachelor-Thesis \\ \large zur Erlangung des akademischen Grades \\ Bachelor of Engineering \\ \vspace{0.3cm}\normalfont vorgelegt von}
+\publishers{ Erstprüfer: Prof. Dr.-Ing. Philipp Nenninger\\Zweitprüfer: Prof. Dr. Stefan Ritter}
+
+\end{titlepage}
+
+\begin{document}
+\maketitle	%Deckblatt
+
+%\begin{spacing}{0.9}
+\tableofcontents 	%Inhaltsverzeichnis
+\newpage
+
+\input{acronym}
+\newpage
+
+\listoffigures		%Bildverzeichnis
+\newpage
+
+\listoftables
+%\end{spacing}
+\newpage
+% aufgabenstellung
+\input{content}
+\newpage
+\footcite{entry}
+ 
+
+
+
+
+\printbibliography
+\include{anhang}
+\end{document}
