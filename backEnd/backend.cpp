@@ -113,7 +113,7 @@ void Backend::ws_dispatch(const ws_message& msg, std::shared_ptr<ws_session> ws_
             getStructureOfPage(msg.payload[0], structureDOM);
             std::shared_ptr<ws_message> answer = std::make_shared<ws_message>(wsEvent_structure, util::Json().toJson(structureDOM));
             ws_session_->send(answer);
-            //hier wird das bdo aufgebaut und als JSON zurückgeschickt (wenn page geändert wird)
+            //hier wird das bdo aufgebaut und als JSON zurückgeschickt
         }
     }break;
     case wsEvent_reqSendDataNodes:{
@@ -123,8 +123,9 @@ void Backend::ws_dispatch(const ws_message& msg, std::shared_ptr<ws_session> ws_
         }
     }break;
     case wsEvent_reqSendParams:{
+        auto start = std::chrono::steady_clock::now();
         for(auto& element : msg.payload){
-            auto start = std::chrono::steady_clock::now();
+
             std::shared_ptr<ws_message> answer = std::make_shared<ws_message>(wsEvent_paramNodeChange, element, getParamNodeValue(element));
             ws_session_->send(answer);
             auto end = std::chrono::steady_clock::now();

@@ -257,8 +257,8 @@ void ws_session::setPage(const std::string& newPage)
 
     actualPage = pageID;
 
-    ws_message structure(wsEvent_structure, newPage);
-    dispatch(structure, shared_from_this());//get the bdo
+    //ws_message structure(wsEvent_structure, newPage);
+    //dispatch(structure, shared_from_this());//get the bdo
 }
 //------------------------------------------------------------------------------
 
