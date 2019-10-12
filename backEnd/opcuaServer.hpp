@@ -48,6 +48,8 @@ protected:
     void createPageNode(const MYSQL_ROW& pageNodeRow);
 
     void removeNode(const IdType& type, uint64_t sqlID);
+    std::string readDataNode(uint64_t sqlID);
+    std::string readDataNode(const std::string& sqlID);
     bool start();
     bool stop();
     bool getState();

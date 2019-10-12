@@ -464,6 +464,23 @@ void OpcuaServer::removeNode(const IdType& type, uint64_t sqlID)
 {
     UA_Server_deleteNode(server_m, generateNodeID(type, sqlID), true);
 }
+std::string OpcuaServer::readDataNode(const std::string& sqlID)
+{
+    return readDataNode(std::stoul(sqlID));
+}
+
+std::string OpcuaServer::readDataNode(uint64_t sqlID)
+{
+    UA_ReadValueId rvi;
+    UA_ReadValueId_init(&rvi);
+    generateNodeID(rvi.nodeId, IdType_DataNode, sqlID);
+    rvi.attributeId = UA_ATTRIBUTEID_VALUE;
+    UA_DataValue resp = UA_Server_read(server_m, &rvi, UA_TIMESTAMPSTORETURN_NEITHER);
+    if(resp.hasValue){
+        return plotValue(resp.value, resp.value.type->typeIndex);
+    }
+    return std::string();
+}
 void OpcuaServer::dataChangeDispatcher(const ChangeRequest& changeRequest)
 {
     util::ConsoleOut() << "______________________________________________________________________________"

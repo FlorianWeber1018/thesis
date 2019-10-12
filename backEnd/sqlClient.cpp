@@ -205,6 +205,20 @@ void SqlClient::getParamNodeIDs(std::shared_ptr<std::set<std::string>> outPnIds,
     MYSQL_RES* result = sendCommand(query);
     itterateThroughMYSQL_RES(result,[=](const MYSQL_ROW& row){ if(row[0]!=nullptr){ outPnIds->insert(std::string(row[0])); } });
 }
+std::string SqlClient::getParamNodeValue(std::string paramNodeSqlID)
+{
+    std::string query = "select value from GuiElementParams where ID = ";
+    query.append(paramNodeSqlID);
+    MYSQL_RES* result = sendCommand(query);
+    if(result != nullptr){
+        if(MYSQL_ROW row = mysql_fetch_row(result)){
+            if(row[0]!=nullptr){
+                return std::string(row[0]);
+            }
+        }
+    }
+    return std::string();
+}
 bool SqlClient::updateParamNode(std::string paramNodeSqlID, std::string newParamValue)
 {
     escapeString(paramNodeSqlID);

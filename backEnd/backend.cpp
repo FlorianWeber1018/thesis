@@ -4,6 +4,7 @@
 #include "rapidjson/document.h"
 #include "httpServer.hpp"
 #include <functional>
+#include <chrono>
 Backend::Backend(){
     if(initDB()){
         util::ConsoleOut() << "jo Datenbank wurde initialisiert" ;
@@ -115,6 +116,23 @@ void Backend::ws_dispatch(const ws_message& msg, std::shared_ptr<ws_session> ws_
             //hier wird das bdo aufgebaut und als JSON zurückgeschickt (wenn page geändert wird)
         }
     }break;
+    case wsEvent_reqSendDataNodes:{
+        for(auto& element : msg.payload){
+            std::shared_ptr<ws_message> answer = std::make_shared<ws_message>(wsEvent_dataNodeChange, element, readDataNode(element));
+            ws_session_->send(answer);
+        }
+    }break;
+    case wsEvent_reqSendParams:{
+        for(auto& element : msg.payload){
+            auto start = std::chrono::steady_clock::now();
+            std::shared_ptr<ws_message> answer = std::make_shared<ws_message>(wsEvent_paramNodeChange, element, getParamNodeValue(element));
+            ws_session_->send(answer);
+            auto end = std::chrono::steady_clock::now();
+            std::cout << "Elapsed time in nanoseconds : "
+                    << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count()
+                    << " ns" << std::endl;
+        }
+    }break;
     default:{
         return;
     }
@@ -136,7 +154,6 @@ void Backend::sql_dispatch(const sql_message& msg)
         return;
     }
     }
-    util::ConsoleOut() << "dispatcher to dispatch messages emitted by the SqlClient Class received event: " << msg.event_m << "payload: " << msg.payload_m;
 }
 void Backend::dispatchGetDataNodeIDs(std::shared_ptr<std::set<std::string> >  outDnIds, std::string pageID)
 {
