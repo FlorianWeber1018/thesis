@@ -45,6 +45,7 @@ protected:
 
     // INTERFACE FOR BACKEND
     //  all strings must beeing passed by value to make it possible to escape the strings in the individual methods
+    std::string getParamNodeValue(std::string paramNodeSqlID);
     bool updateParamNode(std::string paramNodeSqlID, std::string newParamValue);
     bool validateCredentials(std::string userName, std::string pw);
     bool pageExists(std::string pageID);

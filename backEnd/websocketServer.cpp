@@ -144,9 +144,23 @@ void ws_session::after_read( beast::error_code ec, std::size_t bytes_transferred
     if(ws_.got_text()){
         ws_message msg(beast::buffers_to_string(buffer_in.cdata()));
         if(msg.event == wsEvent_authentification || authenticated_m){
+            switch(msg.event){
+            case wsEvent_reqSendDataNodes:{
+                msg.payload.clear();
+                msg.payload.reserve(dnSubscriptions.size());
+                std::copy(dnSubscriptions.begin(), dnSubscriptions.end(), std::back_inserter(msg.payload));
+            }break;
+            case wsEvent_reqSendParams:{
+                msg.payload.clear();
+                msg.payload.reserve(pnSubscriptions.size());
+                std::copy(pnSubscriptions.begin(), pnSubscriptions.end(), std::back_inserter(msg.payload));
+            }break;
+            default:{
+
+            }
+            }
             dispatch(msg, shared_from_this());
         }
-
     }
     buffer_in.consume(bytes_transferred);
     asyncReading(); //loop

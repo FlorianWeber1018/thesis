@@ -31,7 +31,9 @@ enum wsEvent{
     wsEvent_pageChange = 3,
     wsEvent_structure = 4,
     wsEvent_authentification = 5,
-    wsEvent_dsdfsdf};
+    wsEvent_reqSendParams = 6,
+    wsEvent_reqSendDataNodes = 7
+};
 struct ws_message{
     ws_message(const ws_message& msg);
     ws_message(const std::string& str);
