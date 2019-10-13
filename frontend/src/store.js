@@ -18,9 +18,13 @@ var store = new Vuex.Store({
     SOCKET_ONOPEN(state, event) {
       Vue.prototype.$socket = event.currentTarget;
       state.socket.isConnected = true;
+      if(router.currentRoute.path!= '/'){
+        router.push('/');
+      }
     },
     SOCKET_ONCLOSE(state, event) {
       state.socket.isConnected = false;
+      
     },
     SOCKET_ONERROR(state, event) {
       console.error(state, eval);
@@ -69,7 +73,9 @@ var store = new Vuex.Store({
                 state.pageStruct = pageObj;
                 store.dispatch('wsEvent_reqSendParams');
                 store.dispatch('wsEvent_reqSendDataNodes');
-                router.push('WebVisu');
+                if(router.currentRoute.path!= '/WebVisu'){
+                  router.push('WebVisu');
+                }
                 console.log(state.pageStruct);
               }
             }

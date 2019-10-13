@@ -34,7 +34,7 @@
         <v-btn 
             class="ma-2" 
             block
-            outlined color="indigo"
+            color="indigo"
             v-on:click="ws_send_wsEvent_authentification([userName, password])"> 
             LOGIN!
         </v-btn>
@@ -42,7 +42,6 @@
       </v-row>
     </v-container>
   </v-form>
-    <!--  -->
 </template>
 <script>
 import { mapActions, mapState } from 'vuex'
