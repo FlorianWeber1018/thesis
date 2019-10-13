@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-
+import router from "./router";
 Vue.use(Vuex);
 
 var store = new Vuex.Store({
@@ -37,11 +37,18 @@ var store = new Vuex.Store({
           }break;
           case "1":{
             //wsEvent_dataNodeChange
-
+            if(payload.length == 2){
+              let key = payload[0];
+              let value = payload[1];
+              
+            }
           }break;
           case "2":{
             //wsEvent_paramNodeChange
-
+            if(payload.length == 2){
+              let key = payload[0];
+              let value = payload[1]; 
+            }
           }break;
           case "3":{
             //wsEvent_pageChange
@@ -62,6 +69,8 @@ var store = new Vuex.Store({
                 state.pageStruct = pageObj;
                 store.dispatch('wsEvent_reqSendParams');
                 store.dispatch('wsEvent_reqSendDataNodes');
+                router.push('WebVisu');
+                console.log(state.pageStruct);
               }
             }
           }break;

@@ -4,7 +4,7 @@ import loginPage from "./views/loginPage.vue";
 import webVisuPages from "./views/webVisuPages.vue";
 Vue.use(Router);
 
-export default new Router({
+var router = new Router({
   mode: "history",
   base: process.env.BASE_URL,
   routes: [
@@ -20,3 +20,4 @@ export default new Router({
     }
   ]
 });
+export default router;
