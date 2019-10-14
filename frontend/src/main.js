@@ -14,7 +14,7 @@ new Vue({
   render: h => h(App)
 }).$mount("#app");
 
-Vue.use(VueNativeSock, "wss://192.168.178.28:18080", {
+Vue.use(VueNativeSock, "wss://185.11.19.179:18080", {
   store: store,
   reconnection: true, // (Boolean) whether to reconnect automatically (false)
   reconnectionAttempts: 5, // (Number) number of reconnection attempts before giving up (Infinity),

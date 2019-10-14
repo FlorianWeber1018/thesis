@@ -42,16 +42,57 @@ var store = new Vuex.Store({
           case "1":{
             //wsEvent_dataNodeChange
             if(payload.length == 2){
-              let key = payload[0];
+              let key = parseInt(payload[0], 10);
               let value = payload[1];
-              
+              for (const [guiElementKey, guiElement] of Object.entries(state.pageStruct.guiElements)) {
+                let found = false;
+                for (const [DataNodeKey, DataNode] of Object.entries(state.pageStruct.guiElements[guiElementKey].dataNodes)) {
+                  if(state.pageStruct.guiElements[guiElementKey].dataNodes[DataNodeKey].id === key){
+                    const type = state.pageStruct.guiElements[guiElementKey].dataNodes[DataNodeKey].type;
+                    
+                    if(type == "Bool"){
+                      state.pageStruct.guiElements[guiElementKey].dataNodes[DataNodeKey].value = (value == "1");
+                    }else if(type == "String"){
+                      state.pageStruct.guiElements[guiElementKey].dataNodes[DataNodeKey].value = value;
+                    }else if(type == "Double" || type == "Float"){
+                      state.pageStruct.guiElements[guiElementKey].dataNodes[DataNodeKey].value = parseFloat(value);
+                    }else{
+                      state.pageStruct.guiElements[guiElementKey].dataNodes[DataNodeKey].value = parseInt(value);
+                    }
+                    found = true;
+                  }
+                  if(found){break;}
+                }
+                if(found){break;}
+              }
             }
           }break;
           case "2":{
             //wsEvent_paramNodeChange
             if(payload.length == 2){
-              let key = payload[0];
-              let value = payload[1]; 
+              let key = parseInt(payload[0], 10);
+              let value = payload[1];
+              for (const [guiElementKey, guiElement] of Object.entries(state.pageStruct.guiElements)) {
+                let found = false;
+                for (const [paramKey, param] of Object.entries(state.pageStruct.guiElements[guiElementKey].params)) {
+                  if(state.pageStruct.guiElements[guiElementKey].params[paramKey].id === key){
+                    const type = state.pageStruct.guiElements[guiElementKey].params[paramKey].type;
+                    
+                    if(type == "Bool"){
+                      state.pageStruct.guiElements[guiElementKey].params[paramKey].value = (value == "1");
+                    }else if(type == "String"){
+                      state.pageStruct.guiElements[guiElementKey].params[paramKey].value = value;
+                    }else if(type == "Double" || type == "Float"){
+                      state.pageStruct.guiElements[guiElementKey].params[paramKey].value = parseFloat(value);
+                    }else{
+                      state.pageStruct.guiElements[guiElementKey].params[paramKey].value = parseInt(value);
+                    }
+                    found = true;
+                  }
+                  if(found){break;}
+                }
+                if(found){break;}
+              }
             }
           }break;
           case "3":{
@@ -61,7 +102,6 @@ var store = new Vuex.Store({
               if(newPage != NaN){
                 state.page = newPage;
                 store.dispatch('ws_send_wsEvent_structure', newPage);
-                console.log("page changed to: " + newPage);
               }
             }
           }break;
@@ -121,11 +161,20 @@ var store = new Vuex.Store({
       sendstr += credentials.shift();
       context.dispatch('ws_sendEvent', sendstr);
     },
+    ws_send_wsEvent_dataNodeChange: function(context, dataNode) {
+      let sendstr = "1;";
+      sendstr += dataNode.shift();
+      sendstr += ";";
+      sendstr += dataNode.shift();
+      context.dispatch('ws_sendEvent', sendstr);
+      console.log(sendstr);
+    },
     ws_sendEvent: function(context, message) {
       if(context.state.socket.isConnected){
         Vue.prototype.$socket.send(message);
       }
     }
+    
   }
 });
 

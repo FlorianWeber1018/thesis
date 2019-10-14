@@ -1,40 +1,30 @@
 <template>
-    <div v-if="pageStruct != null">
-    {{pageStruct}}
-    </div>
+  <div v-if="pageStruct != null">
+    <guiElement v-for="guiElementObj in pageStruct.guiElements" :key="'gE_' + guiElementObj.id" :id="guiElementObj.id" /> 
+  </div>
 </template>
 <script>
 import { mapActions, mapState } from 'vuex'
+import guiElement from "../components/guiElement"
 export default{
-    components: null,
+    components: {
+      guiElement
+    },
     data: () => (
         {
             
         }),
     methods: {
     ...mapActions([
-      "ws_send_wsEvent_pageChange"
+      
     ])
         
   },
   computed:{
-    ...mapState({pageStruct: state => state.pageStruct}),
-    pageID: function(){
-      return this.pageStruct.pageID;
-    },
-    pageTitle: function(){
-      return this.pageStruct.title;
-    },
-    parentPageID: function(){
-      return this.pageStruct.parentId;
-    },
-    childPages: function(){
-      return this.pageStruct.pages;
-    }
-
-    },
-    created: function() {
-      this.$vuetify.theme.dark = true
-    }
+    ...mapState({pageStruct: state => state.pageStruct})
+  },
+  created: function() {
+    this.$vuetify.theme.dark = true
+  }
 };
 </script>
