@@ -1,10 +1,13 @@
+\usepackage[utf8]{inputenc}
 \usepackage{a4}
 \usepackage{csquotes}
 \usepackage[backend=bibtex,style=verbose-ibid]{biblatex}
 \usepackage{pdfpages}
-\usepackage[utf8]{inputenc}
+
 \usepackage{dsfont}
 \usepackage{amsmath}
+\usepackage{amsfonts}
+\newcommand{\N}{\mathbb{N}}
 \usepackage{graphicx}
 \usepackage{here}
 \usepackage[section]{placeins}
@@ -15,3 +18,15 @@
 
 \usepackage[colorlinks, pdfpagelabels, pdfstartview = FitH, bookmarksopen = true, bookmarksnumbered = true, linkcolor = black, plainpages = false, hypertexnames = false, citecolor = black, urlcolor = blue] {hyperref}
 \usepackage{acronym}
+%Paket für mehrspaltige Seiten
+%--------------------------------------
+\usepackage{multicol}
+\setlength{\columnseprule}{0.2pt}
+\setlength{\columnsep}{2em}
+%--------------------------------------
+
+%Paket für Syntaxhiglighting
+%--------------------------------------
+%\usepackage[chapter]{minted}
+%\renewcommand\theFancyVerbLine{\scriptsize\arabic{FancyVerbLine}}
+%--------------------------------------
