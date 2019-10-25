@@ -6,18 +6,18 @@ Dabei fiel mir auf, dass der aktuelle Stand der Technik in  der Automatisierungs
 vom Stand in anderen softwaregeprägten Bereichen abweicht.
 So wird in der Automatisierungstechnik noch immer auf statisch geschriebene Benutzeroberflächen gesetzt, 
 die kompilliert werden müssen und damit viele Einschränkungen mit sich bringen.
-Es ist zum Beispiel nicht möglich ein Steuerelement zur Laufzeit in abhängigkeit vorhandener Entitäten zu instanzieren. 
-Meist schafft man sich Abhilfe indem man ein Element entweder ein- oder ausblendet.
+Es ist zum Beispiel nicht möglich ein Steuerelement zur Laufzeit in Abhängigkeit vorhandener Entitäten zu instanzieren. 
+Meist schafft man sich Abhilfe, indem man ein Element entweder ein- oder ausblendet.
 Ein weiteres Problem vorhandener Lösungen ist, dass diese meist plattformgebungen sind und nur lokal im Netz, 
-mit entsprechender Software des Herstellers lauffähig sind.
+mit entsprechender Software des Herstellers, lauffähig sind.
 In der heutigen Informatik wird immer mehr auf grafische Benutzeroberflächen gesetzt, 
-welche als Webapplikation in einem beliebigen Browser lauffähig sind.
+welche als Webapplikation in einem beliebigen Browser verwendbar sind.
 
 \section{Zielsetzung}
 Das Ziel dieser Arbeit ist der Entwurf einer Architektur für ein
-echtzeitfähiges SCADA System mit Webfrontend.
-Durch ein \ac{poc} wird herausgefunden ob die Architektur auch in die Praxis umsetzbar ist.
-Hierbei wird die Applikation streng getrennt in Frontend und Backend. Das Frontend wird als Webapplikation im \ac{poc} implementiert.
+echtzeitfähiges \ac{scada} System mit Webfrontend.
+Durch ein \ac{poc}, wird herausgefunden ob die Architektur auch in die Praxis umsetzbar ist.
+Hierbei wird die Applikation streng in Frontend und Backend getrennt. Das Frontend wird als Webapplikation im \ac{poc} implementiert.
 Dabei werden folgende Anforderungen an die Architektur gestellt:
 \begin{itemize}
     \item   Die Datenrate des Frontends soll bei vertretbarem Aufwand so klein wie möglich sein.
@@ -25,12 +25,12 @@ Dabei werden folgende Anforderungen an die Architektur gestellt:
     \item   Die Architektur soll Steuerelemente unterstützen, die eine Eingabe durch den Nutzer zulassen, sowie Steuerelemente die eine Darstellung eines Prozesswerts ermöglichen.
     \item   Die Webapplikation selbst soll so modular sein, dass man zur Laufzeit Steuerelemente hinzufügen und entfernen kann, ohne dass das System offline geht.
     \item   Die Prozessdaten sollen nicht, wie aktuell bei vielen Webapplikationen üblich, durch Polling synchronisiert werden, sondern die Weboberfläche soll auf Datenänderungen des Prozesses asynchron in Echtzeit (bei statischem Routing im Netzwerk) reagieren. Dasselbe gilt für die Eingaben des Nutzers.
-    \item   Die Architektur soll ein herstellerunabhängige Schnittstelle zur Integration in ein vorhandenes System bereitstellen.
+    \item   Die Architektur soll eine herstellerunabhängige Schnittstelle zur Integration in ein vorhandenes System bereitstellen.
     \item   Die Weboberfläche soll eine feste Auflösung haben und muss nicht auf Änderungen des Viewports reagieren.
-            Ausnahmen bilden hierbei Darstellungen die dies, durch ihre einfache Gestalt erlauben.
+            Ausnahmen bilden hierbei Darstellungen die dies, durch ihre einfache Gestalt, erlauben.
 \end{itemize}
 Der Beweis der Realisierbarkeit soll durch eine Beispielimplementierung (\ac{poc}) erbracht werden.
-Dabei wird je ein Eingabeelement (z.B. Button), ein Ausgabeelement (z.B. Label), sowie ein Ein-/Ausgabeelement (zum Beispiel ein Textfeld) implementiert.
+Dabei wird je ein Eingabeelement (z.B. Button), ein Ausgabeelement (z.B. Label), sowie ein Ein-/Ausgabeelement (z.B. ein Textfeld) implementiert.
 
 \section{Gliederung}
 %WIRD ZUM SCHLUSS GESCHRIEBEN
