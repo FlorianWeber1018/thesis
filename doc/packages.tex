@@ -1,7 +1,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage{a4}
 \usepackage{csquotes}
-\usepackage[backend=bibtex,style=verbose-ibid]{biblatex}
+\usepackage[authoryear]{natbib}
+\bibliographystyle{dcugerman}
 \usepackage{pdfpages}
 
 \usepackage{dsfont}
@@ -12,9 +13,16 @@
 \usepackage{here}
 \usepackage[section]{placeins}
 \usepackage[ngerman]{babel}
-\usepackage[font=small,labelfont=bf,margin=\parindent,tableposition=top]{caption}
+\usepackage[font=small,labelfont=bf,margin=\parindent]{caption}
 \usepackage{subcaption}
 \usepackage{setspace}
+
+%Übersetzung des Literaturverzeichnisses
+\newcommand{\literaturverz}[1]{
+	%Autorenverknüpfung mit "und"
+	\renewcommand{\harvardand}{und}
+	\bibliography{#1}
+}
 
 \usepackage[colorlinks, pdfpagelabels, pdfstartview = FitH, bookmarksopen = true, bookmarksnumbered = true, linkcolor = black, plainpages = false, hypertexnames = false, citecolor = black, urlcolor = blue] {hyperref}
 \usepackage{acronym}
@@ -27,6 +35,12 @@
 
 %Paket für Syntaxhiglighting
 %--------------------------------------
-%\usepackage[chapter]{minted}
+\usepackage{minted}
+%\newmintedfile[inputsql]{sql}{
+%    linenos,
+%    autogobble,
+%    breaklines,
+%}
+
 %\renewcommand\theFancyVerbLine{\scriptsize\arabic{FancyVerbLine}}
 %--------------------------------------

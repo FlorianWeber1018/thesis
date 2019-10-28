@@ -39,19 +39,19 @@ Das Frontend ist eine Webapplikation, mit Vue.js als Webframework.%unauthentifiz
 
 Beim Laden der Seite wird eine \ac{wss} Verbindung zum Backend aufgebaut.
 Ohne Authentifizierung zeigt das Frontend eine Seite an, 
-die es dem Nutzer ermöglich sich durch individuelle Zugansdaten (Benutzername, Passwort) zu Authentifizieren.%authentifiziert->layout fig
+die es dem Nutzer ermöglicht sich durch individuelle Zugansdaten (Benutzername und Passwort) zu authentifizieren. %authentifiziert->layout fig
 Werden auf dieser Seite gültige Zugangsdaten eingegeben, ist die \ac{wss} Session authentifiziert und 
 zeigt das Layout in Abbildung \ref{fig:pageLayoutFrontendAuthenticated} an.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth]{content/hauptteil/systemEntwurf/res/LayoutFrontend.pdf}
-  \caption[Frontend Layout]{Layout des Frontends, bei einer authentifizierten \acs{wss} Session}
+  \caption[Frontend Layout]{Layout des Frontends bei einer authentifizierten \acs{wss} Session}
   \label{fig:pageLayoutFrontendAuthenticated}
 \end{figure}
 Das Layout beinhaltet oben links einen Button um die Navigation der Seite ein und auszublenden.
-Ist die Navigation am Linken Rand eingeblendet, so ermöglicht sie es zwischen den einzelnen Seiten der Visualisierung zu navigieren.
-Dazu zeigt die Navigation immer einen ''Zurück'' Button um in die übergeordnete Seite zu wechseln, sowie Buttons um zu den untergeordneten Seiten zu wechseln.
-Existieren keine untergeordneten Seiten, oder keine übegeordnete Seite, so existieren auch die Buttons nicht.
+Ist die Navigation am linken Rand eingeblendet, so ermöglicht sie es zwischen den einzelnen Seiten der Visualisierung zu navigieren.
+Dazu zeigt die Navigation immer einen \glqq{}Zurück'' Button, um in die übergeordnete Seite zu wechseln, sowie Buttons um zu den untergeordneten Seiten zu wechseln.
+Existieren keine untergeordneten Seiten, oder keine übergeordnete Seite, so existieren auch die Buttons nicht.
 Schließlich wird im zentralen Fenster die aktuelle Page der Visualisierung angezeigt.
 Der komplette Seiteninhalt ist eine Repräsentation des Datenobjekts, das global in der Webapplikation vorliegt.
 Diese Datenstruktur ist eine Kopie der Daten aus dem Backend (Abschnitt \ref{subsec:dataBackend}), welche die aktuell angezeigte Seite betreffen.
@@ -59,19 +59,20 @@ Sie ist in Abschnitt \ref{subsec:dataFrontend} genauer beschrieben und kann nur 
 So ist sichergestellt, dass die \ac{gui} Elemente immer die Daten des Backends darstellen und es keine Unterschiede gibt.
 Der Zustand ist also über alle Instanzen des Backends und Frontends immer konsistent.
 Wie Daten verändert werden können ist genauer in Abschnitt \ref{subsec:protokollBackendFrontend} beschrieben.
-Innerhalb der Webapplikation existiert eine Page Komponente die entsprechenend der \ac{gui} Elemente in der globalen Datenstruktur, 
+Innerhalb der Webapplikation existiert eine Page Komponente die, entsprechend der \ac{gui} Elemente in der globalen Datenstruktur, 
 \ac{gui} Element Komponenten (\emph{guiElement}) instanziert und auf der Page anzeigt.
-Diese \ac{gui} Elemente werden entsprechend ihres Typs (zum Beispiel \emph{Button}) weiter in spezialisierte Gui Elemente (zum Beispiel \emph{guiElementButton}) unterteilt.
-Das Schema, wie innerhalb des Webapplikation auf Daten zugegriffen werden bann bzw. Daten geändert werden können,
+Diese \ac{gui} Elemente werden entsprechend ihres Typs (zum Beispiel \emph{Button}) weiter in spezialisierte \ac{gui} Elemente (z.B. \emph{guiElementButton}) unterteilt.
+Das Schema, wie innerhalb der Webapplikation auf Daten zugegriffen werden kann, bzw. Daten geändert werden können,
 ist in Abbildung \ref{fig:dataFlowFrontend} dargestellt.
-Die Gui Elemente haben nun Zugriff auf eine Funktion um Datenänderungen anzufordern, sowie auf den Ihnen zugeordneten Teil der globalen Datenstruktur.
+Die \ac{gui} Elemente haben nun Zugriff auf eine Funktion um Datenänderungen anzufordern, 
+sowie auf den ihnen zugeordneten Teil der globalen Datenstruktur.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth]{content/hauptteil/systemEntwurf/res/datenzugriffFrontend.pdf}
   \caption[Datenzugriff innerhalb des Frontends]{Schema des Zugriffs auf die Datenstruktur des Frontends}
   \label{fig:dataFlowFrontend}
 \end{figure}
-Wie der Dispatcher die Struktur des Frontends ändert, ist in Abschnitt \ref{subsec:protokollBackendFrontend} beschrieben.
+Wie der Dispatcher die Struktur des Frontends ändert ist in Abschnitt \ref{subsec:protokollBackendFrontend} beschrieben.
 Die \ac{gui} Elemente können nur lesend auf die Datenstruktur zugreifen.
 
 
@@ -162,7 +163,7 @@ dass durch eine externe \ac{ca} beim Verbindungsaufbau verifiziert werden muss.
 Das Fro
 %hier weite auf handler eingehn und wie die kommunikation zwischen vuex und ws funktioniert.
 
-%Der Weg, Daten zu verändern ist nun, mit einer Nachricht an das Backend eine Datenänderung ''anzufragen''.
+%Der Weg, Daten zu verändern ist nun, mit einer Nachricht an das Backend eine Datenänderung \glqq{}anzufragen''.
 %Ist die Änderung möglich, Sendet der Server
 \begin{figure}[ht]
   \centering
@@ -274,7 +275,7 @@ Das Fro
      \caption[Aktivitätsdiagramme Dispatcher Frontend]{Aktivitätsdiagramme des Dispatchers im Frontend}
      \label{fig:activityDiagramDispatcherFrontend}
 \end{figure}
-
+asdasd
 \section{Datenstruktur}
 \subsection{Backend}\label{subsec:dataBackend}
 \begin{figure}[ht]
