@@ -155,16 +155,16 @@ Ist dies der Fall, werden die entsprechenden Handler zu den empfangenen Events a
 
 Die Handler des Backends sind durch die verbleibenden Diagramme in Abbildung \ref{fig:activityDiagramDispatcherBackendI}, 
 sowie durch die Diagramme in Abbildung \ref{fig:activityDiagramDispatcherBackendII} definiert.
-Die Handler des Frontends sind in Abbildung \ref{fig:activityDiagramDispatcherFrontend} dargestellt.
+
 
 Das Frontend bedarf keines solchen Authentifizierungsmechanismus, da dies bereits im \ac{wss} Protokoll implementiert ist. 
 Wie auch bei \ac{https} geschieht das durch ein Serverzertifikat des Backends, 
 dass durch eine externe \ac{ca} beim Verbindungsaufbau verifiziert werden muss.
-Das Fro
+Die Handler des Frontends sind in Abbildung \ref{fig:activityDiagramDispatcherFrontend} dargestellt.
 %hier weite auf handler eingehn und wie die kommunikation zwischen vuex und ws funktioniert.
 
 %Der Weg, Daten zu verändern ist nun, mit einer Nachricht an das Backend eine Datenänderung \glqq{}anzufragen''.
-%Ist die Änderung möglich, Sendet der Server
+%Ist die Änderung möglich, Sendet der Server...
 \begin{figure}[ht]
   \centering
   \begin{subfigure}[b]{0.66222973\textwidth}
@@ -275,7 +275,6 @@ Das Fro
      \caption[Aktivitätsdiagramme Dispatcher Frontend]{Aktivitätsdiagramme des Dispatchers im Frontend}
      \label{fig:activityDiagramDispatcherFrontend}
 \end{figure}
-asdasd
 \section{Datenstruktur}
 \subsection{Backend}\label{subsec:dataBackend}
 \begin{figure}[ht]
