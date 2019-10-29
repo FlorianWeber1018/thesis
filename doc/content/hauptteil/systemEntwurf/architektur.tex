@@ -1,4 +1,4 @@
-\section{Architektur}
+\section{Architektur}\label{sec:arch}
 
 \begin{figure}[ht]
 		\centering
@@ -66,6 +66,7 @@ Das Schema, wie innerhalb der Webapplikation auf Daten zugegriffen werden kann, 
 ist in Abbildung \ref{fig:dataFlowFrontend} dargestellt.
 Die \ac{gui} Elemente haben nun Zugriff auf eine Funktion um Datenänderungen anzufordern, 
 sowie auf den ihnen zugeordneten Teil der globalen Datenstruktur.
+Diese Datenstruktur ist in dem Vue Plugin \emph{VueX} gespeichert und existiert damit nur einmal pro Webapplikation.  
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth]{content/hauptteil/systemEntwurf/res/datenzugriffFrontend.pdf}
@@ -328,7 +329,16 @@ da sie nur zur Strukturierung der DataNodes, auf dem \ac{opcua} Server, genutzt 
 
 
 \subsection{Frontend}\label{subsec:dataFrontend}
-\dots
+Die Datenstruktur in der Webapplikation wird in dem Vue Plugin VueX gespeichert.
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\textwidth]{content/hauptteil/systemEntwurf/res/KlassendiagramVuexState.pdf}
+  \caption[Datenzugriff innerhalb des Frontends]{Schema des Zugriffs auf die Datenstruktur des Frontends}
+  \label{fig:dataFlowFrontend}
+\end{figure}
+Die Struktur ist in Abbildung \ref{} dargestellt
+
+Sie ist eine Kopie einer einzelnen Page als \ac{json}
 
 
 
