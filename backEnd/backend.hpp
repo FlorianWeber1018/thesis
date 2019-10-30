@@ -3,8 +3,8 @@
 #include "opcuaServer.hpp"
 #include "websocketServer.hpp"
 #include "sqlClient.hpp"
-#include "httpServer.hpp"
-class Backend : protected OpcuaServer, protected WebsocketServer, protected SqlClient, protected HttpServer{
+
+class Backend : protected OpcuaServer, protected WebsocketServer, protected SqlClient{
 public:
     Backend();
 protected:

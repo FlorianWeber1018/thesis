@@ -6,8 +6,7 @@ add_executable(${PROJECT_NAME}
     "opcuaServer.cpp"
     "websocketServer.cpp"
     "sqlClient.cpp"
-    "util.cpp"
-    "httpServer.cpp")
+    "util.cpp")
 
 target_link_libraries(${PROJECT_NAME} "boost_system" "pthread" "mariadbclient" "ssl" "crypto"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               "open62541")
 
