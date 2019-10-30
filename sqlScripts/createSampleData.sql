@@ -5,7 +5,9 @@ INSERT INTO GuiElementTypes (`type`, description) VALUES
 
 Insert INTO Pages (ParentID, title, description) values
 	(NULL,'ROOT_PAGE', 'the landing Page of the Visu'),
-	(1,'SUB_PAGE', 'first sub page');
+	(1,'SUB_PAGE', 'first sub page'),
+	(1,'SUB_PAGE2', 'second sub page');
+
 
 INSERT INTO DataTypes (type) values
 	('Bool'),
@@ -22,15 +24,15 @@ INSERT INTO DataTypes (type) values
 	('String'),
 	('DateTime');
 INSERT INTO GuiElementDataNodeTemplates (writePermission, type, qualifiedName, defaultValue, description) values
-	(false, 'Bool','buttonState','0','DataNode which holds the value of the Button a Button cick event inc this value and a Button left event dec this value (state > 0 to evaluate the ORed state of all instances of the WebInterface)'),
+	(false, 'Bool','buttonState','0','DataNode which holds the value of the Button a Button'),
 	(true, 'UInt8', 'colorSelector','0','DataNode to mux different colors to display a state'),
 	(true, 'String', 'text', 'ButtonText', 'text which is be displayed on the Button');
 INSERT INTO GuiElementParamTemplates (type, qualifiedName, defaultValue, description) values
-	('String', 'colorEnum', '{"red","green","blue","#FF00FF"}','JSON Array with the coloars that are selectable with the "colorSelector DataNode"'),
-	('UInt16', 'maxSizeX', '65535', 'value for the maximum Size of the GuiElement in X'),
-	('UInt16', 'maxSizeY', '65535', 'value for the maximum Size of the GuiElement in Y'),
-	('UInt16', 'posX', '0', 'value for the maximum Size of the GuiElement in X'),
-	('UInt16', 'posY', '0', 'value for the maximum Size of the GuiElement in Y');
+	('String', 'colorEnum', '["red","green","blue","#FF00FF"]','JSON Array with the coloars that are selectable with the "colorSelector DataNode"'),
+	('UInt16', 'maxSizeX', '65535', 'maximum Size of the GuiElement in X'),
+	('UInt16', 'maxSizeY', '65535', 'maximum Size of the GuiElement in Y'),
+	('UInt16', 'posX', '50', 'position of the GuiElement in  X counted from the left side in %'),
+	('UInt16', 'posY', '0', 'position of the GuiElement in  Y counted from the top of the Page in px');
 INSERT INTO GuiElementTypesDataNodesRel (GuiElementTypeID, DataNodeTemplateID) values
 	(1, 1),
 	(1, 2),
@@ -45,5 +47,10 @@ INSERT INTO GuiElementTypesParamsRel (GuiElementTypeID, ParamTemplateID) values
 
 CALL CreateInstanceOfGuiElement('button', 1, 'der erste Button');
 CALL CreateInstanceOfGuiElement('button', 2, 'der zweite Button');
+CALL CreateInstanceOfGuiElement('button', 2, 'der 3. Button');
+CALL CreateInstanceOfGuiElement('button', 2, 'der 4. Button');
+CALL CreateInstanceOfGuiElement('button', 2, 'der 5. Button');
+CALL CreateInstanceOfGuiElement('button', 2, 'der 6. Button');
+CALL CreateInstanceOfGuiElement('button', 2, 'der 7. Button');
 insert into Credentials (userName, pwHash) VALUES ('user', MD5('testPW'));
 insert into Credentials (userName, pwHash) VALUES ('WebVisuSU', MD5('637013'));

@@ -98,15 +98,6 @@ void Backend::ws_dispatch(const ws_message& msg, std::shared_ptr<ws_session> ws_
             ws_session_->send(answer);
         }
     }break;
-    case wsEvent_authentification:{
-        if(msg.payload.size() == 2){
-            if(validateCredentials(msg.payload[0], msg.payload[1])){
-                ws_session_->setAuthenticated();
-                std::shared_ptr<ws_message> answer = std::make_shared<ws_message>(wsEvent_authentification);
-                ws_session_->send(answer);
-            }
-        }
-    }break;
     case wsEvent_structure:{
         if(msg.payload.size() == 1 && util::isUnsignedLL(msg.payload[0])){
             rj::Document structureDOM;
@@ -116,22 +107,36 @@ void Backend::ws_dispatch(const ws_message& msg, std::shared_ptr<ws_session> ws_
             //hier wird das bdo aufgebaut und als JSON zurückgeschickt
         }
     }break;
-    case wsEvent_reqSendDataNodes:{
-        for(auto& element : msg.payload){
-            std::shared_ptr<ws_message> answer = std::make_shared<ws_message>(wsEvent_dataNodeChange, element, readDataNode(element));
-            ws_session_->send(answer);
+    case wsEvent_authentification:{
+        if(msg.payload.size() == 2){
+            if(validateCredentials(msg.payload[0], msg.payload[1])){
+                ws_session_->setAuthenticated();
+                std::shared_ptr<ws_message> answer = std::make_shared<ws_message>(wsEvent_authentification);
+                ws_session_->send(answer);
+            }
         }
     }break;
-    case wsEvent_reqSendParams:{
+    case wsEvent_reqSendDataNodes:{
         auto start = std::chrono::steady_clock::now();
         for(auto& element : msg.payload){
-
-            std::shared_ptr<ws_message> answer = std::make_shared<ws_message>(wsEvent_paramNodeChange, element, getParamNodeValue(element));
+            std::shared_ptr<ws_message> answer = std::make_shared<ws_message>(wsEvent_dataNodeChange, element, readDataNode(element));
             ws_session_->send(answer);
             auto end = std::chrono::steady_clock::now();
             std::cout << "Elapsed time in nanoseconds : "
                     << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count()
                     << " ns" << std::endl;
+        }
+    }break;
+    case wsEvent_reqSendParamNodes:{
+        //auto start = std::chrono::steady_clock::now();
+        for(auto& element : msg.payload){
+
+            std::shared_ptr<ws_message> answer = std::make_shared<ws_message>(wsEvent_paramNodeChange, element, getParamNodeValue(element));
+            ws_session_->send(answer);
+            /*auto end = std::chrono::steady_clock::now();
+            std::cout << "Elapsed time in nanoseconds : "
+                    << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count()
+                    << " ns" << std::endl;*/
         }
     }break;
     default:{

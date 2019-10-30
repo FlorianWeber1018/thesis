@@ -31,7 +31,7 @@ enum wsEvent{
     wsEvent_pageChange = 3,
     wsEvent_structure = 4,
     wsEvent_authentification = 5,
-    wsEvent_reqSendParams = 6,
+    wsEvent_reqSendParamNodes = 6,
     wsEvent_reqSendDataNodes = 7
 };
 struct ws_message{
@@ -84,7 +84,7 @@ private:
 
     void dispatch(const ws_message& msg, std::shared_ptr<ws_session> ws_session_);
 
-    uint64_t actualPage = 0;
+    uint64_t actualPageID = 0;
 
     bool authenticated_m = false;
     std::queue<std::shared_ptr<ws_message> > outQueue;

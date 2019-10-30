@@ -37,6 +37,7 @@ public:
 
 protected:
     void connect() noexcept;
+
     void disconnect() noexcept;
     bool connected();
     bool initDB();
@@ -71,8 +72,10 @@ protected:
 
     bool itterateThroughMYSQL_RES(MYSQL_RES* resultSet, std::function<void(const MYSQL_ROW&)> callback, bool freeResultSetAfter = true);
 
-    MYSQL_RES* sendCommand(std::string& sendstring);
+    MYSQL_RES* sendCommand(std::string& sendstring, int maxReconnectCnt = 5);
+
     bool sendCUD(const std::string& sendstring);
+    bool sendCUDAlreadyLocked(const std::string& sendstring);
     bool executeScript(const std::string& scriptName);
     bool mysqlResToDom(MYSQL_RES* resultset, unsigned int keyColNumber, rj::Document& dom_o);
 private:
@@ -83,5 +86,7 @@ private:
     void prepareScript(const std::list<std::string>& src, std::list<std::string>& dest);
     void printSqlError(int ErrCode, const std::string &query);
     void escapeString( std::string& str );
+    void connectAlreadyLocked() noexcept;
+    MYSQL_RES* sendCommandAlreadyLocked(std::string& sendstring, int maxReconnectCnt = 5);
 };
 #endif

@@ -14,6 +14,8 @@
 #include <boost/asio/ssl/context.hpp>
 #include <cstddef>
 #include <memory>
+#include <algorithm>
+#include "../util.hpp"
 
 /*  Load a signed certificate into the ssl context, and configure
     the context for use with a server.
@@ -35,7 +37,7 @@ load_server_certificate(boost::asio::ssl::context& ctx)
         winpty openssl req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 10000 -out cert.pem -subj "//C=US\ST=CA\L=Los Angeles\O=Beast\CN=www.example.com"
     */
 
-    std::string const cert =
+    std::string cert = util::RwFile().readFile("../flo.local.crt");/*
         "-----BEGIN CERTIFICATE-----\n"
         "MIIDaDCCAlCgAwIBAgIJAO8vBu8i8exWMA0GCSqGSIb3DQEBCwUAMEkxCzAJBgNV\n"
         "BAYTAlVTMQswCQYDVQQIDAJDQTEtMCsGA1UEBwwkTG9zIEFuZ2VsZXNPPUJlYXN0\n"
@@ -56,9 +58,9 @@ load_server_certificate(boost::asio::ssl::context& ctx)
         "fQyshjlPP9mYVxWOxqctUdQ8UnsUKKGEUcVrA08i1OAnVKlPFjKBvk+r7jpsTPcr\n"
         "9pWXTO9JrYMML7d+XRSZA1n3856OqZDX4403+9FnXCvfcLZLLKTBvwwFgEFGpzjK\n"
         "UEVbkhd5qstF6qWK\n"
-        "-----END CERTIFICATE-----\n";
+        "-----END CERTIFICATE-----\n";*/
 
-    std::string const key =
+    std::string key = util::RwFile().readFile("../flo.local.key");/*
         "-----BEGIN PRIVATE KEY-----\n"
         "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDJ7BRKFO8fqmsE\n"
         "Xw8v9YOVXyrQVsVbjSSGEs4Vzs4cJgcFxqGitbnLIrOgiJpRAPLy5MNcAXE1strV\n"
@@ -86,8 +88,9 @@ load_server_certificate(boost::asio::ssl::context& ctx)
         "1yfu4JF5MvO9JrHQ9tOwkqDmNCWx9xWXbgydsn/eFtuUMULWsG3lNjfst/Esb8ch\n"
         "k5cZd6pdJZa4/vhEwrYYSuEjMCnRb0lUsm7TsHxQrUd6Fi/mUuFU/haC0o0chLq7\n"
         "pVOUFq5mW8p0zbtfHbjkgxyF\n"
-        "-----END PRIVATE KEY-----\n";
-
+        "-----END PRIVATE KEY-----\n";*/
+    std::replace(cert.begin(), cert.end(), '\r', '\n');
+    std::replace(key.begin(), key.end(), '\r', '\n');
     std::string const dh =
         "-----BEGIN DH PARAMETERS-----\n"
         "MIIBCAKCAQEArzQc5mpm0Fs8yahDeySj31JZlwEphUdZ9StM2D8+Fo7TMduGtSi+\n"

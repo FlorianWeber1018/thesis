@@ -150,7 +150,7 @@ void ws_session::after_read( beast::error_code ec, std::size_t bytes_transferred
                 msg.payload.reserve(dnSubscriptions.size());
                 std::copy(dnSubscriptions.begin(), dnSubscriptions.end(), std::back_inserter(msg.payload));
             }break;
-            case wsEvent_reqSendParams:{
+            case wsEvent_reqSendParamNodes:{
                 msg.payload.clear();
                 msg.payload.reserve(pnSubscriptions.size());
                 std::copy(pnSubscriptions.begin(), pnSubscriptions.end(), std::back_inserter(msg.payload));
@@ -255,10 +255,7 @@ void ws_session::setPage(const std::string& newPage)
     setSubscriptions(dnSubscriptions_p, pnSubscriptions_p);
 
 
-    actualPage = pageID;
-
-    //ws_message structure(wsEvent_structure, newPage);
-    //dispatch(structure, shared_from_this());//get the bdo
+    actualPageID = pageID;
 }
 //------------------------------------------------------------------------------
 
@@ -357,7 +354,7 @@ WebsocketServer::~WebsocketServer(){
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         watchdogCnt--;
         if(watchdogCnt <= 0){
-            util::ConsoleOut() << "waiting for Websocket IO Service to stop FAILED, Watchdog forced destrucktion of WebsocketServer Object";
+            util::ConsoleOut() << "waiting for Websocket IO Service to stop FAILED, Watchdog forced destruction of WebsocketServer Object";
             break;
         }
     }

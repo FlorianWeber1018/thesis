@@ -48,6 +48,15 @@ bool RwFile::readFile(const std::string& fileName, std::list<std::string>& lines
     auto lambda = [&linesOut](const std::string& line) noexcept -> bool {linesOut.push_back(line);return true;};
     return readFile(fileName, lambda);
 }
+std::string RwFile::readFile(const std::string& fileName){
+    std::string outStr;
+    auto lambda = [&outStr](const std::string& line) noexcept -> bool {outStr.append(line);return true;};
+    if(readFile(fileName, lambda)){
+        return outStr;
+    }else{
+        return "";
+    }
+}
 bool Json::toDom(const std::string& jsonString, rj::Document& dom_o)
 {
     dom_o.Parse(jsonString.c_str());

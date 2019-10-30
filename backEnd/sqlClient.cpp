@@ -59,12 +59,15 @@ void SqlClient::connect() noexcept
 {
     mutex_m.lock();
     std::lock_guard<std::mutex> lg(mutex_m, std::adopt_lock);
+    connectAlreadyLocked();
+}
+void SqlClient::connectAlreadyLocked() noexcept
+{
 
     if (mysqlhandle_m == nullptr)
     {
         return;
     }
-
     //Connect to the database
     if (mysql_real_connect(mysqlhandle_m,
                            credentials_m.host.c_str(),
@@ -74,10 +77,12 @@ void SqlClient::connect() noexcept
                            credentials_m.port, nullptr, 0)
         == nullptr)
     {
-        this->connected_m = true;//wird in disconnect wieder false
-        this->disconnect();
+        util::ConsoleOut() << "SqlClient::connect() failed";
     }else{
         this->connected_m = true;
+        if(sendCUDAlreadyLocked("USE WebVisu")){
+            util::ConsoleOut() << "SqlClient::connect() succeed";
+        }
     }
 }
 void SqlClient::disconnect() noexcept
@@ -91,10 +96,14 @@ bool SqlClient::connected()
 {
     return connected_m;
 }
-MYSQL_RES* SqlClient::sendCommand(std::string& sendstring)
+MYSQL_RES* SqlClient::sendCommand(std::string& sendstring, int maxReconnectCnt)
 {
     mutex_m.lock();
     std::lock_guard<std::mutex> lg(mutex_m, std::adopt_lock);
+    return sendCommandAlreadyLocked(sendstring, maxReconnectCnt);
+}
+MYSQL_RES* SqlClient::sendCommandAlreadyLocked(std::string& sendstring, int maxReconnectCnt)
+{
     if(connected_m){
         while(mysql_next_result(mysqlhandle_m) == 0){
 
@@ -103,10 +112,30 @@ MYSQL_RES* SqlClient::sendCommand(std::string& sendstring)
         if (ErrCode == 0)
         {
             return mysql_store_result(mysqlhandle_m);
+        }else{
+            printSqlError(ErrCode,sendstring);
+            std::cout << mysql_error(this->mysqlhandle_m) << std::endl;
+            if(maxReconnectCnt > 0){
+                maxReconnectCnt--;
+                util::ConsoleOut() << "SqlClient::sendCommand:: trying to reconnect ";
+                //std::this_thread::sleep_for(std::chrono::seconds(1));
+                connectAlreadyLocked();
+                return sendCommandAlreadyLocked(sendstring, maxReconnectCnt);
+            }else{
+                util::ConsoleOut() << "SqlClient::sendCommand:: trying to reconnect max reconnectCnt reached -> giving up";
+                return nullptr;
+            }
+
         }
-        printSqlError(ErrCode,sendstring);
-        std::cout << mysql_error(this->mysqlhandle_m);
-        return nullptr;
+
+    }else{
+        if(maxReconnectCnt > 0){
+            maxReconnectCnt--;
+            util::ConsoleOut() << "SqlClient::sendCommand:: trying to reconnect ";
+            //std::this_thread::sleep_for(std::chrono::seconds(1));
+            connectAlreadyLocked();
+            return sendCommandAlreadyLocked(sendstring, maxReconnectCnt);
+        }
     }
     return nullptr;
 }
@@ -114,19 +143,14 @@ bool SqlClient::sendCUD(const std::string& sendstring)
 {
     mutex_m.lock();
     std::lock_guard<std::mutex> lg(mutex_m, std::adopt_lock);
+    return sendCUDAlreadyLocked(sendstring);
+}
+bool SqlClient::sendCUDAlreadyLocked(const std::string& sendstring)
+{
     if(connected_m){
         int ErrCode = mysql_query(mysqlhandle_m, sendstring.c_str());
         if(ErrCode){
-            printSqlError(ErrCode, sendstring);
-
-            disconnect();//reconnect
-            connect();//reconnect
-            ErrCode = mysql_query(mysqlhandle_m, sendstring.c_str());//try again
-            if(ErrCode){
-                return false;
-            }else{
-                return true;
-            }
+            return false;
         }else{
             return true;
         }
@@ -268,18 +292,18 @@ void SqlClient::getStructureOfPage(std::string pageID, rj::Document& outDom)
         outDom.AddMember(rj::Value("description"), row[2]==nullptr ? rj::Value(rj::kNullType) : rj::Value(row[2], allocator), allocator);
     });
 
-    rj::Value pages(rj::kArrayType);
+    rj::Value subPages(rj::kArrayType);
     success = itterateThroughMYSQL_RES(getPages(pageID),[&](const MYSQL_ROW& row){
         if(row[3]!=nullptr){
             rj::Value page(rj::kObjectType);
             page.AddMember(rj::Value("id"), rj::Value(std::stoul(row[3])), allocator);
             page.AddMember(rj::Value("title"), row[0]==nullptr ? rj::Value(rj::kNullType) : rj::Value(row[0], allocator), allocator);
             page.AddMember(rj::Value("description"), row[1]==nullptr ? rj::Value(rj::kNullType) : rj::Value(row[1], allocator), allocator);
-            pages.PushBack(page, allocator);
+            subPages.PushBack(page, allocator);
         }
     });
     if(success){
-        outDom.AddMember(rj::Value("pages"), pages, allocator);
+        outDom.AddMember(rj::Value("subPages"), subPages, allocator);
     }
 
     rj::Value guiElements(rj::kObjectType);
@@ -301,26 +325,26 @@ void SqlClient::getStructureOfPage(std::string pageID, rj::Document& outDom)
                     dataNode.AddMember(rj::Value("name"), rj::Value(row[3], allocator), allocator);
                     dataNode.AddMember(rj::Value("type"), rj::Value(row[0], allocator), allocator);
                     dataNode.AddMember(rj::Value("value"), rj::Value(rj::kNullType), allocator);
-                    dataNode.AddMember(rj::Value("writePermission"), rj::Value(std::string(row[6]) == "1" ? true : false), allocator );
+                    //dataNode.AddMember(rj::Value("writePermission"), rj::Value(std::string(row[6]) == "1" ? true : false), allocator );
                     dataNode.AddMember(rj::Value("description"), row[2]==nullptr ? rj::Value(rj::kNullType) : rj::Value(row[2], allocator), allocator);
                     dataNodes.AddMember(rj::Value(row[3], allocator), dataNode, allocator);
                 }
             });
             guiElement.AddMember(rj::Value("dataNodes"), dataNodes, allocator);
 
-            rj::Value params(rj::kObjectType);
+            rj::Value paramNodes(rj::kObjectType);
             itterateThroughMYSQL_RES(getParams(guiElementIdStr), [&](const MYSQL_ROW& row){
                 if(row[0] != nullptr && row[1] != nullptr && row[2] != nullptr){
                     rj::Value param(rj::kObjectType);
                     param.AddMember(rj::Value("id"), rj::Value(std::stoul(row[0])), allocator);
                     param.AddMember(rj::Value("name"), rj::Value(row[1], allocator), allocator);
                     param.AddMember(rj::Value("type"), rj::Value(row[2], allocator), allocator);
-                    param.AddMember(rj::Value("value"), row[3]==nullptr ? rj::Value(rj::kNullType) : rj::Value(row[3], allocator), allocator);
+                    param.AddMember(rj::Value("value"), rj::Value(rj::kNullType), allocator);
                     param.AddMember(rj::Value("description"), row[4]==nullptr ? rj::Value(rj::kNullType) : rj::Value(row[4], allocator), allocator);
-                    params.AddMember(rj::Value(row[1], allocator), param, allocator);
+                    paramNodes.AddMember(rj::Value(row[1], allocator), param, allocator);
                 }
             });
-            guiElement.AddMember(rj::Value("params"), params, allocator);
+            guiElement.AddMember(rj::Value("paramNodes"), paramNodes, allocator);
 
             guiElements.AddMember(rj::Value(row[4], allocator), guiElement, allocator);
         }
@@ -402,19 +426,19 @@ void SqlClient::printSqlError(int ErrCode, const std::string& query)
         return;
     }break;
     case 2014:{
-        std::cout << "mysqlcon::sendCommand::printErr(ErrCode): " << "Commands were executed in an improper order";
+        std::cout << "mysqlcon::sendCommand::printErr(ErrCode): " << "Commands were executed in an improper order ";
     }break;
     case 2006:{
-        std::cout << "mysqlcon::sendCommand::printErr(ErrCode): " << "MySQL server has gone away";
+        std::cout << "mysqlcon::sendCommand::printErr(ErrCode): " << "MySQL server has gone away ";
     }break;
     case 2013:{
-        std::cout << "mysqlcon::sendCommand::printErr(ErrCode): " << "The connection to the server was lost during the query";
+        std::cout << "mysqlcon::sendCommand::printErr(ErrCode): " << "The connection to the server was lost during the query ";
     }break;
     case 2000:{
-        std::cout << "mysqlcon::sendCommand::printErr(ErrCode): " << "An unknown error occurred";
+        std::cout << "mysqlcon::sendCommand::printErr(ErrCode): " << "An unknown error occurred ";
     }break;
     default:{
-        std::cout << "mysqlcon::sendCommand::printErr(ErrCode): " << "IDontKnowErr?!?";
+        std::cout << "mysqlcon::sendCommand::printErr(ErrCode): " << "IDontKnowErr?!? ";
     }
     }
     std::cout << "code was:" << ErrCode << "   " << "query was:" << std::endl << query << std::endl;

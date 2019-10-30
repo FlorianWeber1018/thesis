@@ -28,6 +28,7 @@ public:
             const std::string& fileName,
             std::function<bool(const std::string& line )> lineHandler);
     static bool readFile(const std::string& fileName, std::list<std::string>& linesOut);
+    static std::string readFile(const std::string& fileName);
 };
 
 
