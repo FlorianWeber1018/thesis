@@ -1,31 +1,36 @@
 \chapter{Einführung}
 \section{Motivation}
+Durch mein Studium der Elektrotechnik mit Vertiefung in die Automatisierungstechnik konnte ich Eindrücke in die Vorgehensweise und 
+Möglichkeiten der \ac{gui} Programmierung für Industrieanlagen gewinnen. %anderes wort!
+Dabei fiel mir auf, dass der aktuelle Stand der Technik in  der Automatisierungstechnik noch stark 
+vom Stand in anderen softwaregeprägten Bereichen abweicht.
+So wird in der Automatisierungstechnik noch immer auf statisch geschriebene Benutzeroberflächen gesetzt, 
+die kompilliert werden müssen und damit viele Einschränkungen mit sich bringen.
+Es ist zum Beispiel nicht möglich ein Steuerelement zur Laufzeit in Abhängigkeit vorhandener Entitäten zu instanzieren. 
+Meist schafft man sich Abhilfe, indem man ein Element entweder ein- oder ausblendet.
+Ein weiteres Problem vorhandener Lösungen ist, dass diese meist plattformgebungen sind und nur lokal im Netz, 
+mit entsprechender Software des Herstellers, lauffähig sind.
+In der heutigen Informatik wird immer mehr auf grafische Benutzeroberflächen gesetzt, 
+welche als Webapplikation in einem beliebigen Browser verwendbar sind.
+
 \section{Zielsetzung}
-\section{Gliederung}
-
-
-In der heutigen Informatik wird immer mehr auf grafische Benutzeroberflächen gesetzt, welche als Webapplikation im Browser lauffähig sind.
-In der Industrie ist dies leider noch nicht der Fall und die Benutzeroberfläche wird statisch geschrieben und kompiliert, was einige Einschränkungen mit sich bringt:
+Das Ziel dieser Arbeit ist der Entwurf einer Architektur für ein
+echtzeitfähiges \ac{scada} System mit Webfrontend.
+Durch ein \ac{poc}, wird herausgefunden ob die Architektur auch in die Praxis umsetzbar ist.
+Hierbei wird die Applikation streng in Frontend und Backend getrennt. Das Frontend wird als Webapplikation im \ac{poc} implementiert.
+Dabei werden folgende Anforderungen an die Architektur gestellt:
 \begin{itemize}
-    \item Die Benutzeroberfläche ist statisch und lässt sich zur Laufzeit nur eingeschränkt an Daten anpassen. So kann man zum Beispiel ein interaktives Steuerelement zur Laufzeit nur sichtbar oder unsichtbar machen, eine dynamische Bindung an Daten ist nicht möglich.
-    \item Die Benutzeroberfläche ist Plattform gebunden. Wenn zum Beispiel in WinCC eine Oberfläche erstellt wird, braucht man zwingend eine WinCC Runtime welche ausschließlich in Windows lauffähig ist.
-\end{itemize}
-Um die genannten Probleme zu lösen wird eine neuartige Architektur entworfen um Prozessdaten im Browser in Echtzeit anzuzeigen und zu verändern.
-Die folgenden Anforderungen werden an die Architektur gestellt:
-\begin{itemize}
-    \item   Die Datenrate der Webapplikation bei vertretbarem Aufwand, soll so klein wie möglich sein.
-            Dies ermöglicht unteranderem die Nutzung des Systems im einem Umfeld mit geringer verfügbarer Bandbreite zur Steuerungsebene.
-    \item   Das Framework soll Steuerelemente die eine Eingabe durch den Nutzer zulassen, sowie Steuerelemente die eine Darstellung eines Prozesswerts ermöglichen.
+    \item   Die Datenrate des Frontends soll bei vertretbarem Aufwand so klein wie möglich sein.
+            Dies ermöglicht die Nutzung des Systems in einem Umfeld mit geringer verfügbarer Bandbreite zur Steuerungsebene.
+    \item   Die Architektur soll Steuerelemente unterstützen, die eine Eingabe durch den Nutzer zulassen, sowie Steuerelemente die eine Darstellung eines Prozesswerts ermöglichen.
     \item   Die Webapplikation selbst soll so modular sein, dass man zur Laufzeit Steuerelemente hinzufügen und entfernen kann, ohne dass das System offline geht.
-    \item   Die Prozessdaten sollen nicht, wie aktuell bei vielen Webapplikationen üblich, durch Polling synchronisiert werden, sondern die Weboberfläche soll auf Datenänderungen des Prozesses in Echtzeit (bei statischem Routing im Netzwerk) reagieren. Dasselbe gilt für die andere Richtung.
-    \item   Die Architektur soll herstellerunabhängige Schnittstellen zur Integration in ein vorhandenes System bereitstellen.
-    \item   Die Weboberfläche soll eine feste Auflösung haben und muss nicht auf Änderungen des Viewports reagieren. Ausnahmen bilden hierbei Darstellungen die dies, durch ihre einfache Gestalt, erlauben wie zum Beispiel:
-            \begin{itemize}
-                \item Tabellen
-                \item Buttons
-                \item Labels
-                \item Einzelne Grafiken deren Position für die Darstellung nicht relevant ist
-            \end{itemize}
+    \item   Die Prozessdaten sollen nicht, wie aktuell bei vielen Webapplikationen üblich, durch Polling synchronisiert werden, sondern die Weboberfläche soll auf Datenänderungen des Prozesses asynchron in Echtzeit (bei statischem Routing im Netzwerk) reagieren. Dasselbe gilt für die Eingaben des Nutzers.
+    \item   Die Architektur soll eine herstellerunabhängige Schnittstelle zur Integration in ein vorhandenes System bereitstellen.
+    \item   Die Weboberfläche soll eine feste Auflösung haben und muss nicht auf Änderungen des Viewports reagieren.
+            Ausnahmen bilden hierbei Darstellungen die dies, durch ihre einfache Gestalt, erlauben.
 \end{itemize}
-Der Beweis der Realisierbarkeit soll durch eine Beispielimplementierung erbracht werden.
-Dabei soll je ein Eingabeelement (z.B. Button), ein Ausgabeelement (z.B. Label), sowie ein Ein-/Ausgabe Element (zum Beispiel ein Textfeld) implementiert werden.
+Der Beweis der Realisierbarkeit soll durch eine Beispielimplementierung (\ac{poc}) erbracht werden.
+Dabei wird je ein Eingabeelement (z.B. Button), ein Ausgabeelement (z.B. Label), sowie ein Ein-/Ausgabeelement (z.B. ein Textfeld) implementiert.
+
+\section{Gliederung}
+%WIRD ZUM SCHLUSS GESCHRIEBEN

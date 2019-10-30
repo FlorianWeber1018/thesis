@@ -237,3 +237,6 @@ TSWLatexianTemp*
 *.svg
 #*.pptx
 # End of https://www.gitignore.io/api/latex
+
+.vscode
+_minted-main

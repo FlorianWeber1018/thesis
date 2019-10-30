@@ -1,9 +1,9 @@
-\documentclass[paper=A4,12pt,twoside,bibliography=totoc,listof=totoc]{scrreprt}
+\documentclass[paper=A4,12pt,oneside,bibliography=totoc,listof=totoc,open=any]{scrreprt}
 
 \input{packages}
 \input{settings}
 
-\bibliography{references}
+
 
 \titlehead{
 \center{\includegraphics[page=1,width=.6\textwidth]{content/Hska_logo}  }}
@@ -31,18 +31,19 @@ echtzeitfähiges SCADA System mit Webfrontend}
 \listoffigures		%Bildverzeichnis
 \newpage
 
-\listoftables
+
+\listoflistings
+%\listoftables
 %\end{spacing}
 \newpage
-% aufgabenstellung
+
+\tolerance 5000
 \input{content}
 \newpage
-\footcite{entry}
  
 
 
-
-
-\printbibliography
+\literaturverz{references}
+%\printbibliography
 \include{anhang}
 \end{document}

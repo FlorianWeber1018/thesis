@@ -1,17 +1,64 @@
-\usepackage{a4}
-\usepackage{csquotes}
-\usepackage[backend=bibtex,style=verbose-ibid]{biblatex}
-\usepackage{pdfpages}
 \usepackage[utf8]{inputenc}
+\usepackage{scrhack}
+\usepackage[svgnames]{xcolor}
+\usepackage{a4}
+\usepackage[numbers]{natbib}
+\bibliographystyle{dcugerman}
+
+\usepackage{pdfpages}
+
 \usepackage{dsfont}
 \usepackage{amsmath}
+\usepackage{amsfonts}
+\newcommand{\N}{\mathbb{N}}
 \usepackage{graphicx}
 \usepackage{here}
 \usepackage[section]{placeins}
 \usepackage[ngerman]{babel}
-\usepackage[font=small,labelfont=bf,margin=\parindent,tableposition=top]{caption}
+\usepackage[font=small,labelfont=bf,margin=\parindent]{caption}
 \usepackage{subcaption}
 \usepackage{setspace}
 
-\usepackage[colorlinks, pdfpagelabels, pdfstartview = FitH, bookmarksopen = true, bookmarksnumbered = true, linkcolor = black, plainpages = false, hypertexnames = false, citecolor = black, urlcolor = blue] {hyperref}
-\usepackage{acronym}
+%Übersetzung des Literaturverzeichnisses
+\newcommand{\literaturverz}[1]{
+	%Autorenverknüpfung mit "und"
+	\renewcommand{\harvardand}{und}
+	\bibliography{#1}
+}
+\definecolor{linkcolordef}{RGB}{1, 0, 0}
+\usepackage[
+  colorlinks=true, 
+  linkcolor=black, 
+  urlcolor=cyan, 
+  citecolor=red, 
+  pdfpagelabels, 
+  pdfstartview = FitH, 
+  bookmarksopen = true, 
+  bookmarksnumbered = true,  
+  plainpages = false, 
+  hypertexnames = false]
+  {hyperref}
+\usepackage[printonlyused]{acronym}
+%Paket für mehrspaltige Seiten
+%--------------------------------------
+\usepackage{multicol}
+\setlength{\columnseprule}{0.2pt}
+\setlength{\columnsep}{2em}
+%--------------------------------------
+
+%Paket für Syntaxhiglighting
+%--------------------------------------
+\usepackage{minted}
+%\newmintedfile[inputsql]{sql}{
+%    linenos,
+%    autogobble,
+%    breaklines,
+%}
+\renewcommand{\listingscaption}{Quellcodeauszug}
+\renewcommand{\listoflistingscaption}{Quellcodeverzeichnis}
+\newcommand{\refList}[1]{\listingscaption{} \ref{#1}}
+\newcommand{\refFig}[1]{\figurename{} \ref{#1}}
+%\renewcommand\theFancyVerbLine{\scriptsize\arabic{FancyVerbLine}}
+%--------------------------------------
+
+\usepackage{csquotes}

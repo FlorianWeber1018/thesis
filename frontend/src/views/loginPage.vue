@@ -1,11 +1,8 @@
 <template>
-    <v-form v-model="valid" >
-    <v-container >
+  <v-form v-model="valid">
+    <v-container>
       <v-row align="center">
-        <v-col
-          cols="12"
-          md="4"
-        >
+        <v-col cols="12" md="4">
           <v-text-field
             v-model="userName"
             :counter="10"
@@ -14,10 +11,7 @@
           ></v-text-field>
         </v-col>
 
-        <v-col
-          cols="12"
-          md="4"
-        >
+        <v-col cols="12" md="4">
           <v-text-field
             v-model="password"
             :counter="10"
@@ -27,41 +21,33 @@
           ></v-text-field>
         </v-col>
 
-        <v-col
-          cols="12"
-          md="4"
-        >
-        <v-btn 
-            class="ma-2" 
+        <v-col cols="12" md="4">
+          <v-btn
+            class="ma-2"
             block
-            outlined color="indigo"
-            v-on:click="ws_send_wsEvent_authentification([userName, password])"> 
+            color="indigo"
+            v-on:click="ws_send_wsEvent_authentification([userName, password])"
+          >
             LOGIN!
-        </v-btn>
+          </v-btn>
         </v-col>
       </v-row>
     </v-container>
   </v-form>
-    <!--  -->
 </template>
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions } from "vuex";
 
-export default{
-    components: null,
-    data: () => (
-    {
-        valid: true,
-        userName: "user",
-        password: "testPW"
-    }),
-    methods: {
-        ...mapActions([
-            "ws_send_wsEvent_authentification"
-        ])
-    },
-    created: function() {
-
-    }
+export default {
+  components: null,
+  data: () => ({
+    valid: true,
+    userName: "user",
+    password: "testPW"
+  }),
+  methods: {
+    ...mapActions(["ws_send_wsEvent_authentification"])
+  },
+  created: function() {}
 };
 </script>

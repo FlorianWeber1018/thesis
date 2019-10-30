@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Router from "vue-router";
 import loginPage from "./views/loginPage.vue";
-import webVisuPages from "./views/webVisuPages.vue";
+import webVisuPage from "./views/webVisuPage.vue";
 Vue.use(Router);
 
 var router = new Router({
@@ -16,7 +16,7 @@ var router = new Router({
     {
       path: "/webVisu",
       name: "WebVisu",
-      component: webVisuPages
+      component: webVisuPage
     }
   ]
 });
