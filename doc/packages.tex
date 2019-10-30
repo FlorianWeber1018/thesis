@@ -1,9 +1,10 @@
 \usepackage[utf8]{inputenc}
+\usepackage{scrhack}
 \usepackage[svgnames]{xcolor}
 \usepackage{a4}
-\usepackage{csquotes}
 \usepackage[numbers]{natbib}
 \bibliographystyle{dcugerman}
+
 \usepackage{pdfpages}
 
 \usepackage{dsfont}
@@ -53,6 +54,11 @@
 %    autogobble,
 %    breaklines,
 %}
-
+\renewcommand{\listingscaption}{Quellcodeauszug}
+\renewcommand{\listoflistingscaption}{Quellcodeverzeichnis}
+\newcommand{\refList}[1]{\listingscaption{} \ref{#1}}
+\newcommand{\refFig}[1]{\figurename{} \ref{#1}}
 %\renewcommand\theFancyVerbLine{\scriptsize\arabic{FancyVerbLine}}
 %--------------------------------------
+
+\usepackage{csquotes}

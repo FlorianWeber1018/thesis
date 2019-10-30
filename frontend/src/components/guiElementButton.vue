@@ -11,8 +11,7 @@
       }"
       v-bind:outlined="btnStateValue"
       v-on:click="toggleState()"
-      >{{ text }}</v-btn
-    >
+    >{{ text }}</v-btn>
   </div>
 </template>
 <script>
@@ -41,14 +40,14 @@ export default {
     }
   },
   computed: {
-    params: function() {
-      return this.guiElementStruct.params;
+    paramNodes: function() {
+      return this.guiElementStruct.paramNodes;
     },
     dataNodes: function() {
       return this.guiElementStruct.dataNodes;
     },
     color: function() {
-      return JSON.parse(this.params["colorEnum"].value)[
+      return JSON.parse(this.paramNodes["colorEnum"].value)[
         this.dataNodes["colorSelector"].value
       ];
     },
@@ -62,16 +61,16 @@ export default {
       return this.dataNodes["text"].value;
     },
     posX: function() {
-      return String(this.params["posX"].value) + "%";
+      return String(this.paramNodes["posX"].value) + "%";
     },
     posY: function() {
-      return String(this.params["posY"].value + 60) + "px";
+      return String(this.paramNodes["posY"].value + 60) + "px";
     },
     maxSizeX: function() {
-      return String(this.params["maxSizeX"].value) + "%";
+      return String(this.paramNodes["maxSizeX"].value) + "%";
     },
     maxSizeY: function() {
-      return String(this.params["maxSizeY"].value) + "%";
+      return String(this.paramNodes["maxSizeY"].value) + "%";
     }
   },
   created: function() {

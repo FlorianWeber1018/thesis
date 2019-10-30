@@ -10,7 +10,7 @@ var store = new Vuex.Store({
       message: "",
       reconnectError: false
     },
-    page: 0,
+    pageID: 0,
     authenticated: false,
     pageStruct: null
   },
@@ -104,32 +104,32 @@ var store = new Vuex.Store({
                 )) {
                   let found = false;
                   for (const [paramKey] of Object.entries(
-                    state.pageStruct.guiElements[guiElementKey].params
+                    state.pageStruct.guiElements[guiElementKey].paramNodes
                   )) {
                     if (
-                      state.pageStruct.guiElements[guiElementKey].params[
+                      state.pageStruct.guiElements[guiElementKey].paramNodes[
                         paramKey
                       ].id === key
                     ) {
                       const type =
-                        state.pageStruct.guiElements[guiElementKey].params[
+                        state.pageStruct.guiElements[guiElementKey].paramNodes[
                           paramKey
                         ].type;
 
                       if (type == "Bool") {
-                        state.pageStruct.guiElements[guiElementKey].params[
+                        state.pageStruct.guiElements[guiElementKey].paramNodes[
                           paramKey
                         ].value = value == "1";
                       } else if (type == "String") {
-                        state.pageStruct.guiElements[guiElementKey].params[
+                        state.pageStruct.guiElements[guiElementKey].paramNodes[
                           paramKey
                         ].value = value;
                       } else if (type == "Double" || type == "Float") {
-                        state.pageStruct.guiElements[guiElementKey].params[
+                        state.pageStruct.guiElements[guiElementKey].paramNodes[
                           paramKey
                         ].value = parseFloat(value);
                       } else {
-                        state.pageStruct.guiElements[guiElementKey].params[
+                        state.pageStruct.guiElements[guiElementKey].paramNodes[
                           paramKey
                         ].value = parseInt(value);
                       }
@@ -150,10 +150,10 @@ var store = new Vuex.Store({
             {
               //wsEvent_pageChange
               if (payload.length == 1) {
-                let newPage = parseInt(payload[0], 10);
-                if (!isNaN(newPage)) {
-                  state.page = newPage;
-                  store.dispatch("ws_send_wsEvent_structure", newPage);
+                let newPageID = parseInt(payload[0], 10);
+                if (!isNaN(newPageID)) {
+                  state.pageID = newPageID;
+                  store.dispatch("ws_send_wsEvent_structure", newPageID);
                 }
               }
             }
@@ -167,6 +167,7 @@ var store = new Vuex.Store({
                   state.pageStruct = pageObj;
                   store.dispatch("wsEvent_reqSendParams");
                   store.dispatch("wsEvent_reqSendDataNodes");
+                  //console.dir(JSON.stringify(state));
                   if (router.currentRoute.path != "/WebVisu") {
                     router.push("WebVisu");
                   }
@@ -227,6 +228,7 @@ var store = new Vuex.Store({
       sendstr += ";";
       sendstr += dataNode.shift();
       context.dispatch("ws_sendEvent", sendstr);
+      //console.dir(JSON.stringify(context.state));
     },
     ws_sendEvent: function(context, message) {
       if (context.state.socket.isConnected) {

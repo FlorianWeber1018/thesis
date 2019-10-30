@@ -1,5 +1,5 @@
 <template>
-  <v-app id="inspire" dark="">
+  <v-app id="inspire" dark>
     <v-navigation-drawer v-if="pageStruct != null" v-model="drawer" app clipped>
       <v-list dense>
         <v-list-item
@@ -22,9 +22,7 @@
             <v-icon>navigate_next</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title
-              >{{ childPage.title }} (ID: {{ childPage.id }})</v-list-item-title
-            >
+            <v-list-item-title>{{ childPage.title }} (ID: {{ childPage.id }})</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -66,7 +64,7 @@ export default {
       return this.pageStruct.parentId;
     },
     childPages: function() {
-      return this.pageStruct.pages;
+      return this.pageStruct.subPages;
     }
   },
   created: function() {

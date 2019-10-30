@@ -1,0 +1,10 @@
+{
+  "socket": {
+    "isConnected": true,
+    "message": "",
+    "reconnectError": false
+  },
+  "pageID": 1,
+  "authenticated": true,
+  "pageStruct": null
+}
