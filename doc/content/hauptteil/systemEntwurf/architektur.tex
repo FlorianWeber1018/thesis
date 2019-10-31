@@ -50,7 +50,7 @@ zeigt das Layout in \refFig{fig:pageLayoutFrontendAuthenticated} an.
 \end{figure}
 Das Layout beinhaltet oben links einen Button um die Navigation der Seite ein und auszublenden.
 Ist die Navigation am linken Rand eingeblendet, so ermöglicht sie es zwischen den einzelnen Seiten der Visualisierung zu navigieren.
-Dazu zeigt die Navigation immer einen \glqq{}Zurück'' Button, um in die übergeordnete Seite zu wechseln, sowie Buttons um zu den untergeordneten Seiten zu wechseln.
+Dazu zeigt die Navigation immer einen \flqq Zurück\frqq{} Button, um in die übergeordnete Seite zu wechseln, sowie Buttons um zu den untergeordneten Seiten zu wechseln.
 Existieren keine untergeordneten Seiten, oder keine übergeordnete Seite, so existieren auch die Buttons nicht.
 Schließlich wird im zentralen Fenster die aktuelle Page der Visualisierung angezeigt.
 Der komplette Seiteninhalt ist eine Repräsentation des Datenobjekts, das global in der Webapplikation vorliegt.
@@ -164,7 +164,7 @@ dass durch eine externe \ac{ca} beim Verbindungsaufbau verifiziert werden muss.
 Die Handler des Frontends sind in \refFig{fig:activityDiagramDispatcherFrontend} dargestellt.
 %hier weite auf handler eingehn und wie die kommunikation zwischen vuex und ws funktioniert.
 
-%Der Weg, Daten zu verändern ist nun, mit einer Nachricht an das Backend eine Datenänderung \glqq{}anzufragen''.
+%Der Weg, Daten zu verändern ist nun, mit einer Nachricht an das Backend eine Datenänderung \flqq anzufragen\frqq.
 %Ist die Änderung möglich, Sendet der Server...
 \begin{figure}[ht]
   \centering
@@ -290,7 +290,6 @@ Sie besteht aus einzelnen Tabellen deren Primärschlüssel, ausgenommen einzelne
 Zentrales Element sind dabei die \ac{gui} Elemente (Tabelle \emph{GuiElements}). Jedes \ac{gui} Element ist einer Page (Tabelle \emph{Pages}) zugeordnet. 
 Eine Page kann wiederum einer anderen Page zugeordnet sein. 
 Dies wird erreicht indem jeder Page-Datensatz eine ParentID enthält, welche als Fremdschlüssel auf die übergeordnete Page zeigt. So entsteht eine Baumstruktur innerhalb der Entitäten.
-Ist der Wert dieses Fremdschlüssels \emph{NULL} so hat die jeweilige Page keine übergeordnete Page und liegt damit im Wurzelverzeichnis.\\
 Jedes \ac{gui} Element hat \emph{n} Parameter und \emph{m} Data Nodes (mit $ n, m \in \N $). 
 Diese werden in den Tabellen \emph{GuiElementParams} sowie \emph{GuiElementDataNodes} verwaltet.
 Jede DataNode, beziehungsweise jeder Parameter, hat einen Datentyp, einen Namen, eine Beschreibung, sowie einen Wert. 
@@ -329,16 +328,15 @@ da sie nur zur Strukturierung der DataNodes, auf dem \ac{opcua} Server, genutzt 
 
 
 \subsection{Frontend}\label{subsec:dataFrontend}
-Die Datenstruktur in der Webapplikation wird in dem Vue Plugin VueX gespeichert.
+Die Datenstruktur in der Webapplikation wird in dem Vue Plugin \emph{VueX} gespeichert.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth]{content/hauptteil/systemEntwurf/res/structureFrontend.pdf}
   \caption[Frontend Datenstruktur]{Frontend Datenstruktur}
   \label{fig:structFrontendState}
 \end{figure} 
-Die Struktur ist in \refFig{fig:structFrontendState} dargestellt.
-
-Sie ist eine Kopie einer einzelnen Page als \ac{json} u
+Die Struktur ist in \refFig{fig:structFrontendState} als Klassendiagramm dargestellt.
+Die Struktur beginnt dabei bei der Klasse \flqq state\frqq, welche direkt im Store (So nennt man eine mit VueX generierte Hüllklasse)
 
 
 

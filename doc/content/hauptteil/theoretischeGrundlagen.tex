@@ -45,7 +45,7 @@ Die ausgetauschten Daten können Strings sein oder binäre Daten. Beides wird vo
 Das Protokoll definiert allerdings keine Semantik der übertragenen Daten, 
 weshalb immer ein Subprotokoll nötig ist, um damit produktiv zu Arbeiten.
 Wie auch eine \ac{http} Verbindung, kann auch eine Websocket Verbindung verschlüsselt werden dies erkennt man am Protokollpräfix der \ac{url}.
-Bei einer unverschlüsselten Verbindung lautet der Präfix \glqq{}\emph{ws://}'' und bei einer verschlüsselten \glqq{}\emph{wss://}''.
+Bei einer unverschlüsselten Verbindung lautet der Präfix \flqq \emph{ws://}\frqq{}und bei einer verschlüsselten \flqq \emph{wss://}\frqq.
 
 \section{Datenbanken}
 Der Zweck eines Datenbanksystems ist es Daten persistent zu speichern und zur verfügung zu stellen.
@@ -59,7 +59,7 @@ Im Falle einer relationalen Datenbank werden Daten in Form von Relationen abgesp
 Tabellen sind eine Darstellung von Relationen.\\
 Jede Relation hat Attribute mit einem in der Relation einzigartigem Attributnamen.
 Die Domaine eines Attributs ist die Menge aller Werte die ein Attribut annehmen kann.
-Ist der Wert eines Attributs unbekannt oder noch nicht bestimmt, ist der Wert des Attributs \glqq{}NULL''\citep{Studer:2016:2}.
+Ist der Wert eines Attributs unbekannt oder noch nicht bestimmt, ist der Wert des Attributs \flqq NULL\frqq\citep{Studer:2016:2}.
 Werden Daten nun in einer Datenbank gespeichert, wird ein Wertetupel in eine Relation eingefügt.
 Die Relationen sind nur das strukturelle theoretische Konzept, das sich hinter einer Relationenalen Datenbank verbirgt.
 Anfangs dieses Abschnitts wurde gesagt dass Relationenn in Form einer Tabelle darstellbar sind.
@@ -81,9 +81,9 @@ Dabei gibt es drei Typen:
 Der Primary-Key muss als einzigster Schlüssel zwingend vorhanden sein. Er bestimmt nach was das \ac{dbms} die Datensätze ablegt.
 Desshalb muss der Wert des Attributes das den Krimary-Key bildet innerhalb einer Tabelle einzigartig sein.
 Das heist es darf maximal ein Wertetupel innerhalb einer Relation existieren, mit dem selben Wert des Primärschlüssels.
-Der Primärschlüssel darf auch nicht \glqq{}NULL'' sein.
+Der Primärschlüssel darf auch nicht \flqq NULL\frqq{}sein.
 Ein Unique-Key stellt ein zusätzlichen Schlüssel dar, über die jeder Eintrag in eine Tabell eindeutig identifizierbar ist.
-Wie auch der Primärschlüssel, darf dieser Schlüssel nicht \glqq{}NULL'' sein.
+Wie auch der Primärschlüssel, darf dieser Schlüssel nicht \flqq NULL\frqq{}sein.
 Er ist in jeder Tabelle nur optional vorhanden und kann auch mehrfach vorkommen.
 Der Foreign-Key (Fremdschlüssel) ist ein Schlüssel der nur in einer relationalen \ac{dbms} existiert.
 Er ermöglicht es, einen Verweises auf eine andere Tabelle zu definieren.
@@ -152,11 +152,11 @@ Prozesuren werden durch ein \emph{CALL} Befehl aufgerufen.
 \section{OPC UA}
 \ac{opcua} ist ein Thema dass immer wieder mit Industrie 4.0 in verbindung gebracht wird.
 \citet{opcua:2018} fasst \acs{opcua} in den wenigen  Worten zusammen:\\
-\glqq{}OPC UA (Open Platform Communications Unified Architecture) ist eine Sammlung von Standards 
+\flqq OPC UA (Open Platform Communications Unified Architecture) ist eine Sammlung von Standards 
 für die Kommunikation und den Datenaustausch im Umfeld der Industrieautomation. 
 Mithilfe von OPC UA werden sowohl der Transport von Machine-to-Machine-Daten 
 als auch Schnittstellen und die Semantik von Daten beschrieben. 
-Die komplette Architektur ist serviceorientiert aufgebaut.''
+Die komplette Architektur ist serviceorientiert aufgebaut.\frqq
 Eine der großen Herausforderungnen der Industrie 4.0 besteht in der Vernetzung aller Geräte in einer Fabrik.
 Dies ist nur durch die Verwendung eines offenen (herstellerunabhängigen) Standarts möglich.
 Ein solcher Standart ist \ac{opcua}, er definiert nicht nur wie Daten ausgetauscht werden, 
@@ -165,11 +165,11 @@ Dabei bedient sich ein \ac{opcua} Server einem eingebauten Informationsmodell.
 Das kann man sich vorstellen wie Klassen und Objekte, in der objektorientierten Programmierung.
 Als Beispiel bietet Hersteller A eine Pumpe am Markt an. 
 Diese Pumpe besitzt eine \ac{opcua} Schnittstelle (Server).
-Dieser Server hat ein Pumpenobjekt mit der Bezeichung \glqq{}\emph{pumpe\_xyz\_A}'', das eine Menge an Attributen besitzt die man lesen, schreiben, oder lesen und schreiben kann.
+Dieser Server hat ein Pumpenobjekt mit der Bezeichung \flqq \emph{pumpe\_xyz\_A}\frqq, das eine Menge an Attributen besitzt die man lesen, schreiben, oder lesen und schreiben kann.
 Jedes Attribut hat einen eindeutigen Datentyp. 
 Das Attribut \emph{Seriennummer} besitzt zum Beispiel den primitiven Typ \emph{String}.
 Ein \emph{opcua} Server unterstützt aber nicht nur Primitive Datetypen, 
-sondern auch Objekte wie das Pumpenobjekt \glqq{}\emph{pumpe\_xyz\_A}'' des Herstellers A.
+sondern auch Objekte wie das Pumpenobjekt \flqq \emph{pumpe\_xyz\_A}\frqq{}des Herstellers A.
 Nun möchte man diese Pumpe des Herstellers A durch ein \ac{plc} des Herstellers B auslesen bzw steuern.
 Bei einer Propriotären Schnittstelle würde dies zu Problemen führen da dem HErsteller B Das Informationsmodell der Pumpe nicht bekannt ist. 
 Hersteller A müsste in diesem Fall Dokumente liefern mit denen Hersteller B dann Die Pumpe ansteuern könnte.
@@ -180,7 +180,7 @@ von denen die Hersteller nun Ihre eigenen Klassen ableiten können.
 Eine Solche Klasse gibt es auch für eine Pumpe. Diese Klasse besitzt nun die minimalen Attribute einer Pumpe.
 Hersteller A leitet nun Ihr Pumpenklasse (\emph{pumpe\_xyz\_A}) von dieser Pumpenklasse ab und erweitert die Klasse um ihrer eigenen zusätzlichen Attribute.
 Wenn jetzt Hersteller B die Pumpe mit ihrem \ac{plc} ansprechen möchte gibt es zwei Möglichkeiten.
-Es ist bekannt, dass die Pumpenklasse \glqq{}\emph{pumpe\_xyz\_A}'' von der allgemeinen Pumpenklasse der OPC Foundation abgeleitet wurde.
+Es ist bekannt, dass die Pumpenklasse \flqq \emph{pumpe\_xyz\_A}\frqq{}von der allgemeinen Pumpenklasse der OPC Foundation abgeleitet wurde.
 Damit ist es möglich, zumindest die minimalen Funktionen der Pumpe, anzusprechen. 
 Möchte man sich nicht darauf beschränken, sondern den vollen Funktionsumfang nutzen den die Pumpe bietet, 
 so kann der \ac{plc} sich bei dem \ac{opcua} Server nach deren Informationsmodell für die Pumpe erkundigen.
@@ -192,13 +192,13 @@ bei dem man sich Datenknoten abonieren kann und fortan von dem Server über Änd
 
 \section{Echtzeit}
 Laut \citet{Scholz:2005} ist Echtzeit wie folgt definiert:\\
-\glqq{}Unter Echtzeit versteht man den Betrieb
+\flqq Unter Echtzeit versteht man den Betrieb
 eines Rechensystems, bei dem Programme zur Verarbeitung
 anfallender Daten ständig betriebsbereit sind, derart, dass die
 Verarbeitungsergebnisse innerhalb einer vorgegebenen Zeitspanne
 verfügbar sind. Die Daten können je nach Anwendungsfall nach
 einer zeitlich zufälligen Verteilung oder zu vorherbestimmten
-Zeitpunkten anfallen.''
+Zeitpunkten anfallen.\frqq
 Das bedeutet, dass ein System nur dann echtzeitfähig ist wenn es die folgenden Bedingungen erfüllt:
 \begin{itemize}
   \item Jede Komponente des Systems die an dem Prozess beteiligt ist, muss selbst echtzeitfähig sein.
