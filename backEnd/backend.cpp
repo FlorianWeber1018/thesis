@@ -92,7 +92,15 @@ void Backend::ws_dispatch(const ws_message& msg, std::shared_ptr<ws_session> ws_
     }break;
     case wsEvent_pageChange:{
         if(msg.payload.size() == 1 && util::isUnsignedLL(msg.payload[0]) && pageExists(msg.payload[0])){
-            ws_session_->setPage(msg.payload[0]);
+            std::set<std::string> dnSubscriptions;
+            std::set<std::string> pnSubscriptions;
+
+            getDataNodeIDs(dnSubscriptions, msg.payload[0]);
+            getParamNodeIDs(pnSubscriptions, msg.payload[0]);
+
+            ws_session_->setSubscriptions(dnSubscriptions, pnSubscriptions);
+            ws_session_->setPage(std::stoull(msg.payload[0]));
+
             std::shared_ptr<ws_message> answer = std::make_shared<ws_message>(msg);
             ws_session_->send(answer);
         }
@@ -159,12 +167,4 @@ void Backend::sql_dispatch(const sql_message& msg)
         return;
     }
     }
-}
-void Backend::dispatchGetDataNodeIDs(std::shared_ptr<std::set<std::string> >  outDnIds, std::string pageID)
-{
-    getDataNodeIDs(outDnIds, pageID);
-}
-void Backend::dispatchGetParamNodeIDs(std::shared_ptr<std::set<std::string> > outPnIds, std::string pageID)
-{
-    getParamNodeIDs(outPnIds, pageID);
 }

@@ -76,9 +76,8 @@ public:
     bool checkDataNodeSubscription(const std::string& sqlId);
     bool checkParamNodeSubscription(const std::string& sqlId);
     void setAuthenticated();
-    void setSubscriptions(std::shared_ptr<std::set<std::string>>dnSubscriptions_p, std::shared_ptr<std::set<std::string>>pnSubscriptions_p);
-    //void setSubscriptionsThreadSafe(std::shared_ptr<std::set<std::string>>dnSubscriptions_p, std::shared_ptr<std::set<std::string>>pnSubscriptions_p);
-    void setPage(const std::string& newPage);
+    void setSubscriptions(const std::set<std::string>& dnSubscriptions, const std::set<std::string>& pnSubscriptions);
+    void setPage(const uint64_t& newPageID);
 private:
     void asyncReading();
 
@@ -123,8 +122,6 @@ protected:
     void removeDeletedSessions();
     void publishtoAllSessions(const ws_message &msg);
     virtual void ws_dispatch(const ws_message& msg, std::shared_ptr<ws_session> ws_session_) = 0;
-    virtual void dispatchGetDataNodeIDs(std::shared_ptr<std::set<std::string> >  outDnIds, std::string pageID) = 0;
-    virtual void dispatchGetParamNodeIDs(std::shared_ptr<std::set<std::string> > outPnIds, std::string pageID) = 0;
 private:
     std::list<std::weak_ptr<ws_session>> ws_sessions_m;
     std::mutex ws_sessionsMutex_m;

@@ -211,23 +211,23 @@ bool SqlClient::pageExists(std::string pageID)
     escapeString(pageID);
     return entryExists("Pages", "ID", pageID);
 }
-void SqlClient::getDataNodeIDs(std::shared_ptr<std::set<std::string>> outDnIds, std::string pageID)
+void SqlClient::getDataNodeIDs(std::set<std::string>& outDnIds, std::string pageID)
 {
     escapeString(pageID);
     std::string query = "Call getDataNodesIDsByPageID(";
     query.append(pageID);
     query.append(")");
     MYSQL_RES* result = sendCommand(query);
-    itterateThroughMYSQL_RES(result,[=](const MYSQL_ROW& row){ if(row[0]!=nullptr){ outDnIds->insert(std::string(row[0])); } });
+    itterateThroughMYSQL_RES(result,[&](const MYSQL_ROW& row){ if(row[0]!=nullptr){ outDnIds.insert(std::string(row[0])); } });
 }
-void SqlClient::getParamNodeIDs(std::shared_ptr<std::set<std::string>> outPnIds, std::string pageID)
+void SqlClient::getParamNodeIDs(std::set<std::string>& outPnIds, std::string pageID)
 {
     escapeString(pageID);
     std::string query = "Call getParamsIDsByPageID(";
     query.append(pageID);
     query.append(")");
     MYSQL_RES* result = sendCommand(query);
-    itterateThroughMYSQL_RES(result,[=](const MYSQL_ROW& row){ if(row[0]!=nullptr){ outPnIds->insert(std::string(row[0])); } });
+    itterateThroughMYSQL_RES(result,[&](const MYSQL_ROW& row){ if(row[0]!=nullptr){ outPnIds.insert(std::string(row[0])); } });
 }
 std::string SqlClient::getParamNodeValue(std::string paramNodeSqlID)
 {

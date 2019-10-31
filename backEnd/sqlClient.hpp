@@ -50,8 +50,8 @@ protected:
     bool updateParamNode(std::string paramNodeSqlID, std::string newParamValue);
     bool validateCredentials(std::string userName, std::string pw);
     bool pageExists(std::string pageID);
-    void getDataNodeIDs(std::shared_ptr<std::set<std::string> >  outDnIds, std::string pageID);
-    void getParamNodeIDs(std::shared_ptr<std::set<std::string> > outPnIds, std::string pageID);
+    void getDataNodeIDs(std::set<std::string>& outDnIds, std::string pageID);
+    void getParamNodeIDs(std::set<std::string>& outPnIds, std::string pageID);
     virtual void sql_dispatch(const sql_message& msg) = 0; //overloaded in backend
     void getStructureOfPage(std::string pageID, rj::Document& outDom);
     //_____________________________

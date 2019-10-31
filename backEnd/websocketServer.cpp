@@ -230,32 +230,14 @@ void ws_session::setAuthenticated()
 {
     authenticated_m = true;
 }
-void ws_session::setSubscriptions(std::shared_ptr<std::set<std::string>>dnSubscriptions_p, std::shared_ptr<std::set<std::string>>pnSubscriptions_p)
+void ws_session::setSubscriptions(const std::set<std::string>& dnSubscriptions, const std::set<std::string>& pnSubscriptions)
 {
-    dnSubscriptions.clear();
-    pnSubscriptions.clear();
-    dnSubscriptions = *dnSubscriptions_p;
-    pnSubscriptions = *pnSubscriptions_p;
-}/*
-void ws_session::setSubscriptionsThreadSafe(std::shared_ptr<std::set<std::string>>dnSubscriptions_p, std::shared_ptr<std::set<std::string>>pnSubscriptions_p)
+    this->dnSubscriptions = dnSubscriptions;
+    this->pnSubscriptions = pnSubscriptions;
+}
+void ws_session::setPage(const uint64_t& newPageID)
 {
-    net::post(ws_.get_executor(), beast::bind_front_handler(&ws_session::setSubscriptions, shared_from_this(), dnSubscriptions_p, pnSubscriptions_p));
-}*/
-void ws_session::setPage(const std::string& newPage)
-{
-    uint64_t pageID = std::stoull(newPage);
-    //get all dn and pn of page
-    //subscribe
-
-    auto dnSubscriptions_p = std::make_shared<std::set<std::string>>();
-    auto pnSubscriptions_p = std::make_shared<std::set<std::string>>();
-    websocketServer_m->dispatchGetDataNodeIDs(dnSubscriptions_p, newPage);
-    websocketServer_m->dispatchGetParamNodeIDs(pnSubscriptions_p, newPage);
-
-    setSubscriptions(dnSubscriptions_p, pnSubscriptions_p);
-
-
-    actualPageID = pageID;
+    actualPageID = newPageID;
 }
 //------------------------------------------------------------------------------
 
