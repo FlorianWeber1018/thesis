@@ -24,7 +24,7 @@ OpcuaServer::~OpcuaServer()
         delete changeRequestWorkerClock_m;
     }
 }
-void OpcuaServer::flushChangeRequest(const ChangeRequest& changeRequest)
+void OpcuaServer::flushChangeRequest(const opcua_changeRequest& changeRequest)
 {
     changeRequestMutex_m.lock();
     std::lock_guard<std::mutex> lg(changeRequestMutex_m, std::adopt_lock);
@@ -68,7 +68,7 @@ void OpcuaServer::flushChangeRequest(const std::string& newValue, const std::str
 }
 void OpcuaServer::flushChangeRequest(const std::string& newValue, int8_t type, uint64_t dataNodeSqlID)
 {
-    ChangeRequest newChangeRequest;
+    opcua_changeRequest newChangeRequest;
     if(parseValue(newChangeRequest.newValue, newValue, type)){
         generateNodeID(newChangeRequest.nodeID, IdType_DataNode, dataNodeSqlID);
         flushChangeRequest(newChangeRequest);
@@ -128,13 +128,13 @@ void OpcuaServer::ChangeRequestWorker()
         changeRequestMutex_m.lock();
         std::lock_guard<std::mutex> lg(changeRequestMutex_m, std::adopt_lock);
         while(changeRequests_m.size() > 0){
-            ChangeRequest tempChangeRequest = changeRequests_m.front();
+            opcua_changeRequest tempChangeRequest = changeRequests_m.front();
             performChangeRequest(tempChangeRequest);
             changeRequests_m.pop_front();
         }
     }
 }
-void OpcuaServer::performChangeRequest(const ChangeRequest& changeRequest)
+void OpcuaServer::performChangeRequest(const opcua_changeRequest& changeRequest)
 {
     UA_Server_writeValue(server_m, changeRequest.nodeID, changeRequest.newValue);
 }
@@ -481,7 +481,7 @@ std::string OpcuaServer::readDataNode(uint64_t sqlID)
     }
     return std::string();
 }
-void OpcuaServer::dataChangeDispatcher(const ChangeRequest& changeRequest)
+void OpcuaServer::opcua_dispatch(const opcua_changeRequest& changeRequest)
 {
     util::ConsoleOut() << "______________________________________________________________________________"
                        << "this is the virtual OpcuaServer::dataChangeDispatcher which is the Interface for the Backend class and should be reimplemented by the Backend Class to dispatch the datachange events on the OPCUA Server and transmit them to the Websocket Server."
@@ -499,10 +499,10 @@ void OpcuaServer::staticDataChangeDispatcher(UA_Server *server,
             std::string newValueStr(nodeContext_->opcuaServer_m->plotValue(data->value, data->value.type->typeIndex));
             if(nodeContext_->oldValue != newValueStr){                      //just pass diffs not all writes!
                 nodeContext_->oldValue = newValueStr;
-                ChangeRequest newChangeRequest;
+                opcua_changeRequest newChangeRequest;
                 UA_Variant_copy(&data->value, &newChangeRequest.newValue);
                 UA_NodeId_copy(nodeId, &newChangeRequest.nodeID);
-                nodeContext_->opcuaServer_m->dataChangeDispatcher(newChangeRequest);
+                nodeContext_->opcuaServer_m->opcua_dispatch(newChangeRequest);
                 UA_NodeId_deleteMembers(&newChangeRequest.nodeID);
                 UA_Variant_deleteMembers(&newChangeRequest.newValue);
             }

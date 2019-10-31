@@ -68,7 +68,7 @@ void Backend::traverseOpcuaPagesFromSql(uint64_t startPageID)
     }
 
 }
-void Backend::dataChangeDispatcher(const ChangeRequest& changeRequest)
+void Backend::opcua_dispatch(const opcua_changeRequest& changeRequest)
 {
     ws_message msg(wsEvent_dataNodeChange);
     msg.payload.push_back(std::string(reinterpret_cast<const char*>(changeRequest.nodeID.identifier.string.data)));
