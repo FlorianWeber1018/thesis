@@ -339,6 +339,7 @@ void SqlClient::getStructureOfPage(std::string pageID, rj::Document& outDom)
                     param.AddMember(rj::Value("id"), rj::Value(std::stoul(row[0])), allocator);
                     param.AddMember(rj::Value("name"), rj::Value(row[1], allocator), allocator);
                     param.AddMember(rj::Value("type"), rj::Value(row[2], allocator), allocator);
+                    //param.AddMember(rj::Value("value"), row[3]==nullptr ? rj::Value(rj::kNullType) : rj::Value(row[3], allocator), allocator);
                     param.AddMember(rj::Value("value"), rj::Value(rj::kNullType), allocator);
                     param.AddMember(rj::Value("description"), row[4]==nullptr ? rj::Value(rj::kNullType) : rj::Value(row[4], allocator), allocator);
                     paramNodes.AddMember(rj::Value(row[1], allocator), param, allocator);

@@ -79,6 +79,7 @@ void fail(beast::error_code ec, char const* what){
 
 ws_session::ws_session(tcp::socket&& socket, ssl::context& ctx, WebsocketServer* websocketServer) : ws_(std::move(socket), ctx){
     this->websocketServer_m = websocketServer;
+    ws_.write_buffer_bytes(32768);
 }
 ws_session::~ws_session()
 {
@@ -171,11 +172,13 @@ void ws_session::on_write( beast::error_code ec, std::size_t bytes_transferred){
 
     if(ec)
         return fail(ec, "write");
+    //util::ConsoleOut() << "Buffer SIze:"<<ws_.write_buffer_bytes() <<"message: " << outQueue.front()->to_Str();
     outQueue.pop();
-
     if(! outQueue.empty()){
         ws_.async_write(net::buffer(outQueue.front()->to_Str()), beast::bind_front_handler( &ws_session::on_write, shared_from_this()));
     }
+
+
 }
 
 void ws_session::sendFiltered(std::shared_ptr<ws_message>& msg){
