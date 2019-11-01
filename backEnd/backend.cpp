@@ -17,29 +17,6 @@ Backend::Backend(){
 
 
 
-    //teststuff
-    /*rj::Document myDom;
-    getStructureOfPage("1", myDom);
-    util::ConsoleOut() << util::Json().toJson(myDom);
-
-    std::this_thread::sleep_for(std::chrono::seconds(3));
-    flushChangeRequest("1", 1);
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    flushChangeRequest("42", 2);
-    //removeNode(IdType_DataNode, 4);
-
-
-
-    rj::Document myDom;
-    if(getAllRowsOfTable("GuiElementDataNodeTemplates",myDom)){
-        std::string teststring = util::Json().toJson(myDom);
-        rj::Document newDom;
-        if(util::Json::toDom(teststring, newDom)){
-            std::string teststring2 = util::Json().toJson(newDom);
-            util::ConsoleOut() << teststring2;
-        }
-        util::ConsoleOut() << teststring;
-    }*/
 }
 void Backend::traverseOpcuaPagesFromSql(uint64_t startPageID)
 {

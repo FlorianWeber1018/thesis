@@ -35,17 +35,15 @@ public:
     SqlClient();
     ~SqlClient();
 
-protected:
-    void connect() noexcept;
 
-    void disconnect() noexcept;
-    bool connected();
-    bool initDB();
+
+
 
 
 
     // INTERFACE FOR BACKEND
     //  all strings must beeing passed by value to make it possible to escape the strings in the individual methods
+    bool initDB();
     std::string getParamNodeValue(std::string paramNodeSqlID);
     bool updateParamNode(std::string paramNodeSqlID, std::string newParamValue);
     bool validateCredentials(std::string userName, std::string pw);
@@ -55,11 +53,7 @@ protected:
     virtual void sql_dispatch(const sql_message& msg) = 0; //overloaded in backend
     void getStructureOfPage(std::string pageID, rj::Document& outDom);
     //_____________________________
-    bool entryExists(const std::string& tableName, const std::string& keyColName, const std::string& keyVal);
 
-    bool getAllRowsOfTable(const std::string& tableName, rj::Document& dom_o);
-
-    bool createInstanceOfGuiElement(const std::string& type, uint64_t pageSqlID, const std::string& name);
     MYSQL_RES* getParams(uint64_t guiElementID);
     MYSQL_RES* getDataNodes(uint64_t guiElementID);
     MYSQL_RES* getGuiElements(uint64_t pageID);
@@ -71,6 +65,16 @@ protected:
     MYSQL_RES* getPages(const std::string& pageID);
 
     bool itterateThroughMYSQL_RES(MYSQL_RES* resultSet, std::function<void(const MYSQL_ROW&)> callback, bool freeResultSetAfter = true);
+private:
+    void connect() noexcept;
+    void disconnect() noexcept;
+    bool connected();
+    bool entryExists(const std::string& tableName, const std::string& keyColName, const std::string& keyVal);
+    bool getAllRowsOfTable(const std::string& tableName, rj::Document& dom_o);
+    bool createInstanceOfGuiElement(const std::string& type, uint64_t pageSqlID, const std::string& name);
+
+
+
 
     MYSQL_RES* sendCommand(std::string& sendstring, int maxReconnectCnt = 5);
 
@@ -78,7 +82,7 @@ protected:
     bool sendCUDAlreadyLocked(const std::string& sendstring);
     bool executeScript(const std::string& scriptName);
     bool mysqlResToDom(MYSQL_RES* resultset, unsigned int keyColNumber, rj::Document& dom_o);
-private:
+
     MYSQL* mysqlhandle_m;
     SqlCredentials credentials_m;
     std::mutex mutex_m;
