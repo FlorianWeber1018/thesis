@@ -354,14 +354,16 @@ Es enthält die \eigenName{parentID} der übergeordneten Seite.
 Ist die dargestellte Seite die Einstiegsseite und hat damit keine übergeordnete Seite, so ist diese Variable \emph{null}.
 Zusätzlich enthält sie ein Array mit Objekten welche die wesentlichen Information zu den untergeordneten Seiten, beinhalten.
 Diese Objekte wurden in dem Klassendiagramm als \eigenName{page} Klasse gekenntzeichnet und beinhalten die ID der Seite (\eigenName{id}), 
-den Titel (\eigenName{title} sowie die Beschreibung (\eigenName{description}).
+den Titel (\eigenName{title}) sowie die Beschreibung (\eigenName{description}).
 Diese Informationen werden im Frontend benötigt um eine Navigation durch die einzelnen Seiten des \ac{scada} Systems zu ermöglichen.
 Die restlichen Attribute des \eigenName{pageStruct} Objekts stellen die Daten der aktuell angezeigten Seite dar.
 Wie auch in der \eigenName{page} Klasse sind das die ID, der Titel und die Beschreibung.
 Zusätzlich einhält das \eigenName{pageStruct} Objekt beliebig viele GuiElemente (\eigenName{guiElements}) diese werden allerdings nicht als Array gespeichert, sondern als Objekt, indem jedes Attribut des Objekts ein \eigenName{guiElement} Objekt enthält.
 Die Attributnamen sind dabei die IDs der guiElemente, sodass ein Zugriff auf ein einzelnes Element über deren ID möglich ist.
 Jedes \eigenName{guiElement} besteht aus einer ID (\eigenName{id}), einem Typ (\eigenName{type}), einem Namen (\eigenName{name}), 
-einer Beschreibung (\eigenName{description}), sowie soviele DataNodes und ParamNodes wie die Vorlage der Backend Datenstruktur (\refFig{img:erd}).
- 
-
-
+einer Beschreibung (\eigenName{description}), sowie soviele DataNodes und ParamNodes wie die Vorlage der Backend Datenstruktur (\refFig{img:erd}), des entsprechenden \eigenName{GuiElementTypes} vorgibt.
+Die Nodes Werden dabei in den zwei Attributen \eigenName{dataNodes} sowie \eigenName{paramNodes} als Objekt gespeichert. Die Attributnamen bilden dabei die Namen der Nodes, da diese pro \eigenName{guiElement} Objekt nur einmal vorhanden sind. 
+Jedes \eigenName{node} Objekt hat unabhängig ob eine \eigenName{dataNode} oder eine \eigenName{paramNode} ist, 
+immer eine ID (\eigenName{id}), einen Namen (\eigenName{name}), einen Typ (\eigenName{type}) als String, eine Wert (\eigenName{value}) sowie eine Beschreibung (\eigenName{description}).
+Ob eine Node eine \eigenName{DataNode} (Datenpunkte vom \ac{opcua} Server) oder eine \eigenName{ParamNode} (auf \ac{sql} Server) ist, ist nur durch ihre Zugehörigkeit zu dem entsprechenden Objekt des Attributs \eigenName{dataNodes} oder \eigenName{paramNodes}, im \eigenName{guiElement} Objekt, definiert.
+Der Typ einer Node ist immer ein Typ, entsprechend der expliziten Angabe des Typs (Attribut \eigenName{type}), eines einzelnen \eigenName{node} Objekts.
