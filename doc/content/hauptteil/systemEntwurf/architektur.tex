@@ -50,7 +50,7 @@ zeigt das Layout in \refFig{fig:pageLayoutFrontendAuthenticated} an.
 \end{figure}
 Das Layout beinhaltet oben links einen Button um die Navigation der Seite ein und auszublenden.
 Ist die Navigation am linken Rand eingeblendet, so ermöglicht sie es zwischen den einzelnen Seiten der Visualisierung zu navigieren.
-Dazu zeigt die Navigation immer einen \flqq Zurück\frqq{} Button, um in die übergeordnete Seite zu wechseln, sowie Buttons um zu den untergeordneten Seiten zu wechseln.
+Dazu zeigt die Navigation immer einen \glqq Zurück\grqq{} Button, um in die übergeordnete Seite zu wechseln, sowie Buttons um zu den untergeordneten Seiten zu wechseln.
 Existieren keine untergeordneten Seiten, oder keine übergeordnete Seite, so existieren auch die Buttons nicht.
 Schließlich wird im zentralen Fenster die aktuelle Page der Visualisierung angezeigt.
 Der komplette Seiteninhalt ist eine Repräsentation des Datenobjekts, das global in der Webapplikation vorliegt.
@@ -164,7 +164,7 @@ dass durch eine externe \ac{ca} beim Verbindungsaufbau verifiziert werden muss.
 Die Handler des Frontends sind in \refFig{fig:activityDiagramDispatcherFrontend} dargestellt.
 %hier weite auf handler eingehn und wie die kommunikation zwischen vuex und ws funktioniert.
 
-%Der Weg, Daten zu verändern ist nun, mit einer Nachricht an das Backend eine Datenänderung \flqq anzufragen\frqq.
+%Der Weg, Daten zu verändern ist nun, mit einer Nachricht an das Backend eine Datenänderung \glqq anzufragen\grqq.
 %Ist die Änderung möglich, Sendet der Server...
 \begin{figure}[ht]
   \centering
@@ -329,14 +329,39 @@ da sie nur zur Strukturierung der DataNodes, auf dem \ac{opcua} Server, genutzt 
 
 \subsection{Frontend}\label{subsec:dataFrontend}
 Die Datenstruktur in der Webapplikation wird in dem Vue Plugin \emph{VueX} gespeichert.
+
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth]{content/hauptteil/systemEntwurf/res/structureFrontend.pdf}
   \caption[Frontend Datenstruktur]{Frontend Datenstruktur}
   \label{fig:structFrontendState}
 \end{figure} 
-Die Struktur ist in \refFig{fig:structFrontendState} als Klassendiagramm dargestellt.
-Die Struktur beginnt dabei bei der Klasse \flqq state\frqq, welche direkt im Store (So nennt man eine mit VueX generierte Hüllklasse)
-
+Diese Struktur ist in \refFig{fig:structFrontendState} als Klassendiagramm dargestellt. Sie existiert nur einmal global im Frontend.
+Dabei macht VueX die Struktur die im \emph{state} Objekt gespeichert sind der restlichen Applikation verfügbar.
+Die angegebenen Datentypen im Diagramm geben nicht die \acl{js} Datentypen an, sondern die Typen, 
+die im C++ Backend verwendet werden und als \ac{json} an das Frontend übermittelt werden.
+Die real im Frontend verwendeten Datentypen sind weniger spezifisch, 
+da \acl{js} zum Beispiel alle Zahlen unter dem Typ \eigenName{Number} abspeichert und dabei keine Unterscheidung des Typs unterstützt.
+Das \eigenName{state} Objekt enthält ein \eigenName{socket} Objekt in dem die Daten der Websocket Verbindung gespeichert sind.
+Zusätzlich speichert es die \emph{pageID}, die angibt auf welche Seite aktuell dargestellt wird, eine Variable \eigenName{authenticated}, 
+als Indikator ob die Websocket Verbindung bereits authentifiziert ist, sowie ein \eigenName{pageStruct} Objekt, dass alle weiteren Daten zur Aktuellen Seite beinhaltet.
+Wird noch keine programmierte Seite des \ac{scada} Systems angezeigt, dann ist die Variable \eigenName{pageStruct} \emph{null} und es ist keine \eigenName{pageStruct} vorhanden.
+Das ist im Diagramm durch die explizite Angabe der Multiplitzität (1 : 0..1) bei der Komposition gekennzeichnet.
+Bei der Intitaliesierung des State Objekts ist das \eigenName{pageStruct} Objekt immer \emph{null}, 
+bis es gemäß des Protokolls aus Abschnitt \ref{subsec:protokollBackendFrontend} als \emph{json} empfangen wird.
+Das \eigenName{pageStruct} Objekt wird aus den Daten des Backends gebildet, welche eine einzelne Seite des \ac{scada} Systems betreffen.
+Es enthält die \eigenName{parentID} der übergeordneten Seite. 
+Ist die dargestellte Seite die Einstiegsseite und hat damit keine übergeordnete Seite, so ist diese Variable \emph{null}.
+Zusätzlich enthält sie ein Array mit Objekten welche die wesentlichen Information zu den untergeordneten Seiten, beinhalten.
+Diese Objekte wurden in dem Klassendiagramm als \eigenName{page} Klasse gekenntzeichnet und beinhalten die ID der Seite (\eigenName{id}), 
+den Titel (\eigenName{title} sowie die Beschreibung (\eigenName{description}).
+Diese Informationen werden im Frontend benötigt um eine Navigation durch die einzelnen Seiten des \ac{scada} Systems zu ermöglichen.
+Die restlichen Attribute des \eigenName{pageStruct} Objekts stellen die Daten der aktuell angezeigten Seite dar.
+Wie auch in der \eigenName{page} Klasse sind das die ID, der Titel und die Beschreibung.
+Zusätzlich einhält das \eigenName{pageStruct} Objekt beliebig viele GuiElemente (\eigenName{guiElements}) diese werden allerdings nicht als Array gespeichert, sondern als Objekt, indem jedes Attribut des Objekts ein \eigenName{guiElement} Objekt enthält.
+Die Attributnamen sind dabei die IDs der guiElemente, sodass ein Zugriff auf ein einzelnes Element über deren ID möglich ist.
+Jedes \eigenName{guiElement} besteht aus einer ID (\eigenName{id}), einem Typ (\eigenName{type}), einem Namen (\eigenName{name}), 
+einer Beschreibung (\eigenName{description}), sowie soviele DataNodes und ParamNodes wie die Vorlage der Backend Datenstruktur (\refFig{img:erd}).
+ 
 
 
