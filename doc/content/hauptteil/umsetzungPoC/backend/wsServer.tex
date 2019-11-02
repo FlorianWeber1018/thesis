@@ -1,5 +1,33 @@
 \subsection{WebsocketServer}
-Die Klasse \eigenName{WebsocketServer} 
+Die Klasse \eigenName{WebsocketServer} (\refFig{fig:backend:classDiag:WebsocketServer}) verwaltet die offenen Websocket Sessions (Objekte der Klasse \eigenName{ws\_session}). 
+Websocket Sessions sind die einzelnen Verbindungen zwischen Backend und Frontend.
+Die \eigenName{WebsocketServer} Klasse speichert dabei, pro aktiver Websocket Session, einen Pointer des zugehörigen \eigenName{ws\_session} Objekts in einer Liste.
+Diese Liste existiert als das Attribut \eigenName{ws\_sessions\_m} in der Klasse \eigenName{WebsocketServer} und ist zusätzlich durch ein Mutex geschützt.
+Diese Mutex kann man sich vorstellen wie ein Schloss, das immer zuerst entsperrt werden muss, 
+bevor die Session Liste verfügbar ist (Aufrum von \eigenName{std::mutex::lock()}). 
+Ist das Mutex von einem Thread entsperrt, so kann ein anderer Thread es solange nicht entsperren wie es gesperrt ist.
+Damit wird der zeitgleiche Zugriff von mehreren Threads auf eine Datenstruktur verhindert.
+Ist ein Thread mit der Arbeit an der geschützten Ressource fertig, gibt er sie wieder frei indem er die Methode \eigenName{std::mutex::unlock()} aufruft.
+Das scheint der einfachste Weg zu sein, aber nicht der sicherste. 
+Wenn im Code zwischen \eigenName{lock()} und \eigenName{unlock()} eine Exception Eintritt, 
+wird zwar die Ressource danach nichtmehr benötigt, es wird aber auch nicht \eigenName{unlock()} aufgerufen.
+Man spricht in diesem Fall von einer \emph{Deadlock} da das Mutex von einem Thread entsperrt wurde und nie wieder gesperrt wird. 
+Das führt dazu, dass alle anderen Threads die die Ressource benötigen, endlos auf deren Freigabe warten. 
+Um das zu verhindern bietet die \ac{stl} eine \eigenName{lock\_guard} Klasse die bei ihrer Zerstörung das Mutex selbständig wieder frei gibt.
+Diese Vorgehensweise seht man in \refList{list:addSession}, wenn der \eigenName{lock\_guard} in Zeile 354 nichtmehr im Scope ist, wird automatisch \eigenName{unlock()} aufgerufen.
+\begin{listing}[ht]
+  \inputminted[linenos=true,breaklines=true, firstline=348, lastline=354]{c++}{../Backend/WebsocketServer.cpp}
+  \caption{Methode \eigenName{addSession} der Websocket Server Klasse}
+  \label{list:addSession}
+\end{listing}
+Bei jeder neuen Websocket Verbindung wird ein neues \eigenName{ws\_session} Objekt (Klassendiagramm \refFig{fig:backend:classDiag:wsSession}) instanziert 
+und bekommt dabei einen Pointer auf das \eigenName{WebsocketServer} Objekt. Dies ermöglicht dem \eigenName{ws\_session} Objekt, 
+sich bei dem \eigenName{WebsocketServer} Objekt anzumelden. 
+Zusätzlich speichert das \eigenName{ws\_session} Objekt den Pointer unter dem Attribut \eigenName{websocketServer\_m} ab.
+Dies ermöglicht es beim Empfang einer Nachricht durch das \eigenName{ws\_session} Objekt die virtuelle Methode \eigenName{ws\_dispatch} der \eigenName{WebsocketServer} Klasse aufzurufen, welche in der \eigenName{Backend} Klasse reimplementiert wird.
+Dort wird die Nachricht dann entsprechend ihres
+
+
 %kurze Erwähnung sinn der klasse
 %datenaustausch zwischen WebsocketServer zu abgeleitetrer...(dispatcher.... ) (I/O)
 \begin{figure}[ht]
@@ -17,3 +45,11 @@ Die Klasse \eigenName{WebsocketServer}
 \end{figure}
 %dispatcher codeausschnitt
 %beschreibung dispatcher
+
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\textwidth]{content/hauptteil/umsetzungPoC/backend/uml/classesOfOverview/ws_session.pdf}
+  \caption{Klassediagramm der Klasse \eigenName{ws\_session}}
+  \label{fig:backend:classDiag:wsSession}
+\end{figure}
