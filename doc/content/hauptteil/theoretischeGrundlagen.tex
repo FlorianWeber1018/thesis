@@ -90,11 +90,31 @@ Der Foreign-Key (Fremdschlüssel) ist ein Schlüssel, der nur in einem relationa
 Er ermöglicht es, einen Verweises auf eine andere Tabelle zu definieren.
 Zur Veranschaulichung sei folgendes Beispiel einer relationalen Datenstruktur,
 auf einem \ac{sql} Server, gegeben.
-\begin{figure}[hbt]
+
+\begin{figure}[ht]
   \centering
-  \includegraphics[width=\textwidth]{content/hauptteil/theoretischeGrundlagen/rec/exampleSQL.png}
-\caption{Beispiel Datenstruktur}
- \label{fig:exampleSQLStructure}%%%%%%%%%%%%%AUSTAUSCHEN DURCH ERM!!!!!!!!!!!!!!!
+  \begin{subfigure}[h]{\textwidth}
+    \centering
+    \includegraphics[width=0.517045455\textwidth]{content/hauptteil/theoretischeGrundlagen/rec/exampleSQLAbteilung.pdf}
+    \caption{Tabelle \eigenName{Abteilung}}
+    \label{fig:exampleSQLStructure:abteilung}
+    \hspace{50.00mm}
+  \end{subfigure}
+  \begin{subfigure}[h]{\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{content/hauptteil/theoretischeGrundlagen/rec/exampleSQLMitarbeiterdaten.pdf}
+      \caption{Tabelle \eigenName{Mitarbeiter}}
+      \label{fig:exampleSQLStructure:mitarbeiter}
+      \hspace{50.00mm}
+  \end{subfigure}
+  \begin{subfigure}[h]{\textwidth}
+      \centering
+      \includegraphics[width=0.825284091\textwidth]{content/hauptteil/theoretischeGrundlagen/rec/exampleSQLErgebnis.pdf}
+      \caption{Ergebnis des Querys aus \refFig{fig:exampleSQLQuery}}
+      \label{fig:exampleSQLStructure:result}
+  \end{subfigure}
+  \caption[Beispiel Datenstruktur mit Ergebnis von einem \eigenName{Join} Query]{Beispiel Datenstruktur als Tabellen mit Ergebnis des Querys aus \refFig{fig:exampleSQLQuery}}
+  \label{fig:exampleSQLStructure}
 \end{figure}
 Wie in Abbildung \ref{fig:exampleSQLStructure} zu sehen, besteht die Datenbank \eigenName{Personal} aus zwei Tabellen.
 Die erste Tabelle hat die Bezeichnung (\eigenName{Abteilung}) mit den Spalten \eigenName{ID}, \eigenName{Bezeichnung} sowie Standort.
