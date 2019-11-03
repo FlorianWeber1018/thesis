@@ -28,9 +28,9 @@
 %\section{Verteilte Systeme}
 %\subsection{Synchrones Datenmodell}
 %\subsection{Asynchrones Datenmodell}
-\section{Security}\label{sec:security}
-\subsection{Authentifizierung}
-\subsection{Verschlüsselung}
+% \section{Security}\label{sec:security}
+% \subsection{Authentifizierung}
+% \subsection{Verschlüsselung}
 \section{Websocket}
 %Protokoll WS bzw WSS Präfix
 Websockets bieten die Möglichkeit Nachrichten zwischen einem Server und einer Webanwendung asynchron auszutauschen.
@@ -117,9 +117,9 @@ auf einem \ac{sql} Server, gegeben.
   \label{fig:exampleSQLStructure}
 \end{figure}
 Wie in der Abbildung \ref{fig:exampleSQLStructure} zu sehen ist, besteht die Datenbank aus zwei Tabellen.
-Die erste Tabelle hat die Bezeichnung \eigenName{Abteilung} (\refFig{fig:examplesSQLStructure:abteilung}) mit den Spalten \eigenName{ID}, \eigenName{Bezeichnung} sowie \eigenName{Standort}.
+Die erste Tabelle hat die Bezeichnung \eigenName{Abteilung} (\refFig{fig:exampleSQLStructure:abteilung}) mit den Spalten \eigenName{ID}, \eigenName{Bezeichnung} sowie \eigenName{Standort}.
 Die Spalte \eigenName{ID} ist als Primary-Key deklariert.
-Die zweite Tabelle \eigenName{Mitarbeiter} (\refFig{fig:examplesSQLStructure:mitarbeiter}) enthält die Spalten 
+Die zweite Tabelle \eigenName{Mitarbeiter} (\refFig{fig:exampleSQLStructure:mitarbeiter}) enthält die Spalten 
 \eigenName{Personalnummer}, \eigenName{Vorname}, \eigenName{Nachname}, \eigenName{Telefonnummer}, \eigenName{EmailAdresse} und \eigenName{AbteilungID}.
 In dieser Tabelle ist die Personalnummer der Primärschlüssel.
 Um eine Verknüpfung der Spalte \eigenName{AbteilungID} der Tabelle \eigenName{Mitarbeiter} zu der Tabelle \eigenName{Abteilung} herzustellen, 
@@ -153,8 +153,8 @@ Die Query für diese Operation ist in Abbildung \ref{fig:exampleSQLQuery} abgebi
   \caption{Beispiel sqlQuery - Select mit Join}
   \label{fig:exampleSQLQuery}
 \end{figure}
-Die Antwort des Servers ist in Abbildung \refFig{fig:examplesSQLStructure:result} zu sehen.
-Bei \refFig{fig:examplesSQLStructure:abteilung} und \refFig{fig:examplesSQLStructure:mitarbeiter} sieht man die Datensätze der beiden Quelltabellen des Querys.
+Die Antwort des Servers ist in \refFig{fig:exampleSQLStructure:result} zu sehen.
+Bei \refFig{fig:exampleSQLStructure:abteilung} und \refFig{fig:exampleSQLStructure:mitarbeiter} sieht man die Datensätze der beiden Quelltabellen des Querys.
 Wahrscheinlich würde man diesen einfachen Datenbank Join, in C/C++, mit den Daten in Structures gespeichert, mittels verschachtelter For-Schleifen implementieren. 
 Das Problem bei dieser Implementierung ist, dass man durch jedes Element iterieren muss.
 Das \ac{dbms} hat zur Lösung dieses Problems bessere Algorithmen hinterlegt (Stichwort: binärer Suchbaum, Hash-Maps\dots).
