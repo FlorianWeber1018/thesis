@@ -1,12 +1,12 @@
 \section{Test des \acp{poc} }\label{sec:poc:test}
 \subsection{Testaufbau}
-Das Backend des \acp{poc} ist auf einem Computer mit dem Betriebssystem Ubuntu installiert. 
-Die statischen Dokumente (\ac{js}, \ac{html} und \ac{css}) werden von einem \emph{Apache HTTP Server} gehostet.
+Das Backend des \acp{poc} ist auf einem Computer mit dem Linux-basierten Betriebssystem Ubuntu installiert. 
+Die statischen Dokumente (\ac{js}, \ac{html} und \ac{css}) werden von einem \emph{Apache HTTP Server} ausgelierfert.
 Die Datenbank ist eine MariaDB Datenbank.
-Der Zugriff auf das \ac{scada} System erfolgt über ein zweiten Computer.
+Der Zugriff auf das \ac{scada} System erfolgt über einen zweiten Computer.
 Verschlüsselt wird die Verbindung zwischen Frontend und Backend durch ein selbst ausgestelltes und selbstsigniertes Zertifikat.
-Das Frontent wird durch den Browser \eigenName{Chrome} in der Version 77.0.3865.120 von \emph{Google LLC} ausgeführt und angezeigt.
-Die \ac{opcua} Schnittstelle wird zu Testzwecken mit der Software \eigenName{UaExpert} in der Version 1.5.1 331 der \emph{Unified Automation GmbH} angesprochen.
+Das Frontend wird durch den Browser \eigenName{Chrome} in der Version 77.0.3865.120 von \emph{Google LLC} ausgeführt und angezeigt.
+Die \ac{opcua} Schnittstelle wird zu Testzwecken mit der Software \eigenName{UaExpert}, in der Version 1.5.1 331 der \emph{Unified Automation GmbH}, angesprochen.
 Das Netzwerk besteht aus dem einen Computer mit dem Backend, sowie einem weiteren Computer mit Windows 7.
 Auf dem Windows Computer wird die Software \eigenName{UaExpert} sowie \eigenName{Chrome} ausgeführt.
 Beide Rechner sind in einem  1GBit Ethernet Netzwerk durch ein Switch verbunden.
