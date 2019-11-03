@@ -14,5 +14,14 @@
       "description": "second sub page"
     }
   ],
-  "guiElements": {}
+  "guiElements": {
+    "1": {
+      "id": 1,
+      "type": "button",
+      "name": "der erste Button",
+      "description": "just a stupid Button",
+      "dataNodes": {},
+      "paramNodes": {}
+    }
+  }
 }
