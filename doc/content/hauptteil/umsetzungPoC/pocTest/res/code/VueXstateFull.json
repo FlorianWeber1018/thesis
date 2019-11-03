@@ -1,0 +1,94 @@
+{
+  "socket": {
+    "isConnected": true,
+    "message": "",
+    "reconnectError": false
+  },
+  "pageID": 1,
+  "authenticated": true,
+  "pageStruct": {
+    "pageID": 1,
+    "parentId": null,
+    "title": "ROOT_PAGE",
+    "description": "the landing Page of the Visu",
+    "subPages": [{
+        "id": 2,
+        "title": "SUB_PAGE",
+        "description": "first sub page"
+      },
+      {
+        "id": 3,
+        "title": "SUB_PAGE2",
+        "description": "second sub page"
+      }
+    ],
+    "guiElements": {
+      "1": {
+        "id": 1,
+        "type": "button",
+        "name": "der erste Button",
+        "description": "just a stupid Button",
+        "dataNodes": {
+          "buttonState": {
+            "id": 1,
+            "name": "buttonState",
+            "type": "Bool",
+            "value": false,
+            "description": "DataNode which holds the value of the Button a Button"
+          },
+          "colorSelector": {
+            "id": 2,
+            "name": "colorSelector",
+            "type": "UInt8",
+            "value": 0,
+            "description": "DataNode to mux different colors to display a state"
+          },
+          "text": {
+            "id": 3,
+            "name": "text",
+            "type": "String",
+            "value": "ButtonText",
+            "description": "text which is be displayed on the Button"
+          }
+        },
+        "paramNodes": {
+          "colorEnum": {
+            "id": 1,
+            "name": "colorEnum",
+            "type": "String",
+            "value": "[\"red\",\"green\",\"blue\",\"#FF00FF\"]",
+            "description": "JSON Array with the colors that are selectable with the \"colorSelector DataNode\""
+          },
+          "maxSizeX": {
+            "id": 2,
+            "name": "maxSizeX",
+            "type": "UInt16",
+            "value": 65535,
+            "description": "maximum Size of the GuiElement in X"
+          },
+          "maxSizeY": {
+            "id": 3,
+            "name": "maxSizeY",
+            "type": "UInt16",
+            "value": 65535,
+            "description": "maximum Size of the GuiElement in Y"
+          },
+          "posX": {
+            "id": 4,
+            "name": "posX",
+            "type": "UInt16",
+            "value": 50,
+            "description": "position of the GuiElement in  X counted from the left side in %"
+          },
+          "posY": {
+            "id": 5,
+            "name": "posY",
+            "type": "UInt16",
+            "value": 0,
+            "description": "position of the GuiElement in  Y counted from the top of the Page in px"
+          }
+        }
+      }
+    }
+  }
+}
