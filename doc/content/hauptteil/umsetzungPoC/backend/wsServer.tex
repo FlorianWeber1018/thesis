@@ -5,12 +5,14 @@
   \caption{Klassediagramm der Klasse \eigenName{WebsocketServer}}
   \label{fig:backend:classDiag:WebsocketServer}
 \end{figure}
-Die Klasse \eigenName{WebsocketServer} (\refFig{fig:backend:classDiag:WebsocketServer}) verwaltet die offenen Websocket Sessions (Objekte der Klasse \eigenName{ws\_session}). 
+Die Klasse \eigenName{WebsocketServer} (\refFig{fig:backend:classDiag:WebsocketServer}) verwaltet die offenen Websocket Sessions (Objekte der Klasse \eigenName{ws\_session}).
+Sie bedient sich dabei der bekannten \eigenName{Boost.Beast} C++ Bibliothek.
 Websocket Sessions sind die einzelnen Verbindungen zwischen Backend und Frontend.
+Das Aufbauen von Verbindungen ist den Beispielen von Vinnie Falco zur \eigenName{Boost.Beast} Bibliothek entnommen.
 Die \eigenName{WebsocketServer} Klasse speichert dabei, pro aktiver Websocket Session, einen Pointer des zugehörigen \eigenName{ws\_session} Objekts in einer Liste.
 Diese Liste existiert als das Attribut \eigenName{ws\_sessions\_m} in der Klasse \eigenName{WebsocketServer} und ist zusätzlich durch ein Mutex geschützt.
 Diese Mutex kann man sich vorstellen wie ein Schloss, das immer zuerst entsperrt werden muss, 
-bevor die Session Liste verfügbar ist (Aufrum von \eigenName{std::mutex::lock()}). 
+bevor die Session Liste verfügbar ist (Aufruf von \eigenName{std::mutex::lock()}). 
 Ist das Mutex von einem Thread entsperrt, so kann ein anderer Thread es solange nicht entsperren wie es gesperrt ist.
 Damit wird der zeitgleiche Zugriff von mehreren Threads auf eine Datenstruktur verhindert.
 Ist ein Thread mit der Arbeit an der geschützten Ressource fertig, gibt er sie wieder frei indem er die Methode \eigenName{std::mutex::unlock()} aufruft.
