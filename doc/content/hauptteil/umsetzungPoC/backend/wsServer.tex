@@ -24,9 +24,11 @@ Bei jeder neuen Websocket Verbindung wird ein neues \eigenName{ws\_session} Obje
 und bekommt dabei einen Pointer auf das \eigenName{WebsocketServer} Objekt. Dies ermöglicht dem \eigenName{ws\_session} Objekt, 
 sich bei dem \eigenName{WebsocketServer} Objekt anzumelden. 
 Zusätzlich speichert das \eigenName{ws\_session} Objekt den Pointer unter dem Attribut \eigenName{websocketServer\_m} ab.
-Dies ermöglicht es beim Empfang einer Nachricht durch das \eigenName{ws\_session} Objekt die virtuelle Methode \eigenName{ws\_dispatch} der \eigenName{WebsocketServer} Klasse aufzurufen, welche in der \eigenName{Backend} Klasse reimplementiert wird.
-Dort wird die Nachricht dann entsprechend ihres
+Dies ermöglicht es beim Empfang eines kodierten Strings durch das \eigenName{ws\_session} Objekt, ein \eigenName{ws\_message} Objekt aus dem String zu konstruieren
+und die virtuelle Methode \eigenName{ws\_dispatch} der \eigenName{WebsocketServer} Klasse aufzurufen, welche in der \eigenName{Backend} Klasse reimplementiert wird.
+Dort wird das \eigenName{ws\_message} Objekt dann entsprechend seines Events interpretiert und der entsprechende Handler (beschrieben in Abschnitt \ref{subsec:protokollBackendFrontend}) ausgeführt.
 
+WEITER bei publish to all sesisons!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 %kurze Erwähnung sinn der klasse
 %datenaustausch zwischen WebsocketServer zu abgeleitetrer...(dispatcher.... ) (I/O)

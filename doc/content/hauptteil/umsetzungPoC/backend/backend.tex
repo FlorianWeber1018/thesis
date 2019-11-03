@@ -2,14 +2,14 @@
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth]{content/hauptteil/umsetzungPoC/backend/uml/overview.pdf}
-  \caption{Klassediagramm Überblick Backend}
+  \caption{Klassendiagramm Überblick Backend}
   \label{fig:backend:classDiag:overview}
 \end{figure}
 Das Klassendiagramm in \refFig{fig:backend:classDiag:overview} stellt die Grundstruktur des Backends dar. 
 Das Diagramm ist, bis auf die \eigenName{Backend} Klasse, nicht vollständig und auf die wesentlichen Operationen zur Kommunikation reduziert. 
 Die \eigenName{Backend} Klasse (abgeleitete Klasse) erbt von den drei Basisklassen \eigenName{SqlClient}, \eigenName{OpcuaServer} und \eigenName{WebsocketServer}.
 Jede Basisklasse hat ihre eigene dedizierte Aufgabe die in den einzelnen jeweiligen, gleichnamigen Abschnitten genauer beschrieben ist.
-Die abgeleitete Klasse steht dabei als Vermittler dazwischen. Möchte eine der Basisklassen etwas ausführen für das eine der anderen Klassen benötigt wird, 
+Die abgeleitete Klasse steht dabei als Vermittler dazwischen. Möchte eine der Basisklassen etwas ausführen, für das eine der anderen Klassen benötigt wird, 
 so kann diese das anstoßen, indem sie eine virtuelle (genauer: \eigenName{pure virtual}) Methode aufruft, die in der Basisklasse selbst nicht implementiert wird, sondern in der abgeleiteten \eigenName{Backend} Klasse.
 Dies ermöglicht es nun indirekt durch eine Basisklasse eine Methode einer anderen Basisklasse aufzurufen.
 Um zu garantieren, dass dies auch geschieht und nicht durch einen Tippfehler eine falsche Methode aufgerufen wird, 
@@ -18,8 +18,9 @@ Diese Eigenschaft einer Methode ist im Klassendiagramm durch die kursive Schrift
 In der abgeleiteten Klasse (\eigenName{Backend}) wird die dort reimplementierte Methode nun mit dem Schlüsselwort \eigenName{override} am Ende der Deklaration gekennzeichnet.
 Dies zwingt den Kompiler zu überprüfen, ob die dort deklarierte Methode wirklich eine Methode der Basisklasse reimplementiert und nicht eine neue Methode ist.
 Zusätzlich zu den virtuellen Methoden, die in diesem Fall eine Kommunikation zu anderen Basisklassen, indirekt über die abgeleitete Klasse, ermöglichen, existieren noch eine Anzahl an Methoden, 
-über die man mit der Klasse selbst Interagieren kann.
-Eine Sonderrolle nehmen dabei die Operationen ein, die im Klassendiagramm von \refFig{fig:backend:classDiag:overview}, noch dargestellt sind.
+über die man mit der Klasse selbst interagieren kann.
+%%TRAVERSEOPCUAPAGES
+Eine Sonderrolle nehmen dabei die Operationen ein, die im Klassendiagramm von \refFig{fig:backend:classDiag:overview}, außer der bereits beschriebenen noch zusätzlich dargestellt sind.
 Sie ermöglichen die Änderung oder Abfrage von Daten der jeweiligen Klassen.\\
 %erwähnung datenaustausch zwischen basisklassen zu abgeleitetrer...(dispatcher.... )
   %endlich anzahl an fkt für daten backend -> basisklassen
@@ -27,7 +28,7 @@ Sie ermöglichen die Änderung oder Abfrage von Daten der jeweiligen Klassen.\\
 %erwähnung message klassen die geparsed wwerden ------- besser in einzelnen abschnitten
 Die einzelnen Basisklassen sind zusätzlich separat in den Abbildungen 
 \ref{fig:backend:classDiag:WebsocketServer}, \ref{fig:backend:classDiag:SqlClient} sowie \ref{fig:backend:classDiag:OpcuaServer} 
-vollständig, mit allen Attributen und Operationen dargestellt.
+vollständig, mit allen Attributen und Operationen, dargestellt.
 \include{content/hauptteil/umsetzungPoC/backend/wsServer}
 \include{content/hauptteil/umsetzungPoC/backend/sqlClient}
 \include{content/hauptteil/umsetzungPoC/backend/opcuaServer}
