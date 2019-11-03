@@ -19,7 +19,8 @@ In der abgeleiteten Klasse (\eigenName{Backend}) wird die dort reimplementierte 
 Dies zwingt den Kompiler zu überprüfen, ob die dort deklarierte Methode wirklich eine Methode der Basisklasse reimplementiert und nicht eine neue Methode ist.
 Zusätzlich zu den virtuellen Methoden, die in diesem Fall eine Kommunikation zu anderen Basisklassen, indirekt über die abgeleitete Klasse, ermöglichen, existieren noch eine Anzahl an Methoden, 
 über die man mit der Klasse selbst interagieren kann.
-%%TRAVERSEOPCUAPAGES
+Die Methode \eigenName{traverseOpcuaPagesFromSql(startPageID)} erstellt alle notwendigen \ac{opcua} Nodes, auf Basis der Datenstruktur, ab der angegebenen \eigenName{startPageID}.
+
 Eine Sonderrolle nehmen dabei die Operationen ein, die im Klassendiagramm von \refFig{fig:backend:classDiag:overview}, außer der bereits beschriebenen noch zusätzlich dargestellt sind.
 Sie ermöglichen die Änderung oder Abfrage von Daten der jeweiligen Klassen.\\
 %erwähnung datenaustausch zwischen basisklassen zu abgeleitetrer...(dispatcher.... )
