@@ -20,17 +20,34 @@ Die Methode \eigenName{sendCUD} bedient sich dabei der Methode \eigenName{sendCo
 Da die Verbindung zum \ac{sql} Server eine geteilte Resource ist, ist der Zugriff darauf durch \eigenName{sendCommand} durch ein Mutex geschützt, sodass immer nur ein Thread gleichzeitig ein Query senden kann.
 Die Klasse \eigenName{SqlClient} bietet viele Methoden um die Daten in der Datenbank abzufragen oder zu verändern.
 Um Daten abzufragen werden meistens Querys ausgeführt die mit \eigenName{Select} beginnen.
-Allerdings sind ein paar komplizierte Abfragen in \emph{stored Procedures} auf dem Server ausgelagert.
-Diese Prozeduren werden durch das Skript \eigenName{createProcedures} (siehe Anhang \refList{})
-%kurze Erwähnung sinn der klasse
-%datenaustausch zwischen SqlClient zu abgeleitetrer...(dispatcher.... ) (I/O)
-
-%beschreibung msg klasse mit diagram
+Allerdings sind ein paar komplizierte Querys in \emph{stored Procedures} auf dem Server ausgelagert.
+Die Prozeduren werden durch das Skript \eigenName{createProcedures} (siehe Anhang \refList{list:createProcedures}) erzeugt.
+Um ein \ac{gui} Element zu instanzieren, sind eine Menge an Operationen notwendig.
+Diese Operationen sind auch als Prozeduren implementiert und werden durch eine einfaches \eigenName{Call} Query aufgerufen.
+Immer wenn der Wert einer \emph{ParamNode} auf dem \ac{sql} Server durch Aufruf der Methode \eigenName{updateParamNode} geändert wird, werden alle verbunden \eigenName{ws\_session} Objekte darüber informiert.
+Diese Funktionalität ist implementiert, indem in der \eigenName{updateParamNode} Methode zuerst geprüft wird ob die Änderung tatsächlich eine Änderung darstellt, oder ob der Wert bereits dem neuen Wert entspricht.
+Ist das der Fall wird versucht den Wert auf dem \ac{sql} Server zu ändern. War die Änderung erfolgreich, wird ein \eigenName{sql\_message} Objekt (siehe Klassendiagramm in \refFig{fig:backend:classDiag:sqlMsg}) erstellt 
+und der Methode \eigenName{sql\_dispatch} der Klasse \eigenName{SqlClient} übergeben. 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth]{content/hauptteil/umsetzungPoC/backend/uml/classesOfOverview/sql_message.pdf}
   \caption{Klassediagramm der Klasse \eigenName{sql\_message}}
   \label{fig:backend:classDiag:sqlMsg}
 \end{figure}
+Die Datenstruktur des \eigenName{sql\_message} Objekts ist dabei ähnlich aufgebaut wie die des \eigenName{ws\_message} Objekts.
+Es besitzt ein Event und ein Payloadvektor.
+Diese Methode \eigenName{sql\_dispatch} ist in der Backend Klasse reimplementiert und reagiert auf das \eigenName{sql\_message} Objekt je nach Event.
+In diesem Fall ist das Event \eigenName{paramNodeChange}. Hier wird der Payloadvektor so interpretiert, dass das erste Element die NodeID ist und das zweite der neue Wert.
+Diese Information wird dann schließlich als \eigenName{ws\_message} kodiert und die Methode \eigenName{publishToAllSessions} der \eigenName{WebsocketServer} Klasse aufgerufen, 
+welche diese Information dann an alle Sessions weiterleitet.
+In jeder Methode in der Daten der Websocket Schnittstelle in Querys verwendet werden, können diese nicht als \mintinline{c++}{const std::String&} übergeben werden, da diese durch die Methode \eigenName{escapeString} verändert werden um einer \emph{SQL-Injection} vorzubeugen.
+Diese Methode bedient sich dazu eine entsprechenden Funktion der benutzen Bibliothek.
+Würde die Referenz auf den String als \mintinline{c++}{const} übergeben, könnte die Methode den String nicht verändern.
+
+%kurze Erwähnung sinn der klasse
+%datenaustausch zwischen SqlClient zu abgeleitetrer...(dispatcher.... ) (I/O)
+
+%beschreibung msg klasse mit diagram
+
 %dispatcher codeausschnitt
 %beschreibung dispatcher
