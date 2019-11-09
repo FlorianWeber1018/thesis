@@ -64,7 +64,12 @@ void OpcuaServer::flushChangeRequest(const std::string& newValue, uint64_t dataN
 }
 void OpcuaServer::flushChangeRequest(const std::string& newValue, const std::string& dataNodeSqlID)
 {
-    flushChangeRequest(newValue, std::stoull(dataNodeSqlID));
+    try{
+        flushChangeRequest(newValue, std::stoull(dataNodeSqlID));
+    }catch(...){
+
+    }
+
 }
 void OpcuaServer::flushChangeRequest(const std::string& newValue, int8_t type, uint64_t dataNodeSqlID)
 {
