@@ -8,7 +8,7 @@ In \refFig{fig:frontend:poc:login} sieht man die Startseite des Frontends.
   \label{fig:frontend:poc:login}
 \end{figure}
 Diese Seite ermöglicht die Authentifizierung ohne die eine weitere Interaktion mit dem Backend nicht möglich ist.
-Hat man sich durch Eingabe einem gültigen Passworts mit dem zugehöhrigen Benutzernamen authentifiziert, 
+Hat man sich durch Eingabe, einem gültigen Passworts mit dem zugehöhrigen Benutzernamen, authentifiziert, 
 so wird die erste Seite (\eigenName{ID = 1}) des \ac{scada} Systems angezeigt. In \refFig{fig:frontend:poc:page} ist diese Seite abgebildet.
 \begin{figure}[ht]
   \centering
@@ -16,9 +16,9 @@ so wird die erste Seite (\eigenName{ID = 1}) des \ac{scada} Systems angezeigt. I
   \caption{Screenshot einer Beispielseite}
   \label{fig:frontend:poc:page}
 \end{figure}
-Zur Veranschaulichung ist sie Seite mit drei \ac{gui} Elementen gefüllt. 
+Zur Veranschaulichung ist die Seite mit drei \ac{gui} Elementen gefüllt. 
 Diese sind ein Textfelds (links), ein Button (mittig), sowie ein Label (rechts).
-Das Textfeld hat die drei verschiedene Darstellungen, welche in \refFig{fig:frontend:poc:textFeld} dargestellt sind.
+Das Textfeld hat die in \refFig{fig:frontend:poc:textFeld} dargestellten Darstellungsformen.
 \begin{figure}[ht]
   \centering
   \hspace{0.05\textwidth}
@@ -49,14 +49,14 @@ Das Textfeld hat die drei verschiedene Darstellungen, welche in \refFig{fig:fron
 Da die Architektur in Abschnitt \ref{subsec:archFrontend} es verbietet Ist- und Sollzustand in der selben Variablen zu speichern, sind diese Werte auch im Textfeld getrennt.
 Wenn es nicht angeklickt wird, hat es nicht den Fokus und zeigt seinen aktuellen Wert an. 
 Diese Darstellung ist in \refFig{fig:frontend:poc:textFeld:noFocus} zu sehen. unter dem Textfeld wird der Name des Felds angezeigt.
-Wird das Textfeld angeklickt, ist es wie in \refFig{fig:frontend:poc:textFeld:focus} abgebildet dargestellt. In diesem Zustand erlaubt es eine Eingabe durch den Nutzer.
+Wird das Textfeld angeklickt, ist es wie in \refFig{fig:frontend:poc:textFeld:focus} abgebildet, dargestellt. In diesem Zustand erlaubt es eine Eingabe durch den Nutzer.
 Der aktuelle Wert wird dann im Rahmen angezeigt. 
 Wenn das Textfeld abgewählt wird und damit den Fokus verliert, wird die Eingabe verworfen und es zeigt wieder den alten Wert an.
-Wird die Eingabe mit \eigenName{Enter} bestätigt wird der Neue Wert an das Backend gesendet. 
+Wird die Eingabe mit \eigenName{Enter} bestätigt wird der neue Wert an das Backend gesendet. 
 Das Textfeld zeigt diesen allerdings erst nach Bestätigung der Änderung durch das Backend an. 
-In \refFig{fig:frontend:poc:textFeld:nachAenderung} sieht man den in \refFig{fig:frontend:poc:textFeld:focus} eingegeben neuen Wert \eigenNameNorm{neuer Text} in der gleichen Darstellung wie in \refFig{fig:frontend:poc:textFeld:noFocus} dargestellt.
+In \refFig{fig:frontend:poc:textFeld:nachAenderung} sieht man den in \refFig{fig:frontend:poc:textFeld:focus} eingegeben neuen Wert \eigenNameNorm{neuer Text} in der gleichen Darstellungsform wie in \refFig{fig:frontend:poc:textFeld:noFocus} dargestellt.
 Da der Text länger ist wie das Textfeld, wird dieser mit \eigenNameNorm{ \dots} abgekürzt.
-Das \ac{gui} Element \eigenName{Button} hat die in \refFig{fig:frontend:poc:button} abgebildeten zwei Darstellungsformen.
+\\Das \ac{gui} Element \eigenName{Button} hat die in \refFig{fig:frontend:poc:button} abgebildeten zwei Darstellungsformen.
 \begin{figure}[ht]
   \centering
   \hspace{0.1\textwidth}
@@ -82,7 +82,7 @@ Durch das Klicken des Buttons wird der Wert der DataNode in ihren komplementäre
 Der auf dem Button angezeigte Text, ist in einer \emph{ParamNode} gespeichert. Die Farbe des Buttons ist gemultiplext.
 In einer \emph{ParamNode} ist ein \ac{json} Array gespeichert, das die einzelnen Farben enthält.
 Diese können dann mit der \eigenName{colorSelector} \emph{DataNode} ausgewählt werden. 
-Das dritte \ac{gui} Element auf der Beispielseite in \refFig{fig:frontend:poc:page} ist ein einfaches label.
+\\Das dritte \ac{gui} Element auf der Beispielseite in \refFig{fig:frontend:poc:page} ist ein einfaches Label.
 Der Text des Labels ist gemultiplext. Dieser Mechanismus ist analog zu der Farbe eines Buttons implementiert. 
 
 \begin{figure}[ht]
