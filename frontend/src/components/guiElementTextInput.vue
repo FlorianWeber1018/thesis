@@ -1,15 +1,27 @@
 <template>
-  <div class="absolutePos" v-bind:style="{
+  <div
+    class="absolutePos"
+    v-bind:style="{
         left: posX,
         top: posY,
         width: sizeX,
         height: sizeY
-      }">
-    <v-btn
+      }"
+  >
+    <v-text-field
+      v-bind:hint="name"
+      v-bind:label="text"
+      v-bind:loading="highlight"
       v-bind:color="color"
-      v-bind:outlined="btnStateValue"
-      v-on:click="toggleState()"
-    >{{ text }}</v-btn>
+      v-model="tempText"
+      v-on:blur="blured"
+      v-on:keydown.enter="enter"
+      v-on:keydown.escape="esc"
+      v-on:focus="focused"
+      filled
+      outlined
+      persistent-hint
+    ></v-text-field>
   </div>
 </template>
 <style scoped>
@@ -20,7 +32,7 @@
 <script>
 import { mapActions } from "vuex";
 export default {
-  name: "guiElementButton",
+  name: "guiElementTextInput",
   components: null,
   props: {
     guiElementStruct: {
@@ -28,18 +40,37 @@ export default {
       required: true
     }
   },
-  data: () => ({}),
+  data: function() {
+    return {
+      tempText: "",
+      highlight: false
+    };
+  },
   methods: {
     ...mapActions(["ws_send_wsEvent_dataNodeChange"]),
-    toggleState: function() {
+    sendNewText: function(newText) {
       let dataNode = [];
-      dataNode.push(String(this.btnStateID));
-      if (this.btnStateValue === true) {
-        dataNode.push("0");
-      } else {
-        dataNode.push("1");
-      }
+      dataNode.push(String(this.textID));
+      dataNode.push(newText);
       this.ws_send_wsEvent_dataNodeChange(dataNode);
+    },      
+    sendTempText: function() {
+      this.sendNewText(this.tempText);
+      event.target.blur();
+    },
+    esc: function() {
+      event.target.blur();
+    },
+    enter: function() {
+      this.sendTempText();
+      event.target.blur();
+    },
+    blured: function() {
+      this.tempText = "";
+      this.highlight = false;
+    },
+    focused: function() {
+      this.highlight = true;
     }
   },
   computed: {
@@ -48,6 +79,9 @@ export default {
     },
     dataNodes: function() {
       return this.guiElementStruct.dataNodes;
+    },
+    name: function() {
+      return this.guiElementStruct.name;
     },
     color: function() {
       if (this.paramNodes["colorEnum"].value !== null) {
@@ -58,20 +92,17 @@ export default {
         return "";
       }
     },
-    btnStateID: function() {
-      return this.dataNodes["buttonState"].id;
-    },
-    btnStateValue: function() {
-      return this.dataNodes["buttonState"].value;
+    textID: function() {
+      return this.dataNodes["text"].id;
     },
     text: function() {
       return this.dataNodes["text"].value;
     },
     posX: function() {
-      return String(this.paramNodes["posX"].value+200) + "px";
+      return String(this.paramNodes["posX"].value + 20) + "px";
     },
     posY: function() {
-      return String(this.paramNodes["posY"].value+20) + "px";
+      return String(this.paramNodes["posY"].value + 20) + "px";
     },
     sizeX: function() {
       return String(this.paramNodes["sizeX"].value) + "px";
@@ -81,7 +112,7 @@ export default {
     }
   },
   created: function() {
-    //this.$vuetify.theme.dark = true;
+    this.$vuetify.theme.dark = true;
   }
 };
 </script>

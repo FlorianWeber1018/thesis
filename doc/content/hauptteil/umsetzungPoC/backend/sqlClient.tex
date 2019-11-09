@@ -40,9 +40,9 @@ Die Methode \eigenName{sql\_dispatch} ist in der Klasse \eigenName{Backend} reim
 In diesem Fall ist das Event \eigenName{paramNodeChange}. Hier wird der Payloadvektor so interpretiert, dass das erste Element die NodeID ist und das zweite der neue Wert.
 Diese Information wird dann schließlich als \eigenName{ws\_message} kodiert und die Methode \eigenName{publishToAllSessions} der \eigenName{WebsocketServer} Klasse aufgerufen, 
 welche diese Information dann an alle Sessions weiterleitet.
-In jeder Methode, in der Daten der Websocket Schnittstelle in Querys verwendet werden, können diese nicht als \mintinline{c++}{const std::String&} übergeben werden, da diese durch die Methode \eigenName{escapeString} verändert werden um eine \emph{SQL-Injection} vorzubeugen.
+In jeder Methode, in der Daten der Websocket Schnittstelle in Querys verwendet werden, können diese nicht als \glqq \mintinline{c++}{const std::String &}\grqq{} übergeben werden, da diese durch die Methode \eigenName{escapeString} verändert werden um eine \emph{SQL-Injection} vorzubeugen.
 Diese Methode bedient sich dazu einer entsprechenden Funktion der verwendeten Bibliothek.
-Würde die Referenz auf den String als \mintinline{c++}{const} übergeben werden, könnte die Methode den String nicht verändern.
+Würde die Referenz auf den String als \glqq \mintinline{c++}{const}\grqq{}  übergeben werden, könnte die Methode den String nicht verändern.
 
 %kurze Erwähnung sinn der klasse
 %datenaustausch zwischen SqlClient zu abgeleitetrer...(dispatcher.... ) (I/O)

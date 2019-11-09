@@ -13,7 +13,7 @@ Auf die Erstellung eines Datenmodells für jeden \emph{GuiElement} Typ wurde ver
 Die Datenstruktur, die den \acp{plc} zur Verfügung gestellt wird, enthält eine \emph{Page}, die wiederum eine \emph{Page} enthalten kann oder ein oder mehrere \emph{GuiElements}.
 Jedes \emph{GuiElement} hat DataNodes deren Typ, entsprechend der Vorlage des \emph{GuiElement} Typs, in der \ac{sql} Datenbank festgelegt ist.
 Die Übersetzung der Typen ist dabei durch das Attribut \eigenName{basicTypeMapping} definiert, das die in der Datenbank gespeicherten Typ Strings auf die eingebauten \ac{opcua} Datentypen mappt.
-Die Umkehrung des Mappings ist in dem Attribut \eigenName{basicTypeMappingReverse} gespeichert.
+Die Umkehrung des Mappings ist in dem Attribut \mbox{\eigenName{basicTypeMappingReverse}} gespeichert.
 Die Klasse \eigenName{OpcuaServer} stellt den anderen Klassen des Backends Methoden zur Verfügung, um \emph{DataNodes}, \emph{GuiElements} und \emph{Pages} auf dem OpcuaServer zu erstellen.
 Die Methode \eigenName{readDataNode} ermöglicht das Auslesen einer einzelnen \emph{DataNode}. 
 Sie wird verwendet, wenn eine Seite im Frontend neu geladen wird und noch keine Daten vorhanden sind.

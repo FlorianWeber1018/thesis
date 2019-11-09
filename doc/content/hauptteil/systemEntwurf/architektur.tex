@@ -291,7 +291,7 @@ Sie besteht aus einzelnen Tabellen deren Primärschlüssel, ausgenommen einzelne
 Zentrales Element sind dabei die \ac{gui} Elemente (Tabelle \emph{GuiElements}). Jedes \ac{gui} Element ist einer Page (Tabelle \emph{Pages}) zugeordnet. 
 Eine Page kann wiederum einer anderen Page zugeordnet sein. 
 Dies wird erreicht indem jeder Page-Datensatz eine ParentID enthält, welche als Fremdschlüssel auf die übergeordnete Page zeigt. So entsteht eine Baumstruktur innerhalb der Entitäten.
-Jedes \ac{gui} Element hat \emph{n} Parameter und \emph{m} Data Nodes (mit $ n, m \in \N $). 
+Jedes \ac{gui} Element hat \emph{n} Parameter und \emph{m} Data Nodes (mit $ n, m \in \N_0 $). 
 Diese werden in den Tabellen \emph{GuiElementParams} sowie \emph{GuiElementDataNodes} verwaltet.
 Jede DataNode, beziehungsweise jeder Parameter, hat einen Datentyp, einen Namen, eine Beschreibung, sowie einen Wert. 
 Bei den Parametern entspricht dies dem tatsächlichen aktuellen Wert, 

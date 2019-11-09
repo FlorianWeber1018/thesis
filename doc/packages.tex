@@ -54,7 +54,7 @@
 %    autogobble,
 %    breaklines,
 %}
-
+\usepackage{adjustbox}
 
 
 
@@ -62,8 +62,8 @@
 \renewcommand{\listoflistingscaption}{Quellcodeverzeichnis}
 \newcommand{\refList}[1]{\listingscaption{} \ref{#1}}
 \newcommand{\refFig}[1]{\figurename{} \ref{#1}}
-\newcommand{\eigenName}[1]{\glqq \emph{#1}\grqq{}}
-
+\newcommand{\eigenName}[1]{\mbox{\glqq \emph{#1}\grqq{}}}
+\newcommand{\eigenNameNorm}[1]{\mbox{\glqq #1\grqq{}}}
 \newenvironment{code}{\captionsetup{type=listing}}{}
 
 %\renewcommand\theFancyVerbLine{\scriptsize\arabic{FancyVerbLine}}
