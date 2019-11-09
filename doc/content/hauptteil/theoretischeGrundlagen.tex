@@ -28,9 +28,9 @@
 %\section{Verteilte Systeme}
 %\subsection{Synchrones Datenmodell}
 %\subsection{Asynchrones Datenmodell}
-\section{Security}\label{sec:security}
-\subsection{Authentifizierung}
-\subsection{Verschlüsselung}
+% \section{Security}\label{sec:security}
+% \subsection{Authentifizierung}
+% \subsection{Verschlüsselung}
 \section{Websocket}
 %Protokoll WS bzw WSS Präfix
 Websockets bieten die Möglichkeit Nachrichten zwischen einem Server und einer Webanwendung asynchron auszutauschen.
@@ -83,27 +83,47 @@ Der Primary-Key muss als einziger Schlüssel zwingend vorhanden sein. Er bestimm
 Deshalb muss der Wert des Attributes das den Primary-Key bildet, innerhalb einer Tabelle einzigartig sein.
 Das heist es darf maximal ein Wertetupel innerhalb einer Relation existieren, mit dem selben Wert des Primärschlüssels.
 Der Primärschlüssel darf auch nicht \eigenName{NULL} sein.
-Ein Unique-Key stellt ein zusätzlichen Schlüssel dar, über die jeder Eintrag in einer Tabelle eindeutig identifizierbar ist.
+Ein Unique-Key stellt einen zusätzlichen Schlüssel dar, über die jeder Eintrag in einer Tabelle eindeutig identifizierbar ist.
 Wie auch der Primärschlüssel, darf dieser Schlüssel nicht \eigenName{NULL} sein.
 Er ist in jeder Tabelle nur optional vorhanden und kann auch mehrfach vorkommen.
 Der Foreign-Key (Fremdschlüssel) ist ein Schlüssel, der nur in einem relationalen \ac{dbms} unterstützt wird.
-Er ermöglicht es, einen Verweises auf eine andere Tabelle zu definieren.
+Er ermöglicht es, einen Verweis auf eine andere Tabelle zu definieren.
 Zur Veranschaulichung sei folgendes Beispiel einer relationalen Datenstruktur,
 auf einem \ac{sql} Server, gegeben.
-\begin{figure}[hbt]
+
+\begin{figure}[ht]
   \centering
-  \includegraphics[width=\textwidth]{content/hauptteil/theoretischeGrundlagen/rec/exampleSQL.png}
-\caption{Beispiel Datenstruktur}
- \label{fig:exampleSQLStructure}%%%%%%%%%%%%%AUSTAUSCHEN DURCH ERM!!!!!!!!!!!!!!!
+  \begin{subfigure}[h]{\textwidth}
+    \centering
+    \includegraphics[width=0.517045455\textwidth]{content/hauptteil/theoretischeGrundlagen/rec/exampleSQLAbteilung.pdf}
+    \caption{Tabelle \eigenName{Abteilung}}
+    \label{fig:exampleSQLStructure:abteilung}
+    \hspace{50.00mm}
+  \end{subfigure}
+  \begin{subfigure}[h]{\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{content/hauptteil/theoretischeGrundlagen/rec/exampleSQLMitarbeiterdaten.pdf}
+      \caption{Tabelle \eigenName{Mitarbeiter}}
+      \label{fig:exampleSQLStructure:mitarbeiter}
+      \hspace{50.00mm}
+  \end{subfigure}
+  \begin{subfigure}[h]{\textwidth}
+      \centering
+      \includegraphics[width=0.825284091\textwidth]{content/hauptteil/theoretischeGrundlagen/rec/exampleSQLErgebnis.pdf}
+      \caption{Ergebnis des Querys aus \refFig{fig:exampleSQLQuery}}
+      \label{fig:exampleSQLStructure:result}
+  \end{subfigure}
+  \caption[Beispiel Datenstruktur mit Ergebnis von einem \eigenName{Join} Query]{Beispiel Datenstruktur als Tabellen mit Ergebnis des Querys aus \refFig{fig:exampleSQLQuery}}
+  \label{fig:exampleSQLStructure}
 \end{figure}
-Wie in Abbildung \ref{fig:exampleSQLStructure} zu sehen, besteht die Datenbank \eigenName{Personal} aus zwei Tabellen.
-Die erste Tabelle hat die Bezeichnung (\eigenName{Abteilung}) mit den Spalten \eigenName{ID}, \eigenName{Bezeichnung} sowie Standort.
+Wie in der Abbildung \ref{fig:exampleSQLStructure} zu sehen ist, besteht die Datenbank aus zwei Tabellen.
+Die erste Tabelle hat die Bezeichnung \eigenName{Abteilung} (\refFig{fig:exampleSQLStructure:abteilung}) mit den Spalten \eigenName{ID}, \eigenName{Bezeichnung} sowie \eigenName{Standort}.
 Die Spalte \eigenName{ID} ist als Primary-Key deklariert.
-Die zweite Tabelle (\eigenName{Mitarbeiter}) enthält die Spalten 
+Die zweite Tabelle \eigenName{Mitarbeiter} (\refFig{fig:exampleSQLStructure:mitarbeiter}) enthält die Spalten 
 \eigenName{Personalnummer}, \eigenName{Vorname}, \eigenName{Nachname}, \eigenName{Telefonnummer}, \eigenName{EmailAdresse} und \eigenName{AbteilungID}.
 In dieser Tabelle ist die Personalnummer der Primärschlüssel.
 Um eine Verknüpfung der Spalte \eigenName{AbteilungID} der Tabelle \eigenName{Mitarbeiter} zu der Tabelle \eigenName{Abteilung} herzustellen, 
-wird ein Fremschlüssel definiert, der von der Spalte \eigenName{AbteilungID} der Tabelle \eigenName{Mitarbeiter} auf die Tabelle \eigenName{Abteilung}, 
+wird ein Fremdschlüssel definiert, der von der Spalte \eigenName{AbteilungID} der Tabelle \eigenName{Mitarbeiter} auf die Tabelle \eigenName{Abteilung}, 
 unter Benutzung deren Primärschlüssels, verweist.
 Die Definition eines Fremdschlüssels ist nicht zwingend notwendig, um die Verknüfung der zwei Relationen nach dieser Semantik zu ermöglichen.
 Es ermöglicht aber die selbstständige Erhaltung der referenziellen In­te­g­ri­tät durch das \ac{dbms}. 
@@ -123,7 +143,7 @@ sich aber um die konkrete Implementierung der Operation keinerlei Gedanken mache
 Um dies zu demonstrieren ist das folgende Beispiel, auf Basis der Beispieldatenbank in Abbildung \ref{fig:exampleSQLStructure}, gegeben.
 Nun möchte man alle Telefonnummern, Namen und E-Mail Adressen einer Abteilung haben, welche den Namen \emph{HW-Entwicklung} trägt.
 Dazu ist es notwendig die Datensätze der Mitarbeitertabelle mit den Datensätzen der Abteilungstabelle, 
-entsprechend des Fremsschlüssels in der Mitarbeiter Tabelle, zu kombinieren und alle Datensätze der so entstandenen Tabelle auszugeben, 
+entsprechend des Fremdschlüssels in der Mitarbeiter Tabelle, zu kombinieren und alle Datensätze der so entstandenen Tabelle auszugeben, 
 welche die Abteilungsbezeichnung \emph{HW-Entwicklung} tragen. 
 Die Query für diese Operation ist in Abbildung \ref{fig:exampleSQLQuery} abgebildet.
 \begin{figure}[hbt]
@@ -133,8 +153,8 @@ Die Query für diese Operation ist in Abbildung \ref{fig:exampleSQLQuery} abgebi
   \caption{Beispiel sqlQuery - Select mit Join}
   \label{fig:exampleSQLQuery}
 \end{figure}
-Die Antwort des Servers ist in Abbildung \ref{fig:exampleSQLStructure} unten links zu sehen.
-Rechts sieht man die Datensätze der beiden Quelltabellen des Querys.
+Die Antwort des Servers ist in \refFig{fig:exampleSQLStructure:result} zu sehen.
+Bei \refFig{fig:exampleSQLStructure:abteilung} und \refFig{fig:exampleSQLStructure:mitarbeiter} sieht man die Datensätze der beiden Quelltabellen des Querys.
 Wahrscheinlich würde man diesen einfachen Datenbank Join, in C/C++, mit den Daten in Structures gespeichert, mittels verschachtelter For-Schleifen implementieren. 
 Das Problem bei dieser Implementierung ist, dass man durch jedes Element iterieren muss.
 Das \ac{dbms} hat zur Lösung dieses Problems bessere Algorithmen hinterlegt (Stichwort: binärer Suchbaum, Hash-Maps\dots).
