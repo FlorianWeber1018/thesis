@@ -40,26 +40,26 @@ mit den Attributen \emph{Connection: Upgrade} und \emph{Upgrade: websocket} im H
 Unterstützt der \ac{http} Server das Websocket Protokoll, 
 bestätigt er die Anfrage mit einem \emph{HTTP/1.1 101 Switching Protocols} Response.
 Anschließend bauen die Teilnehmer eine \ac{tcp} Verbindung auf, die so lange bestehen bleibt, bis einer der Teilnehmer die Verbindung aktiv beendet 
-oder Ein Teilnehmer nicht mehr ereichbar ist.
-Die ausgetauschten Daten können Strings sein oder binäre Daten. Beides wird vom Websocket Protokoll unterstützt.
+oder ein Teilnehmer nicht mehr erreichbar ist.
+Die ausgetauschten Daten können Strings oder binäre Daten sein. Beides wird vom Websocket Protokoll unterstützt.
 Das Protokoll definiert allerdings keine Semantik der übertragenen Daten, 
 weshalb immer ein Subprotokoll nötig ist, um damit produktiv zu arbeiten.
 Wie auch eine \ac{http} Verbindung, kann eine Websocket Verbindung verschlüsselt werden. Dies erkennt man am Protokollpräfix des \ac{url}.
 Bei einer unverschlüsselten Verbindung lautet der Präfix \eigenName{ws://} und bei einer verschlüsselten Verbindung \eigenName{wss://}.
 
 \section{Datenbanken}
-Der Zweck eines Datenbanksystems ist es Daten persistent zu speichern und zur Verfügung zu stellen.
+Der Zweck eines Datenbanksystems ist es, Daten persistent zu speichern und zur Verfügung zu stellen.
 Ein Datenbanksystem setzt sich aus einer Datenbasis, sowie einem \ac{dbms} zusammen.
 Dabei stellt die Datenbasis den Speicher der Datenbank dar und das \ac{dbms} 
 das Programm durch das der Zugriff auf die Datenbasis ermöglicht wird.
-DDas DBMS ist notwendig, um konkurrierende Zugriffe von mehreren Nutzer auf die selbe Datenbasis zu verwalten \citep{Schubert:2007:3}. 
+Das \ac{dbms} ist notwendig, um konkurrierende Zugriffe von mehreren Nutzer auf die selbe Datenbasis zu verwalten \citep{Schubert:2007:3}. 
 Meistens bietet das \ac{dbms} als Interface eine Netzwerkschnittstelle an (Server-Client Architektur), es gibt allerdings auch Datenbanken deren \ac{dbms} Teil der Applikation werden (z.B. SQLite).
 
 \subsection{Relationale Datenbank}\label{subsec:relDB}
 Im Falle einer relationalen Datenbank werden Daten in Form von Relationen abgespeichert.
 Tabellen sind eine Darstellung von Relationen.\\
 Jede Relation hat Attribute mit einem in der Relation einzigartigem Attributnamen.
-Die Domänene eines Attributs ist die Menge aller Werte die ein Attribut annehmen kann.
+Die Domäne eines Attributs ist die Menge aller Werte, die ein Attribut annehmen kann.
 Ist der Wert eines Attributs unbekannt oder noch nicht bestimmt, ist der Wert des Attributs \eigenName{NULL} \citep{Studer:2016:2}.
 Werden Daten nun in einer Datenbank gespeichert, wird ein Wertetupel in eine Relation eingefügt.
 Die Relationen sind nur das strukturelle theoretische Konzept, das sich hinter einer relationalen Datenbank verbirgt.
@@ -69,7 +69,7 @@ ist es möglich zur Vereinfachung statt von Relationen von Tabellen zu sprechen.
 Das \ac{dbms} stellt eine Schnittstelle bereit um dem Nutzer die Daten zugänglich zu machen (\ac{crud} Operationen).
 Die Schnittstelle unterstützt meist die Sprache \ac{sql}. Diese Sprache ist in Abschnitt \ref{subsec:sql} genauer beschrieben.
 Relationen können nicht nur als Tabelle ausgegeben werden, es ist auch möglich sie zu verknüpfen.
-Wenn keine Regel angegeben wird wie zwei Relationen Verknüpft werden sollen, wird das informatische Kreuzprodukt gebildet.
+Wenn keine Regel angegeben wird wie zwei Relationen verknüpft werden sollen, wird das informatische Kreuzprodukt gebildet.
 Das bedeutet, dass jedes Wertetuple aus Relation A, mit jedem Wertetupel aus Relation B verknüft wird. 
 Dadurch entsteht eine neue Relation.
 In einer Datenbank existieren immer Schlüssel (Keys) innerhalb einer Tabelle.
@@ -81,11 +81,11 @@ Dabei gibt es drei Typen:
 \end{itemize}
 Der Primary-Key muss als einziger Schlüssel zwingend vorhanden sein. Er bestimmt nach was das \ac{dbms} die Datensätze ablegt.
 Deshalb muss der Wert des Attributes das den Primary-Key bildet, innerhalb einer Tabelle einzigartig sein.
-Das heist es darf maximal ein Wertetupel innerhalb einer Relation existieren, mit dem selben Wert des Primärschlüssels.
+Das heißt, es darf maximal ein Wertetupel mit dem selben Wert des Primärschlüssels, innerhalb einer Relation, existieren.
 Der Primärschlüssel darf auch nicht \eigenName{NULL} sein.
 Ein Unique-Key stellt einen zusätzlichen Schlüssel dar, über die jeder Eintrag in einer Tabelle eindeutig identifizierbar ist.
 Wie auch der Primärschlüssel, darf dieser Schlüssel nicht \eigenName{NULL} sein.
-Er ist in jeder Tabelle nur optional vorhanden und kann auch mehrfach vorkommen.
+Er ist in jeder Tabelle nur optional vorhanden. Es ist allerdings auch möglich dass mehrere Unique-Keys existieren.
 Der Foreign-Key (Fremdschlüssel) ist ein Schlüssel, der nur in einem relationalen \ac{dbms} unterstützt wird.
 Er ermöglicht es, einen Verweis auf eine andere Tabelle zu definieren.
 Zur Veranschaulichung sei folgendes Beispiel einer relationalen Datenstruktur,
@@ -113,7 +113,7 @@ auf einem \ac{sql} Server, gegeben.
       \caption{Ergebnis des Querys aus \refFig{fig:exampleSQLQuery}}
       \label{fig:exampleSQLStructure:result}
   \end{subfigure}
-  \caption[Beispiel Datenstruktur mit Ergebnis von einem \eigenName{Join} Query]{Beispiel Datenstruktur als Tabellen mit Ergebnis des Querys aus \refFig{fig:exampleSQLQuery}}
+  \caption[Beispiel Datenstruktur mit Ergebnis von einem \eigenName{Join} Query]{Eigene Beispiel Datenstruktur als Tabellen mit Ergebnis des Querys aus \refFig{fig:exampleSQLQuery}}
   \label{fig:exampleSQLStructure}
 \end{figure}
 Wie in der Abbildung \ref{fig:exampleSQLStructure} zu sehen ist, besteht die Datenbank aus zwei Tabellen.
@@ -134,13 +134,13 @@ Bei beiden Verfahren bleibt die referenzielle In­te­g­ri­tät erhalten.
 Das heißt es gibt nach dem Löschen keine Referenzen, die nicht aufgelöst werden können.
 
 \subsection{\acs{sql}}\label{subsec:sql}
-\acs{sql} ist eine Abkürzung für \acl{sql}. Dabei handelt es sich um eine Sprache, 
+\acs{sql} ist eine Abkürzung für \acl{sql}. Dabei handelt es sich um eine herstellerunabhängige Sprache, 
 welche das Erzeugen und Verwalten von Datenstrukturen ermöglicht. 
 Außerdem ermöglicht sie das Abfragen, Einfügen, Verändern, sowie Verknüpfen von Datensätzen.
 Dabei unterscheidet sich \ac{sql} sehr von anderen Programmiersprachen.
 So besteht der Ansatz bei \ac{sql} eher darin zu definieren, was man als Ergebnis möchte, 
-sich aber um die konkrete Implementierung der Operation keinerlei Gedanken machen braucht.
-Um dies zu demonstrieren ist das folgende Beispiel, auf Basis der Beispieldatenbank in Abbildung \ref{fig:exampleSQLStructure}, gegeben.
+sich aber um die konkrete Implementierung der Operation keinerlei Gedanken zu machen braucht.
+Um dies zu demonstrieren, ist das folgende Beispiel, auf Basis der Beispieldatenbank in Abbildung \ref{fig:exampleSQLStructure}, gegeben.
 Nun möchte man alle Telefonnummern, Namen und E-Mail Adressen einer Abteilung haben, welche den Namen \emph{HW-Entwicklung} trägt.
 Dazu ist es notwendig die Datensätze der Mitarbeitertabelle mit den Datensätzen der Abteilungstabelle, 
 entsprechend des Fremdschlüssels in der Mitarbeiter Tabelle, zu kombinieren und alle Datensätze der so entstandenen Tabelle auszugeben, 
@@ -150,7 +150,7 @@ Die Query für diese Operation ist in Abbildung \ref{fig:exampleSQLQuery} abgebi
   %\centering
   %\inputsql{content/hauptteil/theoretischeGrundlagen/rec/sqlQuery.sql}
   \inputminted{sql}{content/hauptteil/theoretischeGrundlagen/rec/sqlQuery.sql}
-  \caption{Beispiel sqlQuery - Select mit Join}
+  \caption{Eigenes Beispiel SQL Query - Select mit Join}
   \label{fig:exampleSQLQuery}
 \end{figure}
 Die Antwort des Servers ist in \refFig{fig:exampleSQLStructure:result} zu sehen.
@@ -159,7 +159,7 @@ Wahrscheinlich würde man diesen einfachen Datenbank Join, in C/C++, mit den Dat
 Das Problem bei dieser Implementierung ist, dass man durch jedes Element iterieren muss.
 Das \ac{dbms} hat zur Lösung dieses Problems bessere Algorithmen hinterlegt (Stichwort: binärer Suchbaum, Hash-Maps\dots).
 
-\subsection{Stored Procedurs}\label{subsec:storedProc}
+\subsection{Stored Procedures}\label{subsec:storedProc}
 Ein \ac{sql} Server unterstützt nicht nur das Manipulieren und Ausgeben von Daten mit \ac{sql}, sondern auch das Speichern von Funktionen und Prozeduren.
 Diese Prozeduren und Funktionen sind auch in \ac{sql} geschrieben.
 Sie ermöglichen dem Entwickler das Auslagern komplexer \ac{sql} Querys.
@@ -172,8 +172,8 @@ Prozeduren werden durch ein \emph{CALL} Befehl aufgerufen.
 
 \section{OPC UA}
 \ac{opcua} ist ein Thema, das immer wieder mit Industrie 4.0 in Verbindung gebracht wird.
-\citet{opcua:2018} fasst \acs{opcua} in den wenigen  Worten zusammen:\\
-\eigenName{OPC UA (Open Platform Communications Unified Architecture) ist eine Sammlung von Standards 
+\citet{opcua:2018} fasst \acs{opcua} in wenigen  Worten zusammen:\\
+\eigenNameUmbr{OPC UA (Open Platform Communications Unified Architecture) ist eine Sammlung von Standards 
 für die Kommunikation und den Datenaustausch im Umfeld der Industrieautomation. 
 Mithilfe von OPC UA werden sowohl der Transport von Machine-to-Machine-Daten 
 als auch Schnittstellen und die Semantik von Daten beschrieben. 
@@ -184,7 +184,7 @@ Ein solcher Standard ist \ac{opcua}.
 Er definiert nicht nur wie Daten ausgetauscht werden, 
 sondern auch wie die Daten zu interpretieren sind (Semantik).
 Dabei bedient sich ein \ac{opcua} Server einem eingebauten Informationsmodell. 
-Dies kann man sich vorstellen wie Klassen und Objekte in der objektorientierten Programmierung.
+Dies kann man sich wie Klassen und Objekte in der objektorientierten Programmierung vorstellen.
 Als Beispiel bietet Hersteller A eine Pumpe am Markt an. 
 Diese Pumpe besitzt eine \ac{opcua} Schnittstelle (Server).
 Dieser Server hat ein Pumpenobjekt mit der Bezeichung \eigenName{pumpe\_xyz\_A}, das eine Menge an Attributen besitzt die man lesen, schreiben, oder lesen und schreiben kann.
@@ -196,6 +196,7 @@ Nun möchte man diese Pumpe des Herstellers A durch ein \ac{plc} des Herstellers
 Bei einer propriotären Schnittstelle, würde dies zu Problemen führen da dem Hersteller B das Informationsmodell der Pumpe nicht bekannt ist. 
 Hersteller A müsste in diesem Fall Dokumente liefern, mit denen Hersteller B die Pumpe ansteuern könnte.
 Der Hersteller wäre also gezwungen, für jeden größeren \ac{plc} Hersteller, verschiedene Dokumente zur Verfügung zu stellen.
+
 \ac{opcua} geht an dieser Stelle einen anderen Weg. 
 Der \ac{opcua} Standard stellt eine Menge an \ac{opcua} Klassen zur Verfügung, 
 von denen die Hersteller nun ihre eigenen Klassen ableiten können.
