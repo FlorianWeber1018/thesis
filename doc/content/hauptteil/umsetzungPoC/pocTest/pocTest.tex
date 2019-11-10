@@ -55,7 +55,7 @@ Um diesen Sachverhalt zu erklären, benötigt man es tieferes Verständnis für 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth]{content/hauptteil/umsetzungPoC/pocTest/res/tcpPackageLostGraph.pdf}
-  \caption{Verhalten von TCP bei Packetverlust \citep{tcp:articel}}
+  \caption{Verhalten von \ac{tcp} bei Packetverlust \citep{tcp:articel}}
   \label{fig:testing:tcp:retrans}
 \end{figure}
 In \refFig{fig:testing:tcp:retrans} ist dargestellt wie der Datenaustausch bei tcp funktioniert.
@@ -81,4 +81,4 @@ Es wird vermutet, dass dies der Regelalgorithmus der Wartezeit auf das \ac{ack} 
 Dies würde den wahrscheinlich endlosen Anstieg der Latenz begründen.
 Unter der Annahme, dass diese These korrekt ist vermutet der Autor das Problem in der Implementierung einer Websocket Session in der sich senden und empfangen den selben Thread teilen.
 Leider kann dieser Sachverhalt aufgrund Zeitmangels nicht weitergehend untersucht werden.
-\\Die Echtzeitfähigkeit der Implementierung des aktuellen \ac{poc} ist damit wiederlegt, da die Schnittstelle zwischen Backend und Frontend nicht echtzeitfähig ist.
+\\Die Echtzeitfähigkeit der Implementierung des aktuellen \ac{poc} ist damit wiederlegt, da die Schnittstelle zwischen Backend und Frontend aufgrund der nicht endlichen Reaktionszeit nicht echtzeitfähig ist.
