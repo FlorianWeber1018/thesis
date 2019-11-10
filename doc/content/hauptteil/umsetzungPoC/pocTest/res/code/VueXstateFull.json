@@ -59,33 +59,158 @@
             "value": "[\"red\",\"green\",\"blue\",\"#FF00FF\"]",
             "description": "JSON Array with the colors that are selectable with the \"colorSelector DataNode\""
           },
-          "maxSizeX": {
+          "sizeX": {
             "id": 2,
-            "name": "maxSizeX",
+            "name": "sizeX",
             "type": "UInt16",
-            "value": 65535,
+            "value": 100,
             "description": "maximum Size of the GuiElement in X"
           },
-          "maxSizeY": {
+          "sizeY": {
             "id": 3,
-            "name": "maxSizeY",
+            "name": "sizeY",
             "type": "UInt16",
-            "value": 65535,
+            "value": 50,
             "description": "maximum Size of the GuiElement in Y"
           },
           "posX": {
             "id": 4,
             "name": "posX",
             "type": "UInt16",
-            "value": 50,
-            "description": "position of the GuiElement in  X counted from the left side in %"
+            "value": 0,
+            "description": "position of the GuiElement in X counted from the left side in px"
           },
           "posY": {
             "id": 5,
             "name": "posY",
             "type": "UInt16",
             "value": 0,
-            "description": "position of the GuiElement in  Y counted from the top of the Page in px"
+            "description": "position of the GuiElement in Y counted from the top of the Page in px"
+          }
+        }
+      },
+      "2": {
+        "id": 2,
+        "type": "textInput",
+        "name": "ein Textfeld",
+        "description": "input Field for inserting a text",
+        "dataNodes": {
+          "colorSelector": {
+            "id": 4,
+            "name": "colorSelector",
+            "type": "UInt8",
+            "value": 0,
+            "description": "DataNode to mux different colors to display a state"
+          },
+          "text": {
+            "id": 5,
+            "name": "text",
+            "type": "String",
+            "value": "",
+            "description": "text which was typed into and displayed on the Text input field"
+          }
+        },
+        "paramNodes": {
+          "colorEnum": {
+            "id": 8,
+            "name": "colorEnum",
+            "type": "String",
+            "value": "[\"red\",\"green\",\"blue\",\"#FF00FF\"]",
+            "description": "JSON Array with the colors that are selectable with the \"colorSelector DataNode\""
+          },
+          "sizeX": {
+            "id": 9,
+            "name": "sizeX",
+            "type": "UInt16",
+            "value": 100,
+            "description": "maximum Size of the GuiElement in X"
+          },
+          "sizeY": {
+            "id": 10,
+            "name": "sizeY",
+            "type": "UInt16",
+            "value": 50,
+            "description": "maximum Size of the GuiElement in Y"
+          },
+          "posX": {
+            "id": 11,
+            "name": "posX",
+            "type": "UInt16",
+            "value": 0,
+            "description": "position of the GuiElement in X counted from the left side in px"
+          },
+          "posY": {
+            "id": 12,
+            "name": "posY",
+            "type": "UInt16",
+            "value": 0,
+            "description": "position of the GuiElement in Y counted from the top of the Page in px"
+          }
+        }
+      },
+      "3": {
+        "id": 3,
+        "type": "label",
+        "name": "ein Label",
+        "description": "label for showing constant Text",
+        "dataNodes": {
+          "textSelector": {
+            "id": 7,
+            "name": "textSelector",
+            "type": "UInt8",
+            "value": 0,
+            "description": "DataNode to mux different texts to display"
+          }
+        },
+        "paramNodes": {
+          "sizeX": {
+            "id": 15,
+            "name": "sizeX",
+            "type": "UInt16",
+            "value": 100,
+            "description": "maximum Size of the GuiElement in X"
+          },
+          "sizeY": {
+            "id": 16,
+            "name": "sizeY",
+            "type": "UInt16",
+            "value": 50,
+            "description": "maximum Size of the GuiElement in Y"
+          },
+          "posX": {
+            "id": 17,
+            "name": "posX",
+            "type": "UInt16",
+            "value": 0,
+            "description": "position of the GuiElement in X counted from the left side in px"
+          },
+          "posY": {
+            "id": 18,
+            "name": "posY",
+            "type": "UInt16",
+            "value": 0,
+            "description": "position of the GuiElement in Y counted from the top of the Page in px"
+          },
+          "color": {
+            "id": 19,
+            "name": "color",
+            "type": "String",
+            "value": "blue",
+            "description": "primary color"
+          },
+          "textColor": {
+            "id": 20,
+            "name": "textColor",
+            "type": "String",
+            "value": "white",
+            "description": "the color of the text"
+          },
+          "textEnum": {
+            "id": 21,
+            "name": "textEnum",
+            "type": "String",
+            "value": "[\"first Text\",\"second text\", \"third text\"]",
+            "description": "JSON Array with the different texts which can selected with the \"textSelector DataNode\""
           }
         }
       }

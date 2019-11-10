@@ -11,6 +11,14 @@ Das Netzwerk besteht aus dem einen Computer mit dem Backend (IP Adresse: 192.168
 Auf dem Windows Computer wird die Software \eigenName{UaExpert} sowie \eigenName{Chrome} ausgeführt.
 Beide Rechner sind in einem 1GBit Ethernet Netzwerk durch ein Switch verbunden.
 
+\subsection{Test der \acs{opcua} Schnittstelle}
+Um die \ac{opcua} Schnittstelle des \ac{scada} Systems zu testen, 
+wird in der Software \eigenName{UaExpert} der Text eines Buttons geändert und die Änderung auf dem geöffneten Frontend, 
+in \eigenName{Chrome}, verfolgt.
+Anschließend wird der Button betätigt und es wird in der Software \eigenName{UaExpert} überprüft ob sich der zugehöhrige Wert des Buttons ändert
+Beide Tests waren erfolgreich, der Button ändert wie erwartet seinen Text auf den neuen Wert und die \emph{DataNode} ändert Ihren Wert von \emph{true} auf \emph{false}.
+Da die \ac{opcua} Schnittstelle durch die Bibliothek \eigenName{open62541} implementiert ist und diese bereits durch die \emph{OPC Foundation} zertifiziert wurde \citep{cert62541}, wird deren Verhalten hier nicht weiter untersucht.
+
 \subsection{Test der Echtzeitfähigkeit}
 Um die Echtzeitfähigkeit zu belegen, wird die Schnittstelle zum Frontend mit einem Skript getestet.
 Dieses Skript ist im Anghang unter \refList{list:testing:latency} zu finden. 
