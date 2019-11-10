@@ -27,7 +27,7 @@ das die \eigenName{nodeID} und den neuen Wert der DataNode beinhaltet. Dieses Ob
   \label{fig:backend:classDiag:opcuaCR}
 \end{figure}
 Das \eigenName{OpcuaServer} Objekt hat drei Threads. 
-Ein Thread der exclusiv dem nativen Server der \emph{opne62541} Bibliothek zugeordnet ist und zwei Threads, mit denen zyklisch geprüft wird, 
+Ein Thread der exklusiv dem nativen Server der \emph{opne62541} Bibliothek zugeordnet ist und zwei Threads, mit denen zyklisch geprüft wird, 
 ob \eigenName{opcua\_changeRequest} Objekte in der Warteschlange (Attribut \eigenName{changeRequests\_m}) vorhanden sind.
 Sind in der Warteschlange \eigenName{opcua\_changeRequest} Objekte vorhanden, wird jedes Element an die Methode \eigenName{performChangeRequest} übergeben und aus der Warteschlange entfernt.
 In der Methode \eigenName{performChangeRequest} wird dann die Änderung an der Datenstruktur durchgeführt. % eventuell noch den Trick mit NodeContext erklären () void*.....

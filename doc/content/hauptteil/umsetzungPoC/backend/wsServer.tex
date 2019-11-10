@@ -20,7 +20,7 @@ Solche Race Conditions bedarfen keiner echten Simultanität (mehrere Prozessorke
 Ist ein Thread nun mit der Arbeit an der geschützten Ressource fertig, gibt er sie wieder frei indem er die Methode \eigenName{std::mutex::unlock()} aufruft.
 Das scheint der einfachste Weg zu sein, aber nicht der sicherste. 
 Wenn im Code zwischen \eigenName{lock()} und \eigenName{unlock()} eine Exception eintritt, 
-wird zwar die Ressource danach nichtmehr benötigt, es wird aber auch nicht \eigenName{unlock()} aufgerufen.
+wird zwar die Ressource danach nicht mehr benötigt, es wird aber auch nicht \eigenName{unlock()} aufgerufen.
 Man spricht in diesem Fall von einem \emph{Deadlock}, da das Mutex von einem Thread gesperrt wurde und nie wieder entsperrt wird. 
 Das führt dazu, dass alle anderen Threads, die die Ressource benötigen, endlos auf deren Freigabe warten. 
 Um das zu verhindern bietet die \ac{stl} eine \eigenName{lock\_guard} Klasse, die bei ihrer Zerstörung das Mutex selbständig wieder frei gibt.

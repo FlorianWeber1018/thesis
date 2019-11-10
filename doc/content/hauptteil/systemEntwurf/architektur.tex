@@ -4,13 +4,13 @@
 		\centering
 		\includegraphics[width=\textwidth]{content/hauptteil/systemEntwurf/res/comMod.pdf}
     \caption[Kommunikationsmodell des \acs{scada} Systems]{Kommunikationsmodell des \acs{scada} Systems.\\
-      Die CPUs sind per \acs{opcua} an das Scada System angebunden und haben die Rolle eines \acs{opcua} Clients.
+      Die CPUs sind per \acs{opcua} an das \acs{scada} System angebunden und haben die Rolle eines \acs{opcua} Clients.
       Die Webapplikation im Browser kommuniziert über \acs{wss} sowie \acs{https} verschlüsselt mit dem Backend.}
 		\label{img:comMod}
 \end{figure}
 Wie in \refFig{img:comMod} dargestellt, lässt sich die Architektur des \ac{scada} Systems in \acp{plc}, Backend und Frontends unterteilen.
 Unter Frontend (Abschnitt \ref{subsec:archFrontend}) versteht man die (in diesem Fall) grafische Schnittstelle, 
-die es dem Nutzer ermöglicht mit dem System zu interagieren.
+die es dem Nutzer ermöglicht, mit dem System zu interagieren.
 Das Backend (Abschnitt \ref{subsec:archBackend}) fasst den Rest des Systems zusammen.
 
 \subsection{Backend}\label{subsec:archBackend}
@@ -28,11 +28,11 @@ da er als einzige Komponente keine Verbindung mit dem Rest des Backends hat.
 Dies ist deshalb möglich, da der \ac{https} Server dazu da ist, die \ac{html}, die \ac{css}, sowie die \ac{js} Dokumente 
 einmalig beim Seitenaufruf an das Endgerät (Frontend Host Device) auszuliefern.
 Von diesem Zeitpunkt an findet die Kommunikation zwischen Frontend und Backend ausschließlich über den \ac{wss} Server statt.
-Dabei exist immer genau eine Session für jede Frontendinstanz.%%%
-Zwischen dem Websocket Server und dem Frontend können ab diesem Zeitpunkt Strings ausgetauscht werden.
+Dabei exist immer genau eine Session für jede Frontendinstanz. 
+\\Zwischen dem Websocket Server und dem Frontend können ab diesem Zeitpunkt Strings ausgetauscht werden.
 Der \ac{opcua} Server hält die variablen Daten des Systems und bietet diese den angeschlossenen \acp{plc} an.
 Die Parametrierung des Frontends sowie alle anderen Daten, die persistiert werden müssen, 
-werden in einem \ac{sql} Server, in Form einer relationalen Datenbank, gespeichert.
+werden in einem \ac{sql} Server gespeichert.
 
 \subsection{Frontend}\label{subsec:archFrontend}
 Das Frontend ist eine Webapplikation, mit Vue.js \citep{vue} als Webframework.%unauthentifiziert->login Fenster
@@ -48,7 +48,7 @@ zeigt das Layout in \refFig{fig:pageLayoutFrontendAuthenticated} an.
   \caption[Frontend Layout]{Layout des Frontends bei einer authentifizierten \acs{wss} Session}
   \label{fig:pageLayoutFrontendAuthenticated}
 \end{figure}
-Das Layout beinhaltet oben links einen Button um die Navigation der Seite ein und auszublenden.
+Das Layout beinhaltet oben links einen Button, um die Navigation der Seite ein und auszublenden.
 Ist die Navigation am linken Rand eingeblendet, so ermöglicht sie es zwischen den einzelnen Seiten der Visualisierung zu navigieren.
 Dazu zeigt die Navigation immer einen \glqq Zurück\grqq{} Button, um in die übergeordnete Seite zu wechseln, sowie Buttons um zu den untergeordneten Seiten zu wechseln.
 Existieren keine untergeordneten Seiten, oder keine übergeordnete Seite, so existieren auch die Buttons nicht.
@@ -58,7 +58,7 @@ Diese Datenstruktur ist eine Kopie der Daten aus dem Backend (Abschnitt \ref{sub
 Sie ist in Abschnitt \ref{subsec:dataFrontend} genauer beschrieben und kann nur über die Websocket Schnittstelle verändert werden. 
 So ist sichergestellt, dass die \ac{gui} Elemente immer die Daten des Backends darstellen und es keine Unterschiede gibt.
 Der Zustand ist also über alle Instanzen des Backends und Frontends immer konsistent.
-Wie Daten verändert werden können ist genauer in Abschnitt \ref{subsec:protokollBackendFrontend} beschrieben.
+Wie Daten verändert werden können, ist genauer in Abschnitt \ref{subsec:protokollBackendFrontend} beschrieben.
 Innerhalb der Webapplikation existiert eine Page Komponente die, entsprechend der \ac{gui} Elemente in der globalen Datenstruktur, 
 \ac{gui} Element Komponenten (\emph{guiElement}) instanziert und auf der Page anzeigt.
 Diese \ac{gui} Elemente werden entsprechend ihres Typs (zum Beispiel \emph{Button}) weiter in spezialisierte \ac{gui} Elemente (z.B. \emph{guiElementButton}) unterteilt.
@@ -85,7 +85,6 @@ welches die Semantik der ausgetauschten Daten definiert.
 An dieses Protokoll werden folgende Anforderungen gestellt.\\
 Das Protokoll soll
 \begin{itemize}
- \item [\dots]so einfach wie möglich sein.
  \item [\dots]alle Datentypen unterstützen, die das Backend definiert.
  \item [\dots]weitestgehend symmetrisch sein (Die Nachrichten vom Server zum Client haben eine ähnliche Gestalt wie die vom Client zum Server).
  \item [\dots]möglichst leichtgewichtig sein.
@@ -120,7 +119,7 @@ Aufgrund dieses Sachverhalts wird bei der Zustandsfreiheit eine Ausnahme gemacht
   \caption[Websocket Message Container und Event]{Websocket Message Container und Event}
   \label{fig:CDWME}
 \end{figure}
-Das erarbeitete Protokoll tauscht Strings aus, dessen Struktur der Klasse in \refFig{fig:CDWME:ws_message} zugrunde liegt.
+Das erarbeitete Protokoll tauscht Strings aus, deren Struktur der Klasse in \refFig{fig:CDWME:ws_message} zugrunde liegt.
 Diese Klasse besteht aus Nutzdaten (\emph{payload}), sowie einem Header (\emph{event}).
 Nutzdaten sind nur optional vorhanden, so ist möglich nur ein Event zu verschicken.
 Der Header ist eine Aufzählung verschiedener Events. 
@@ -279,7 +278,7 @@ Die Handler des Frontends sind in \refFig{fig:activityDiagramDispatcherFrontend}
 
 \section{Datenstruktur}
 \subsection{Backend}\label{subsec:dataBackend}
-\begin{figure}[ht]
+\begin{figure}[htb]
   \centering
   \includegraphics[width=\textwidth]{content/hauptteil/systemEntwurf/res/erd.pdf}
   \caption[\acs{erd} des \acs{scada} Systems]{\acs{erd} des \ac{scada} Systems.\\
@@ -290,8 +289,9 @@ Das abgebildete \ac{erd} in \refFig{img:erd}, stellt die globale Datenstruktur d
 Sie besteht aus einzelnen Tabellen deren Primärschlüssel, ausgenommen einzelner Hilfstabellen, immer eine ID ist.
 Zentrales Element sind dabei die \ac{gui} Elemente (Tabelle \emph{GuiElements}). Jedes \ac{gui} Element ist einer Page (Tabelle \emph{Pages}) zugeordnet. 
 Eine Page kann wiederum einer anderen Page zugeordnet sein. 
-Dies wird erreicht indem jeder Page-Datensatz eine ParentID enthält, welche als Fremdschlüssel auf die übergeordnete Page zeigt. So entsteht eine Baumstruktur innerhalb der Entitäten.
-Jedes \ac{gui} Element hat \emph{n} Parameter und \emph{m} Data Nodes (mit $ n, m \in \N_0 $). 
+Dies wird erreicht indem jeder Page-Datensatz eine ParentID enthält, welche als Fremdschlüssel auf die übergeordnete Page zeigt. 
+So entsteht eine Baumstruktur innerhalb der Entitäten.
+\\Jedes \ac{gui} Element hat \emph{n} Parameter und \emph{m} Data Nodes (mit $ n, m \in \N_0 $). 
 Diese werden in den Tabellen \emph{GuiElementParams} sowie \emph{GuiElementDataNodes} verwaltet.
 Jede DataNode, beziehungsweise jeder Parameter, hat einen Datentyp, einen Namen, eine Beschreibung, sowie einen Wert. 
 Bei den Parametern entspricht dies dem tatsächlichen aktuellen Wert, 
@@ -301,14 +301,15 @@ Jedem Typ sind nun \emph{n} DataNodeTemplates (Tabelle \emph{GuiElementDataNodeT
 aus denen die eigentlichen DataNodes beim Instanzieren erstellt werden. Da eine solche Vorlage für DataNodes auch für mehrere \ac{gui} Element Typen verwendet werden kann, 
 ist die Verbindung eine $n:m$ Bindung. 
 Dies ist in einer Datenbank nur durch eine Hilfstabelle, 
-welche die Primärschlüssel zweier Tabellen miteinander verknüpft, ereichbar. 
+welche die Primärschlüssel zweier Tabellen miteinander verknüpft, erreichbar. 
 Analog zu den DataNodes ist der gleiche Mechanismus für die Parameter vorgesehen.
-Um ein sauberes Interface zu schaffen sind zum Instanzieren, 
-sowie zum Löschen der \ac{gui} Elemente, Stored Procedures vorgesehen.
+\\Um ein sauberes Interface zu schaffen sind zum Instanzieren, 
+sowie zum Löschen der \ac{gui} Elemente Stored Procedures vorgesehen.
 Die komplette Datenstruktur des \ac{sql} Servers ist so abgelegt, 
 dass dieser alle relevanten Relationen kennt und entsprechend verwaltet.
 So werden beispielsweise beim Löschen eines \ac{gui} Elements alle zugehörigen DataNodes mitgelöscht und 
-beim Löschen einer kompletten Page werden alle der Page zugeordneten \ac{gui} Elemente auch gelöscht (\emph{on delete cascade}, Abschnitt \ref{subsec:relDB}).\\ 
+beim Löschen einer kompletten Page werden alle der Page zugeordneten \ac{gui} Elemente auch gelöscht 
+\mbox{(\emph{on delete cascade}, \refFig{subsec:relDB})}.\\ 
 Der \ac{opcua} Server hält alle DataNodes der \ac{gui} Elemente. 
 Diese \ac{gui} Elemente werden entsprechen der Pages, denen sie zugeordnet sind, auf dem \ac{opcua} Server abgelegt und 
 sind den \acp{plc} dort zugänglich.
@@ -324,31 +325,31 @@ entsprechend seines explizit abgespeicherten Datentyps, konvertiert.
 %hier noch mehr entry: OPCUASERVER::createDataNode(MYSQL_RES) aber: abstract ohne auf impl einzugehn
 GuiElements und Pages haben als Datentyp auf dem \ac{opcua} Server den Typ BaseObjectType.
 Auf einen Spezialisierung dieser Typdefinition für Pages und \ac{gui} Elements auf dem \ac{opcua} Server wird absichtlich verzichtet, 
-da sie nur zur Strukturierung der DataNodes, auf dem \ac{opcua} Server, genutzt werden.
+da sie nur zur Strukturierung der DataNodes auf dem \ac{opcua} Server genutzt werden.
 
 
 \subsection{Frontend}\label{subsec:dataFrontend}
 Die Datenstruktur des Frontends wird in dem Vue.js Plugin \emph{VueX} gespeichert.
-\begin{figure}[H]
+\begin{figure}[htb]
   \centering
   \includegraphics[width=0.79\textwidth]{content/hauptteil/systemEntwurf/res/structureFrontend.pdf}
   \caption[Frontend Datenstruktur]{Frontend Datenstruktur}
   \label{fig:structFrontendState}
-\end{figure} 
+\end{figure}
 Diese Struktur ist in \refFig{fig:structFrontendState} als Klassendiagramm dargestellt. Sie existiert nur einmal global im Frontend.
 Dabei macht VueX die Struktur, die im \eigenName{state} Objekt gespeichert ist, der restlichen Applikation verfügbar.
 Die angegebenen Datentypen im Diagramm geben nicht die nativen \acl{js} Datentypen an, sondern die Typen, 
 die im C++ Backend verwendet werden und als \ac{json} an das Frontend übermittelt werden.
 Die real im Frontend verwendeten Datentypen sind weniger spezifisch, 
 da \acl{js} zum Beispiel alle Zahlen unter dem Typ \eigenName{Number} abspeichert und dabei keine Unterscheidung des Typs unterstützt.
-Das \eigenName{state} Objekt enthält ein \eigenName{socket} Objekt, in dem die Daten der Websocket Verbindung gespeichert sind.
+\\Das \eigenName{state} Objekt enthält ein \eigenName{socket} Objekt, in dem die Daten der Websocket Verbindung gespeichert sind.
 Zusätzlich speichert es die \eigenName{pageID}, die angibt welche Seite aktuell dargestellt wird, eine Variable \eigenName{authenticated}, 
 als Indikator ob die Websocket Verbindung bereits authentifiziert ist, sowie ein \eigenName{pageStruct} Objekt, das alle weiteren Daten zur aktuellen Seite beinhaltet.
 Wird noch keine programmierte Seite des \ac{scada} Systems angezeigt, dann ist die Variable \eigenName{pageStruct} \emph{null} und es ist keine \eigenName{pageStruct} vorhanden.
 Das ist im Diagramm durch die explizite Angabe der Multiplizität (1 : 0..1) bei der Komposition gekennzeichnet.
 Bei der Initialisierung des \eigenName{state} Objekts ist das \eigenName{pageStruct} Objekt immer \emph{null}, 
 bis es gemäß des Protokolls aus Abschnitt \ref{subsec:protokollBackendFrontend} als \ac{json} empfangen wird.
-Das \eigenName{pageStruct} Objekt wird aus den Daten des Backends gebildet, welche eine einzelne Seite des \ac{scada} Systems betreffen.
+\\Das \eigenName{pageStruct} Objekt wird aus den Daten des Backends gebildet, welche eine einzelne Seite des \ac{scada} Systems betreffen.
 Es enthält die \eigenName{parentID} der übergeordneten Seite. 
 Ist die dargestellte Seite die Einstiegsseite und hat damit keine übergeordnete Seite, so ist diese Variable \emph{null}.
 Zusätzlich enthält sie ein Array mit Objekten, welche die wesentlichen Information zu den untergeordneten Seiten beinhalten.
@@ -357,9 +358,9 @@ den Titel (\eigenName{title}) sowie die Beschreibung (\eigenName{description}).
 Diese Informationen werden im Frontend benötigt, um eine Navigation durch die einzelnen Seiten des \ac{scada} Systems zu ermöglichen.
 Die restlichen Attribute des \eigenName{pageStruct} Objekts stellen die Daten der aktuell angezeigten Seite dar.
 Wie auch in der \eigenName{page} Klasse sind das die ID, der Titel und die Beschreibung.
-Zusätzlich enthält das \eigenName{pageStruct} Objekt beliebig viele GuiElemente (\eigenName{guiElements}). 
-Diese werden ae werden allerdings nicht als Array gespeichert, sondern als Objekt, indem jedes Attribut des Objekts ein \eigenName{guiElement} Objekt ist.
-Die Attributnamen sind dabei die IDs der guiElemente, sodass ein Zugriff auf ein einzelnes Element über deren ID möglich ist.
+\\Zusätzlich enthält das \eigenName{pageStruct} Objekt beliebig viele GuiElemente (\eigenName{guiElements}). 
+Diese werden allerdings nicht als Array gespeichert, sondern als Objekt, indem jedes Attribut des Objekts ein \eigenName{guiElement} Objekt ist.
+Die Attributnamen sind dabei die IDs der \ac{gui} Elemente, sodass ein Zugriff auf ein einzelnes Element über deren ID möglich ist.
 Jedes \eigenName{guiElement} besteht aus einer ID (\eigenName{id}), einem Typ (\eigenName{type}), einem Namen (\eigenName{name}), 
 einer Beschreibung (\eigenName{description}), sowie so vielen DataNodes und ParamNodes wie die Vorlage der Backend Datenstruktur (\refFig{img:erd}), des entsprechenden \eigenName{GuiElementTypes}, vorgibt.
 Die Nodes werden dabei in den zwei Attributen \eigenName{dataNodes} sowie \eigenName{paramNodes} als Objekt gespeichert. Die Attributnamen bilden dabei die Namen der Nodes, da diese pro \eigenName{guiElement} Objekt nur einmal vorhanden sind. 

@@ -5,15 +5,15 @@ Die statischen Dokumente (\ac{js}, \ac{html} und \ac{css}) werden von einem \emp
 Die Datenbank ist eine MariaDB Datenbank.
 Der Zugriff auf das \ac{scada} System erfolgt über einen zweiten Computer.
 Verschlüsselt wird die Verbindung zwischen Frontend und Backend durch ein selbst ausgestelltes und selbstsigniertes Zertifikat.
-Das Frontend wird durch den Browser \eigenName{Chrome} in der Version 77.0.3865.120 von \emph{Google LLC} ausgeführt und angezeigt.
-Die \ac{opcua} Schnittstelle wird zu Testzwecken mit der Software \eigenName{UaExpert}, in der Version 1.5.1 331 der \emph{Unified Automation GmbH}, angesprochen.
+Das Frontend wird durch den Browser \eigenName{Chrome} in der Version 77.0.3865.120 von \emph{Google} ausgeführt und angezeigt.
+Die \ac{opcua} Schnittstelle wird zu Testzwecken mit der Software \eigenName{UaExpert}, in der Version 1.5.1 331 der \emph{Unified Automation}, angesprochen.
 Das Netzwerk besteht aus dem einen Computer mit dem Backend (IP Adresse: 192.168.178.70), sowie einem weiteren Computer mit Windows 7 (IP Adresse: 192.168.178.160).
 Auf dem Windows Computer wird die Software \eigenName{UaExpert} sowie \eigenName{Chrome} ausgeführt.
 Beide Rechner sind in einem 1GBit Ethernet Netzwerk durch ein Switch verbunden.
 
 \subsection{Test der Echtzeitfähigkeit}
 Um die Echtzeitfähigkeit zu belegen, wird die Schnittstelle zum Frontend mit einem Skript getestet.
-Dieses Script ist im Anghang unter \refList{list:testing:latency} zu finden. 
+Dieses Skript ist im Anghang unter \refList{list:testing:latency} zu finden. 
 \\Es baut eine \ac{wss} Verbindung zum Backend auf und ändert so schnell wie möglich die DataNode mit der \eigenName{ID = 1}.
 Es wird also ein Automat etabliert der immer den Wert \emph{true} zu \emph{false} und \emph{false} zu \emph{true} ändert.
 Die Zeiten, wann eine Änderungsanforderung abgeschickt wird sowie wann die Bestätigung der Änderung im Client eintrifft, 
@@ -35,7 +35,7 @@ In \refFig{fig:testing:latency4hNorm:wireshark} ist ein Auszug des Mitschnitts d
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth]{content/hauptteil/umsetzungPoC/pocTest/res/LatenzNormal4hWireshark.pdf}
-  \caption{Auszug aus dem Paketmitschnitt während des vierstündigen Dauertests aus dem Programm Wireshark \citep{wireshark:program}}
+  \caption{Auszug aus dem Paketmitschnitt während des vierstündigen Dauertests aus dem Programm \mbox{Wireshark} \citep{wireshark:program}}
   \label{fig:testing:latency4hNorm:wireshark}
 \end{figure}
 In dem Auszug sieht man den Zeitstempel des Computers mit Windows 7, auf dem Wireshark mitschneidet, die Quelladresse (Source), die Zieladresse (Destination), das Protokoll (Protocol), die Länge (Length), sowie wenige Infos über den Inhalt des Pakets.
@@ -56,9 +56,9 @@ Wenn der Empfang innerhalb einer definierten Zeit (Retransmission Timer in \refF
 dann wird das Packet wiederholt gesendet.
 Diese Zeit in der der Sender auf das \ac{ack} wartet ist nicht konstant und wird entsprechend der Häufigkeit des Auftreten eines ausbleibenden \ac{ack} angepasst.
 Bleibt ein \ac{ack} aus, so wird die Zeit sollange erhöht, bis sie so hoch ist, dass sie der doppelten Laufzeit eines Packets auf dem Netzwerk entspricht.
-Es ist desshalb die doppelte Zeit, da das gesendete Packet die Zeit des Wegs zum Empfänger braucht und sich dazu die Laufzeit des \ac{ack} zurück zum Sender addiert.
+Es ist desshalb die doppelte Zeit, da das gesendete Packet die Zeit des Wegs zum Empfänger braucht und sich dazu die Laufzeit des \ac{ack} zurück zum Sender addiert. Diese Zeit nennt man \ac{rtt}.
 Das gilt allerdings nur bei symetrischen Routen zwischen Empfänger und Sender.
-Es wird vermutet, dass dieser Regelalgorithmus dafür verantwortlich ist, dass die Latenz stetig ansteigt.
+Es wird vermutet, dass dieser Regelalgorithmus (congestion control) dafür verantwortlich ist, dass die Latenz stetig ansteigt.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth]{content/hauptteil/umsetzungPoC/pocTest/res/LatenzNormal4hReqRes.pdf}
@@ -69,7 +69,8 @@ In \refFig{fig:testing:latency4hNorm:cnt} sind nochmal die selben Rohdaten die \
 allerdings nun nicht über die Zeit, 
 sondern über die Anzahl an vom Frontend an das Backend gesendeten Packeten. 
 Hier kann zu Begin, nach der kurzen Konstante innerhalb der ersten 1000 Werte, einen exponentiellen und zum Schluss einen linearen Anstieg erkennen.
-Es wird vermutet, dass dies der Regelagorithmus der Wartezeit auf das \ac{ack} ist und generell Packete vom Fronent zum Backend beim ersten Senden nicht vom Backend bestätigt werden.
+Es wird vermutet, dass dies der Regelalgorithmus der Wartezeit auf das \ac{ack} ist und generell Packete vom Fronent zum Backend beim ersten Senden nicht vom Backend bestätigt werden.
 Dies würde den wahrscheinlich endlosen Anstieg der Latenz begründen.
 Unter der Annahme, dass diese These korrekt ist vermutet der Autor das Problem in der Implementierung einer Websocket Session in der sich senden und empfangen den selben Thread teilen.
 Leider kann dieser Sachverhalt aufgrund Zeitmangels nicht weitergehend untersucht werden.
+\\Die Echtzeitfähigkeit der Implementierung des aktuellen \ac{poc} ist damit klar wiederlegt, da die Schnittstelle zwischen Backend und Frontend nicht echtzeitfähig ist.

@@ -194,7 +194,7 @@ Ein \ac{opcua} Server unterstützt aber nicht nur primitive Datetypen,
 sondern auch Objekte wie das Pumpenobjekt \eigenName{pumpe\_xyz\_A} des Herstellers A.
 Nun möchte man diese Pumpe des Herstellers A durch ein \ac{plc} des Herstellers B auslesen beziehungsweise steuern.
 Bei einer propriotären Schnittstelle, würde dies zu Problemen führen da dem Hersteller B das Informationsmodell der Pumpe nicht bekannt ist. 
-Hersteller A müsste in diesem Fall Dokumente liefern, mit denen Hersteller B die Pumpe ansteuern könnte.
+Hersteller A müsste in diesem Fall Dokumente liefern, mit denen Hersteller B die Pumpe ansteuern könnte. Diese wäre zum Beispiel eine \ac{edd} Datei.
 Der Hersteller wäre also gezwungen, für jeden größeren \ac{plc} Hersteller, verschiedene Dokumente zur Verfügung zu stellen.
 
 \ac{opcua} geht an dieser Stelle einen anderen Weg. 
@@ -234,11 +234,12 @@ Ethernet verhindert auf dem Bus (physikalischer Layer) keine Kollisionen sondern
 Wenn eine Kollision erkannt wurde, 
 wird das Senden auf dem Bus abgebrochen und nach einer zufälligen Zeit erneut versucht.
 Dieses Verfahren nennt man \ac{CSMA/CD}. 
-Wer den Zugriff auf den Bus bekommt ist Zufall.
+Den Buszugriff erhält immer der Teilnehmer der zuerst sendet. Wann ein anderer Teilnehmer dann den Buszugriff erhält ist Zufall.
 Deshalb ist nicht garantiert, dass man innerhalb einer definierten Zeitspanne die Daten übertragen kann.
 Man kann dieses Problem allerdings umgehen, indem man im physikalischen Layer bereits dafür sorgt, 
 dass keine Datenkollision auftreten kann. Dies ist zum Beispiel durch den Einsatz von Switches möglich.
-Diese trennen die einzelnen Sender voneinander und verhindern damit gezielt Kollisionen.
+Diese trennen die einzelnen Sender voneinander, sodass innerhalb einer Kollisiondomäne sich immer nur ein Sender befindet. Damit ist es möglich Kollisionen gezielt zu verhindern.
+
 Es muss an dieser Stelle angemerkt werden, dass man immernoch nicht vollständig echtzeitfähig Daten übertragen kann, 
 da das Netzwerk auch auf die aufkommende Datenlast ausgelegt sein muss.
 Dadurch ist es möglich mit Ethernet in einer kontrollierten Umgebung Daten in Echtzeit zu übertragen.
