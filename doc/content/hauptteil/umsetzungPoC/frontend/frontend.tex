@@ -7,18 +7,18 @@ In \refFig{fig:frontend:poc:login} sieht man die Startseite des Frontends.
   \caption{Screenshot der Login Seite im Browser}
   \label{fig:frontend:poc:login}
 \end{figure}
-Diese Seite ermöglicht die Authentifizierung ohne die eine weitere Interaktion mit dem Backend nicht möglich ist.
-Hat man sich durch Eingabe, einem gültigen Passworts mit dem zugehöhrigen Benutzernamen, authentifiziert, 
-so wird die erste Seite (\eigenName{ID = 1}) des \ac{scada} Systems angezeigt. In \refFig{fig:frontend:poc:page} ist diese Seite abgebildet.
+Diese Seite ermöglicht die Authentifizierung, ohne die eine weitere Interaktion mit dem Backend nicht möglich ist.
+Hat man sich durch die Eingabe, eines gültigen Passworts mit dem zugehöhrigen Benutzernamen authentifiziert, 
+wird die erste Seite (\eigenName{ID = 1}) des \ac{scada} Systems angezeigt. In \refFig{fig:frontend:poc:page} ist diese Seite abgebildet.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.8\textwidth]{content/hauptteil/umsetzungPoC/frontend/res/page.pdf}
   \caption{Screenshot einer Beispielseite}
   \label{fig:frontend:poc:page}
 \end{figure}
-Zur Veranschaulichung ist die Seite mit drei \ac{gui} Elementen gefüllt. 
-Die Datenstruktur, die dieser Seite zu Grunde liegt ist in \refList{list:bdoFrontend} im Anhang dargestellt.
+Zur Veranschaulichung ist diese Beispielseite mit drei \ac{gui} Elementen ausgestattet. 
 Diese sind ein Textfelds (links), ein Button (mittig), sowie ein Label (rechts).
+Die Datenstruktur, die dieser Seite zugrunde liegt, ist in \refList{list:bdoFrontend} im Anhang dargestellt.
 Das Textfeld hat die in \refFig{fig:frontend:poc:textFeld} dargestellten Darstellungsformen.
 \begin{figure}[ht]
   \centering
@@ -50,10 +50,11 @@ Das Textfeld hat die in \refFig{fig:frontend:poc:textFeld} dargestellten Darstel
 Da die Architektur in Abschnitt \ref{subsec:archFrontend} es verbietet Ist- und Sollzustand in der selben Variablen zu speichern, sind diese Werte auch im Textfeld getrennt.
 Wenn es nicht angeklickt wird, hat es nicht den Fokus und zeigt seinen aktuellen Wert an. 
 Diese Darstellung ist in \refFig{fig:frontend:poc:textFeld:noFocus} zu sehen. unter dem Textfeld wird der Name des Felds angezeigt.
-Wird das Textfeld angeklickt, ist es wie in \refFig{fig:frontend:poc:textFeld:focus} abgebildet, dargestellt. In diesem Zustand erlaubt es eine Eingabe durch den Nutzer.
-Der aktuelle Wert wird dann im Rahmen angezeigt. 
+Wird das Textfeld angeklickt, ist es wie in \refFig{fig:frontend:poc:textFeld:focus} abgebildet, dargestellt. 
+In diesem Zustand erlaubt es eine Eingabe durch den Nutzer.
+Der aktuelle Wert wird dann im Rahmen des Textfelds angezeigt. 
 Wenn das Textfeld abgewählt wird und damit den Fokus verliert, wird die Eingabe verworfen und es zeigt wieder den alten Wert an.
-Wird die Eingabe mit \eigenName{Enter} bestätigt wird der neue Wert an das Backend gesendet. 
+Wird die Eingabe mit \eigenName{Enter} bestätigt, wird der neue Wert an das Backend gesendet. 
 Das Textfeld zeigt diesen allerdings erst nach Bestätigung der Änderung durch das Backend an. 
 In \refFig{fig:frontend:poc:textFeld:nachAenderung} sieht man den in \refFig{fig:frontend:poc:textFeld:focus} eingegeben neuen Wert \eigenNameNorm{neuer Text} in der gleichen Darstellungsform wie in \refFig{fig:frontend:poc:textFeld:noFocus} dargestellt.
 Da der Text länger ist wie das Textfeld, wird dieser mit \eigenNameNorm{ \dots} abgekürzt.
@@ -79,12 +80,12 @@ Da der Text länger ist wie das Textfeld, wird dieser mit \eigenNameNorm{ \dots}
   \label{fig:frontend:poc:button}
 \end{figure}
 Diese werden entsprechend der DataNode \emph{buttonState} ausgewählt. 
-Durch das Klicken des Buttons wird der Wert der DataNode in ihren komplementären Wert geändert.
-Der auf dem Button angezeigte Text, ist in einer \emph{ParamNode} gespeichert. Die Farbe des Buttons ist gemultiplext.
+Durch das Klicken des Buttons wird der Wert der DataNode, entsprechend seines vorherigen Werts, geändert. 
+Der auf dem Button angezeigte Text ist in einer \emph{ParamNode} gespeichert. Die Farbe des Buttons ist gemultiplext.
 In einer \emph{ParamNode} ist ein \ac{json} Array gespeichert, das die einzelnen Farben enthält.
 Diese können dann mit der \eigenName{colorSelector} \emph{DataNode} ausgewählt werden. 
-\\Das dritte \ac{gui} Element auf der Beispielseite in \refFig{fig:frontend:poc:page} ist ein einfaches Label.
-Der Text des Labels ist gemultiplext. \\Dieser Mechanismus ist analog zu der Farbe eines Buttons implementiert. 
+\\Das dritte \ac{gui} Element auf der Beispielseite, dargestellt in \refFig{fig:frontend:poc:page}, ist ein Label.
+Der Text des Labels ist gemultiplext. Dieser Mechanismus ist analog zu der Farbe eines Buttons implementiert. 
 
 \begin{figure}[ht]
   \centering
@@ -92,6 +93,6 @@ Der Text des Labels ist gemultiplext. \\Dieser Mechanismus ist analog zu der Far
   \caption{Screenshot einer Beispielseite mit ausgeklappter Navigation}
   \label{fig:frontend:poc:page:nav}
 \end{figure}
-Um die Seite zu wechseln, kann man sich durch das Aufrufen der Navigationsleiste links, durch die Baumstruktur des \ac{scada} Systems navigieren.
+Um die Seite zu wechseln kann man sich, durch das Aufrufen der Navigationsleiste links, durch die Baumstruktur des \ac{scada} Systems navigieren.
 Diese Leiste ist in \refFig{fig:frontend:poc:page:nav} dargestellt und wird durch den Button oben links in \refFig{fig:frontend:poc:page} eingeblendet.
 Um die Navigation wieder auszublenden, muss in die Seite geklickt werden.

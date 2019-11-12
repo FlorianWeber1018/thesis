@@ -5,6 +5,7 @@
       :key="'gE_' + guiElementObj.id"
       :id="guiElementObj.id"
     />
+    <!--{{pageStruct}}-->
   </div>
 </template>
 <script>

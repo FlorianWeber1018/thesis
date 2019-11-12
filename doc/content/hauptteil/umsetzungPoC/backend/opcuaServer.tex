@@ -22,12 +22,12 @@ Muss der Wert einer \emph{DataNode} geändert werden, so muss ein \eigenName{opc
 das die \eigenName{nodeID} und den neuen Wert der DataNode beinhaltet. Dieses Objekt wird anschließend an die Methode \eigenName{flushChangeRequest} übergeben.
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.2\textwidth]{content/hauptteil/umsetzungPoC/backend/uml/classesOfOverview/opcua_changeRequest.pdf}
+  \includegraphics[width=0.4\textwidth]{content/hauptteil/umsetzungPoC/backend/uml/classesOfOverview/opcua_changeRequest.pdf}
   \caption{Klassendiagramm der Klasse \eigenName{opcua\_changeRequest}}
   \label{fig:backend:classDiag:opcuaCR}
 \end{figure}
 Das \eigenName{OpcuaServer} Objekt hat drei Threads. 
-Ein Thread der exklusiv dem nativen Server der \emph{opne62541} Bibliothek zugeordnet ist und zwei Threads, mit denen zyklisch geprüft wird, 
+Ein Thread der exklusiv dem nativen Server der \emph{open62541} Bibliothek zugeordnet ist und zwei Threads, mit denen zyklisch geprüft wird, 
 ob \eigenName{opcua\_changeRequest} Objekte in der Warteschlange (Attribut \eigenName{changeRequests\_m}) vorhanden sind.
 Sind in der Warteschlange \eigenName{opcua\_changeRequest} Objekte vorhanden, wird jedes Element an die Methode \eigenName{performChangeRequest} übergeben und aus der Warteschlange entfernt.
 In der Methode \eigenName{performChangeRequest} wird dann die Änderung an der Datenstruktur durchgeführt. % eventuell noch den Trick mit NodeContext erklären () void*.....

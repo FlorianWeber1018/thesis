@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>WebSocket Test</title>
+<script language="javascript" type="text/javascript">
+  var wsUri = "wss://192.168.178.70:18080";
+  var output;
+  var startTime = new Date();
+  var startms = startTime.getTime();
+  var stoptimeHours = 4;
+  var stoptimeMinutes = stoptimeHours * 60;
+  var stoptimeSeconds = 20; //stoptimeMinutes * 60;
+  var stoptimems = stoptimeSeconds * 1000;
+  var sleepTimems = 20;
+
+  function init() {
+    output = document.getElementById("output");
+    testWebSocket();
+  }
+
+  function testWebSocket() {
+    websocket = new WebSocket(wsUri);
+    websocket.onopen = function (evt) {
+      onOpen(evt)
+    };
+    websocket.onclose = function (evt) {
+      onClose(evt)
+    };
+    websocket.onmessage = function (evt) {
+      onMessage(evt)
+    };
+    websocket.onerror = function (evt) {
+      onError(evt)
+    };
+  }
+
+  function onOpen(evt) {
+    //writeToScreen("CONNECTED");
+    doSend("5;user;testPW");
+  }
+
+  function onClose(evt) {
+    writeToScreen("DISCONNECTED");
+  }
+
+  function onMessage(evt) {
+    switch (evt.data) {
+      case "5": {
+        doSend("3;1");
+      }
+      break;
+    case "3;1": {
+      writeToScreen("started to send for " + stoptimems + " ms<br>");
+      writeToScreen("1;" + getTimeStamp() + ";");
+      doSend("1;1;1");
+    }
+    break;
+    case "1;1;1": {
+      rec_1();
+    }
+    break;
+    case "1;1;0": {
+      rec_0();
+    }
+    break;
+    }
+  }
+
+  function rec_1() {
+    writeToScreen("1;" + getTimeStamp() + "<br>");
+    sleepFor(sleepTimems);
+    writeToScreen("0;" + getTimeStamp() + ";");
+    doSend("1;1;0");
+  }
+
+  function rec_0() {
+    writeToScreen("0;" + getTimeStamp() + "<br>");
+    if (getTimeStamp() < stoptimems) {
+      sleepFor(sleepTimems);
+      writeToScreen("1;" + getTimeStamp() + ";");
+      doSend("1;1;1");
+    }
+  }
+
+  function sleepFor(sleepDuration) {
+    var now = new Date().getTime();
+    while (new Date().getTime() < now + sleepDuration) {
+      /* do nothing */
+    }
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  function onError(evt) {
+    writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+  }
+
+  function doSend(message) {
+    websocket.send(message);
+  }
+
+  function writeToScreen(message) {
+    document.getElementById("output").innerHTML += message;
+  }
+
+  window.addEventListener("load", init, false);
+
+  function getTimeStamp() {
+    let actualTime = new Date();
+    let actualms = actualTime.getTime();
+    let diff = actualms - startms;
+    return diff;
+  }
+</script>
+
+<h2>WebSocket Test</h2>
+
+<div id="output"></div>
